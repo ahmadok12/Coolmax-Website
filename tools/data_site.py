@@ -171,8 +171,8 @@ T = {
     "menu": {"en": "Menu", "ar": "القائمة"},
     "hero_kicker": {"en": "Wholesale · Pakistan & Middle East", "ar": "بالجملة · باكستان والشرق الأوسط"},
     "hero_title": {
-        "en": "Industrial evaporative air coolers, supplied wholesale",
-        "ar": "مكيفات صحراوية صناعية وتجارية بأسعار الجملة",
+        "en": "Industrial evaporative air coolers, [[supplied wholesale]]",
+        "ar": "مكيفات صحراوية صناعية وتجارية [[بأسعار الجملة]]",
     },
     "hero_lead": {
         "en": "Factory-direct coolers from 1,000 to 80,000 m³/h for dealers, contractors and project buyers in Pakistan, "
@@ -184,7 +184,7 @@ T = {
         "en": ["Up to 90% lower running cost than AC", "SASO, CE & BV approved factory", "Container & mixed-model orders"],
         "ar": ["تكلفة تشغيل أقل حتى 90% مقارنة بالمكيف العادي", "مصنع حاصل على شهادات SASO وCE وBV", "طلبات بالحاوية وموديلات متنوعة"],
     },
-    "brands_title": {"en": "Three brands, one wholesale partner", "ar": "ثلاث علامات تجارية وشريك جملة واحد"},
+    "brands_title": {"en": "Three brands, [[one wholesale]] partner", "ar": "ثلاث علامات تجارية و[[شريك جملة واحد]]"},
     "brands_lead": {
         "en": "Choose by budget, capacity and market. We quote all three side by side.",
         "ar": "اختر حسب الميزانية والقدرة والسوق، ونقدم لك عروض أسعار للعلامات الثلاث جنباً إلى جنب.",
@@ -194,8 +194,9 @@ T = {
     "view_range": {"en": "View range", "ar": "عرض التشكيلة"},
     "featured_kicker": {"en": "Best seller", "ar": "الأكثر مبيعاً"},
     "featured_cta": {"en": "Full specifications", "ar": "المواصفات الكاملة"},
-    "cats_title": {"en": "Shop by application", "ar": "تسوق حسب الاستخدام"},
-    "why_title": {"en": "Why evaporative cooling sells in hot, dry markets", "ar": "لماذا تنتشر المكيفات الصحراوية في الأسواق الحارة والجافة"},
+    "cats_title": {"en": "Shop by [[application]]", "ar": "تسوق حسب [[الاستخدام]]"},
+    "why_lead": {"en": "Four reasons dealers across Pakistan and the Gulf keep reordering evaporative coolers every summer.", "ar": "أربعة أسباب تجعل الموزعين في باكستان والخليج يعيدون طلب المكيفات الصحراوية كل صيف."},
+    "why_title": {"en": "Why evaporative cooling [[sells in hot, dry]] markets", "ar": "لماذا تنتشر [[المكيفات الصحراوية]] في الأسواق الحارة والجافة"},
     "why_points": {
         "en": [
             ("Low running cost", "A 18,000 m³/h industrial unit draws about 1.1 kW. That is roughly a tenth of the electricity of compressor AC for the same space."),
@@ -217,12 +218,12 @@ T = {
     },
     "ambient": {"en": "Outdoor °C", "ar": "الحرارة الخارجية °م"},
     "rh": {"en": "Humidity", "ar": "الرطوبة"},
-    "markets_title": {"en": "Supplying Pakistan and the Gulf", "ar": "نوّرد إلى باكستان ودول الخليج"},
+    "markets_title": {"en": "Supplying [[Pakistan and the Gulf]]", "ar": "نوّرد إلى [[باكستان ودول الخليج]]"},
     "markets_lead": {
         "en": "Local delivery from our store in Pakistan, and container shipments to importers, distributors and contractors across the Middle East.",
         "ar": "توصيل محلي من معرضنا في باكستان، وشحن بالحاويات للمستوردين والموزعين والمقاولين في جميع أنحاء الشرق الأوسط.",
     },
-    "process_title": {"en": "How wholesale ordering works", "ar": "كيف يتم طلب الجملة"},
+    "process_title": {"en": "How [[wholesale ordering]] works", "ar": "كيف يتم [[طلب الجملة]]"},
     "process": {
         "en": [
             ("Send your requirement", "Tell us the space, quantity, destination and budget on WhatsApp or the form."),
@@ -237,7 +238,7 @@ T = {
             ("التسليم وخدمة ما بعد البيع", "توصيل محلي في باكستان أو شحن إلى ميناء بلدك، مع توفر قطع الغيار مثل خلايا التبريد والمضخات والمحركات."),
         ],
     },
-    "faq_title": {"en": "Wholesale FAQ", "ar": "أسئلة شائعة عن البيع بالجملة"},
+    "faq_title": {"en": "Wholesale [[FAQ]]", "ar": "أسئلة شائعة عن [[البيع بالجملة]]"},
     "faq": {
         "en": [
             ("Do you sell wholesale only?", "Wholesale, dealer and project orders are our focus. Retail customers are welcome at our store in Pakistan."),
@@ -258,7 +259,7 @@ T = {
             ("هل تعمل المكيفات الصحراوية في المناطق الرطبة؟", "تعمل بأفضل أداء في الهواء الحار الجاف. وفي المناطق الساحلية الرطبة توفر تهوية قوية بهواء نقي، وسننصحك بالموديل ومعدل تغيير الهواء المناسب."),
         ],
     },
-    "calc_title": {"en": "How many coolers do you need?", "ar": "كم مكيفاً صحراوياً تحتاج؟"},
+    "calc_title": {"en": "How many coolers [[do you need?]]", "ar": "كم مكيفاً صحراوياً [[تحتاج؟]]"},
     "calc_lead": {
         "en": "Industry rule of thumb from the Aolan selection guide: units = floor area × ceiling height × air changes per hour ÷ cooler airflow.",
         "ar": "القاعدة المعتمدة في دليل اختيار أولان: عدد الوحدات = المساحة × ارتفاع السقف × عدد مرات تغيير الهواء في الساعة ÷ تدفق المكيف.",
@@ -279,7 +280,7 @@ T = {
         "en": "Estimate only. Duct runs, roof insulation and local humidity change the result, so we confirm every project before quoting.",
         "ar": "هذا تقدير فقط. طول مجاري الهواء وعزل السقف والرطوبة المحلية تؤثر على النتيجة، لذلك نراجع كل مشروع قبل تقديم عرض السعر.",
     },
-    "contact_title": {"en": "Request a wholesale quote", "ar": "اطلب عرض سعر الجملة"},
+    "contact_title": {"en": "Request a [[wholesale quote]]", "ar": "اطلب [[عرض سعر الجملة]]"},
     "contact_lead": {
         "en": "Tell us what you need. We usually reply on WhatsApp within one business day with prices, availability and loading details.",
         "ar": "أخبرنا بما تحتاجه. نرد عادة عبر واتساب خلال يوم عمل واحد بالأسعار والتوفر وتفاصيل التحميل.",
@@ -344,6 +345,31 @@ T = {
     "compare_title": {"en": "Mini Chiller vs other air conditioners", "ar": "مقارنة الميني تشيلر بأنواع التكييف الأخرى"},
     "features": {"en": "Key features", "ar": "المزايا الرئيسية"},
     "projects_short": {"en": "Installations", "ar": "تركيبات منفذة"},
+    "eb_why": {"en": "Why evaporative", "ar": "لماذا التبريد التبخيري"},
+    "eb_range": {"en": "Our range", "ar": "تشكيلتنا"},
+    "eb_process": {"en": "How we work", "ar": "طريقة عملنا"},
+    "eb_brands": {"en": "Our brands", "ar": "علاماتنا التجارية"},
+    "eb_best": {"en": "Best seller", "ar": "الأكثر مبيعاً"},
+    "eb_tools": {"en": "Plan your project", "ar": "خطط لمشروعك"},
+    "eb_faq": {"en": "Questions", "ar": "أسئلة"},
+    "eb_contact": {"en": "Get in touch", "ar": "تواصل معنا"},
+    "eb_markets": {"en": "Where we deliver", "ar": "أين نوّرد"},
+    "range_lead": {
+        "en": "From 200 m³/h desk coolers to 80,000 m³/h central units, plus the new Mini Chiller. Pick a range to see every model and its full specifications.",
+        "ar": "من مبردات مكتبية بتدفق 200 م³/ساعة إلى وحدات مركزية بتدفق 80,000 م³/ساعة، بالإضافة إلى الميني تشيلر الجديد. اختر الفئة لعرض جميع الموديلات ومواصفاتها الكاملة.",
+    },
+    "process_lead": {
+        "en": "One contact for three brands: we size the job, compare models side by side and handle loading, so you order with confidence.",
+        "ar": "جهة تواصل واحدة لثلاث علامات تجارية: نحسب احتياجك ونقارن الموديلات ونتولى التحميل، لتطلب بثقة.",
+    },
+    "cta_title": {"en": "Get the [[2026 wholesale price list]] today", "ar": "احصل على [[قائمة أسعار الجملة 2026]] اليوم"},
+    "cta_lead": {
+        "en": "Send us your city and quantities on WhatsApp. We reply with prices, stock and container loading, usually within one business day.",
+        "ar": "أرسل لنا مدينتك والكميات عبر واتساب، ونرد بالأسعار والتوفر وكميات التحميل خلال يوم عمل واحد عادة.",
+    },
+    "call_us": {"en": "WhatsApp / call", "ar": "واتساب / اتصال"},
+    "hero_card": {"en": "Model families: industrial, portable, solar and home", "ar": "فئة موديلات: صناعية ومتنقلة وشمسية ومنزلية"},
+    "scroll": {"en": "Scroll down", "ar": "مرر للأسفل"},
     "soon_card": {"en": "Model details coming soon", "ar": "تفاصيل الموديل قريباً"},
     "soon_cta": {"en": "Ask for the current price list", "ar": "اطلب قائمة الأسعار الحالية"},
     "register": {"en": "Register for launch pricing", "ar": "سجّل للحصول على أسعار الإطلاق"},

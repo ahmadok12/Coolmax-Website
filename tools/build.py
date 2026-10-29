@@ -54,8 +54,18 @@ def L(v, lang):
 
 
 def t(key, lang, **kw):
-    s = T[key][lang]
+    s = T[key][lang].replace("[[", "").replace("]]", "")
     return s.format(**kw) if kw else s
+
+
+def hx(key, lang):
+    """Heading text with [[accent]] words wrapped for the two-tone heading style."""
+    return T[key][lang].replace("[[", '<span class="acc">').replace("]]", "</span>")
+
+
+def sec_head(eyebrow, title, lead="", tag="h2"):
+    lead_html = f'<p class="sub">{lead}</p>' if lead else ""
+    return f"""<div class="sec-head"><span class="eyebrow">{eyebrow}</span><div><{tag} class="h2">{title}</{tag}>{lead_html}</div></div>"""
 
 
 _VALUE_KEYS = sorted(VALUE_AR, key=len, reverse=True)
@@ -144,7 +154,14 @@ ICON = {
     "check": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     "arrow": '<svg class="flip" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     "wa": '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3a.5.5 0 0 0 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.4.8 3.2.7a2.8 2.8 0 0 0 1.8-1.3 2.3 2.3 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg>',
-    "logo": '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="#0b3a6e"/><g stroke="#5fd4ee" stroke-width="2.6" stroke-linecap="round" fill="none"><path d="M20 8v24M9.6 14l20.8 12M9.6 26l20.8-12"/><path d="M16.5 9.5 20 13l3.5-3.5M16.5 30.5 20 27l3.5 3.5"/></g></svg>',
+    "ne": '<svg class="flip" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    "down": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    "phone": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+    "c1": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M26 4 10 28h13l-3 16 18-26H25l1-14Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',
+    "c2": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 16c8-6 14 6 22 0s14-6 14-6M6 26c8-6 14 6 22 0s14-6 14-6M6 36c8-6 14 6 22 0s14-6 14-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    "c3": '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M24 4v6M24 38v6M4 24h6M38 24h6M10 10l4 4M34 34l4 4M10 38l4-4M34 14l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    "c4": '<svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="20" cy="14" rx="12" ry="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 14v10c0 3 5 5 12 5s12-2 12-5V14M8 24v10c0 3 5 5 12 5 3 0 6-.5 8-1.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="36" cy="34" r="7" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+    "logo": '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="#c79a55"/><g stroke="#161616" stroke-width="2.6" stroke-linecap="round" fill="none"><path d="M20 8v24M9.6 14l20.8 12M9.6 26l20.8-12"/><path d="M16.5 9.5 20 13l3.5-3.5M16.5 30.5 20 27l3.5 3.5"/></g></svg>',
 }
 
 
@@ -165,13 +182,14 @@ def header(cur, lang):
         f'<a href="{calc}">{t("nav_calc", lang)}</a><a href="{contact}">{t("nav_contact", lang)}</a>'
     )
     return f"""<a class="skip" href="#main">{t('skip', lang)}</a>
-<div id="geo-banner" class="geo-banner" hidden><span lang="{o}">{t('geo_banner', lang)}</span> <a href="{alt}" lang="{o}" data-setlang="{o}">{t('geo_banner_btn', lang)}</a><button type="button" class="geo-x" aria-label="Close">×</button></div>
 <header class="site-header">
+  <div id="geo-banner" class="geo-banner" hidden><span lang="{o}">{t('geo_banner', lang)}</span> <a href="{alt}" lang="{o}" data-setlang="{o}">{t('geo_banner_btn', lang)}</a><button type="button" class="geo-x" aria-label="Close">×</button></div>
   <div class="wrap header-in">
     <a class="logo" href="{home}">{ICON['logo']}<span>{esc(L(SITE['name'], lang))}</span></a>
     <nav class="main-nav" aria-label="Main">{nav}</nav>
+    <a class="hdr-phone" href="{wa_link()}" rel="noopener"><span class="hdr-ico">{ICON['phone']}</span><span><small>{t('call_us', lang)}</small><b dir="ltr">{esc(SITE['phone_display'])}</b></span></a>
     <a class="lang-switch" href="{alt}" hreflang="{o}" lang="{o}" data-setlang="{o}" title="{esc(t('lang_switch_label', lang))}">{t('lang_switch', lang)}</a>
-    <a class="btn btn-primary hdr-cta" href="{contact}">{t('cta_quote', lang)}</a>
+    <a class="btn btn-gold hdr-cta" href="{contact}">{t('cta_quote', lang)}</a>
     <details class="mnav"><summary aria-label="{t('menu', lang)}"><span></span><span></span><span></span></summary>
       <div class="mnav-panel"><a href="{home}">{t('nav_home', lang)}</a>{brands}<a href="{calc}">{t('nav_calc', lang)}</a><a href="{contact}">{t('nav_contact', lang)}</a></div>
     </details>
@@ -200,6 +218,7 @@ def footer(cur, lang):
       <li>{esc(L(SITE['address'], lang))}</li>
       <li><a href="{href(cur, f'{lang}/cooler-sizing-calculator.html')}">{t('nav_calc', lang)}</a></li></ul></div>
   </div>
+  <div class="footer-wm" aria-hidden="true">{esc(L(SITE['name'], lang)).split()[0]}</div>
   <div class="wrap footer-bottom">© 2026 {esc(L(SITE['name'], lang))}. {t('footer_rights', lang)}</div>
 </footer>
 <a class="wa-float" href="{wa_link()}" rel="noopener" aria-label="WhatsApp">{ICON['wa']}</a>"""
@@ -208,9 +227,9 @@ def footer(cur, lang):
 def page(cur, lang, title, desc, body, schema=(), noindex=False, og_image="assets/img/og.jpg", has_alt=True):
     alt_path = swap_lang(cur, lang)
     fonts = (
-        "family=Manrope:wght@500;600;700;800"
+        "family=Urbanist:wght@400;500;600;700;800"
         if lang == "en"
-        else "family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Manrope:wght@600;700;800"
+        else "family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Urbanist:wght@600;700;800"
     )
     en_path, ar_path = (cur, alt_path) if lang == "en" else (alt_path, cur)
     x_default = "" if cur.endswith("/index.html") and cur.count("/") == 1 else en_path
@@ -254,7 +273,7 @@ def page(cur, lang, title, desc, body, schema=(), noindex=False, og_image="asset
 <meta property="og:image" content="{SITE['url']}/{og_image}">
 <meta property="og:locale" content="{locale}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#0b3a6e">
+<meta name="theme-color" content="#161616">
 <link rel="icon" href="{href(cur, 'assets/favicon.svg')}" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -369,8 +388,8 @@ def cta_band(cur, lang, title, lead, model="", brand=""):
     contact = href(cur, f"{lang}/wholesale-inquiry.html") + (f"?{q}" if q else "")
     wa_text = f"{t('cta_quote', lang)}: {brand.title()} {model}".strip() if model else ""
     return f"""<section class="cta-band"><div class="wrap cta-in">
-  <div><h2>{esc(title)}</h2><p>{esc(lead)}</p></div>
-  <div class="cta-btns"><a class="btn btn-light" href="{contact}">{t('cta_quote', lang)}</a>
+  <div><h2>{title if '<span' in title else esc(title)}</h2><p>{esc(lead)}</p></div>
+  <div class="cta-btns"><a class="btn btn-gold" href="{contact}">{t('cta_quote', lang)}</a>
   <a class="btn btn-wa" href="{wa_link(wa_text)}" rel="noopener">{ICON['wa']}{t('cta_whatsapp', lang)}</a></div>
 </div></section>"""
 
@@ -414,7 +433,7 @@ def build_home(lang):
     stats = [
         ("3", {"en": "Brands", "ar": "علامات تجارية"}),
         (f"{len(PRODUCTS)}+", {"en": "Model families", "ar": "فئة موديلات"}),
-        ("1,000–80,000", {"en": "m³/h airflow range", "ar": "م³/ساعة نطاق تدفق الهواء"}),
+        ("80,000", {"en": "m³/h top airflow", "ar": "م³/ساعة أعلى تدفق هواء"}),
         (str(len(MARKETS)), {"en": "Core markets", "ar": "أسواق رئيسية"}),
     ]
     stats_html = "".join(f'<div><b dir="ltr">{n}</b><span>{L(l, lang)}</span></div>' for n, l in stats)
@@ -451,60 +470,106 @@ def build_home(lang):
     ]
     feat_stats_html = "".join(f"<div><span>{esc(k)}</span><b dir=\"auto\">{esc(L(v, lang))}</b></div>" for k, v in feat_stats)
 
-    body = f"""
-<section class="hero"><div class="wrap hero-in">
-  <div class="hero-copy">
-    <p class="kicker">{t('hero_kicker', lang)}</p>
-    <h1>{t('hero_title', lang)}</h1>
-    <p class="lead">{t('hero_lead', lang)}</p>
-    <ul class="ticks">{points}</ul>
-    <div class="btns"><a class="btn btn-primary btn-lg" href="{contact}">{t('cta_quote', lang)}</a>
-    <a class="btn btn-wa btn-lg" href="{wa_link()}" rel="noopener">{ICON['wa']}{t('cta_whatsapp', lang)}</a></div>
-  </div>
-  <div class="hero-media">{img(cur, 'cover', 'Aolan evaporative air coolers range', eager=True)}</div>
-</div>
-<div class="wrap stats">{stats_html}</div></section>
+    why_cards = "".join(
+        f'<div class="icard"><div class="icard-top"><h3>{esc(h)}</h3><span class="icard-ico">{ICON["c" + str(i)]}</span></div><p>{esc(d)}</p></div>'
+        for i, (h, d) in enumerate(T["why_points"][lang], 1)
+    )
+    svc_items = ""
+    for i, c in enumerate(CATEGORIES, 1):
+        im = f"{IMG}/{CATEGORY_IMAGE[c['slug']]}-sm.webp"
+        svc_items += (
+            f'<li><a href="{href(cur, aolan_path)}#{c["slug"]}" data-img="{href(cur, im)}" data-desc="{esc(L(c["desc"], lang))}">'
+            f'<span class="svc-n">0{i}</span><span class="svc-t">{esc(c[lang])}</span><span class="svc-a">{ICON["ne"]}</span></a></li>'
+        )
+    first_cat = CATEGORIES[0]
+    step_imgs = ["azl-180-app", "wind-supremo-detail", "projects-2", "projects-1"]
+    steps = "".join(
+        f'<li class="pstep">{img(cur, step_imgs[i - 1], "", small=True)}<div><h3><span class="acc">{i:02d}.</span> {esc(h)}</h3><p>{esc(d)}</p></div><span class="pstep-n" aria-hidden="true">{i:02d}</span></li>'
+        for i, (h, d) in enumerate(T["process"][lang], 1)
+    )
+    new_ticks = "".join(f"<li>{ICON['check']}{esc(x.split(':')[0])}</li>" for x in newp["bullets"][lang][:4])
+    wm = esc(L(SITE["name"], lang)).split()[0]
 
-{new_spot}
-<section class="sec" id="brands"><div class="wrap">
-  <h2 class="h2">{t('brands_title', lang)}</h2><p class="sub">{t('brands_lead', lang)}</p>
-  <div class="grid3">{cards}</div>
+    body = f"""
+<section class="hero hero-bg">
+  <div class="wrap hero-in">
+    <div class="hero-copy">
+      <span class="eyebrow eyebrow-light">{t('hero_kicker', lang)}</span>
+      <h1>{hx('hero_title', lang)}</h1>
+      <p class="lead">{t('hero_lead', lang)}</p>
+      <div class="btns"><a class="btn btn-pill" href="{contact}">{t('cta_quote', lang)}<span class="btn-dot">{ICON['ne']}</span></a>
+      <a class="btn btn-wa" href="{wa_link()}" rel="noopener">{ICON['wa']}{t('cta_whatsapp', lang)}</a></div>
+    </div>
+    <div class="hero-side">
+      <div class="glass"><b dir="ltr">{len(PRODUCTS)}+</b><span>{t('hero_card', lang)}</span>
+        <ul>{''.join(f'<li>{esc(x)}</li>' for x in T['hero_points'][lang])}</ul></div>
+      <a class="hero-thumb" href="{href(cur, product_path(lang, newp))}">{img(cur, 'mini-chiller', 'Aolan Mini Chiller', small=True)}<span class="chip chip-new">{t('new_badge', lang)}</span></a>
+    </div>
+  </div>
+  <a class="scroll-dot" href="#why" aria-label="{t('scroll', lang)}">{ICON['down']}</a>
+</section>
+
+<section class="sec" id="why"><div class="wrap">
+  {sec_head(t('eb_why', lang), hx('why_title', lang), t('why_lead', lang))}
+  <div class="grid4 icards">{why_cards}</div>
 </div></section>
 
-<section class="sec sec-tint"><div class="wrap feature">
-  <div class="feature-media">{img(cur, feat['image'], 'Aolan Wind Supremo industrial evaporative air cooler', small=True)}</div>
-  <div><p class="kicker">{t('featured_kicker', lang)} · Aolan</p><h2 class="h2">Wind Supremo</h2>
-  <p class="lead">{esc(L(feat['summary'], lang))}</p>
-  <div class="kv">{feat_stats_html}</div>
-  <div class="btns"><a class="btn btn-primary" href="{href(cur, product_path(lang, feat))}">{t('featured_cta', lang)} {ICON['arrow']}</a>
-  <a class="btn btn-ghost" href="{contact}?model=Wind%20Supremo&amp;brand=aolan">{t('cta_quote', lang)}</a></div></div>
+<section class="dband"><div class="wrap dband-in">
+  <div class="dband-copy">
+    <span class="eyebrow eyebrow-light">{t('new_kicker', lang)}</span>
+    <h2 class="h2">Aolan <span class="acc">Mini Chiller</span></h2>
+    <ul class="ticks ticks-2">{new_ticks}</ul>
+    <p>{t('new_lead', lang)}</p>
+    <div class="kv kv-dark">{new_stats_html}</div>
+    <div class="btns"><a class="btn btn-pill btn-pill-light" href="{href(cur, product_path(lang, newp))}">{t('featured_cta', lang)}<span class="btn-dot">{ICON['ne']}</span></a></div>
+  </div>
+  <div class="dband-media">{img(cur, 'mini-chiller', 'Aolan Mini Chiller indoor and outdoor units', small=True)}</div>
+  <div class="wm wm-dark" aria-hidden="true">2026</div>
 </div></section>
 
 <section class="sec"><div class="wrap">
-  <h2 class="h2">{t('cats_title', lang)}</h2>
-  <div class="grid4">{cats}</div>
+  {sec_head(t('eb_range', lang), hx('cats_title', lang), t('range_lead', lang))}
+  <div class="svc">
+    <figure class="svc-media">{img(cur, CATEGORY_IMAGE[first_cat['slug']], first_cat[lang], small=True)}<figcaption>{esc(L(first_cat['desc'], lang))}</figcaption></figure>
+    <ol class="svc-list">{svc_items}</ol>
+  </div>
+  <div class="stats">{stats_html}</div>
 </div></section>
 
-<section class="sec sec-dark"><div class="wrap why-grid">
-  <div><h2 class="h2">{t('why_title', lang)}</h2><div class="whys">{why}</div></div>
-  {supply_table(lang)}
+<section class="sec sec-grey sec-wm"><div class="wm" aria-hidden="true">{wm}</div><div class="wrap">
+  <div class="split-head"><div><span class="eyebrow">{t('eb_process', lang)}</span><h2 class="h2">{hx('process_title', lang)}</h2></div><p class="sub">{t('process_lead', lang)}</p></div>
+  <ol class="psteps">{steps}</ol>
 </div></section>
 
-<section class="sec" id="calculator"><div class="wrap calc-wrap">
-  <div><h2 class="h2">{t('calc_title', lang)}</h2><p class="sub">{t('calc_lead', lang)}</p></div>
-  {calculator(cur, lang)}
+<section class="sec" id="brands"><div class="wrap">
+  {sec_head(t('eb_brands', lang), hx('brands_title', lang), t('brands_lead', lang))}
+  <div class="grid3">{cards}</div>
 </div></section>
 
-<section class="sec sec-tint"><div class="wrap">
-  <h2 class="h2">{t('markets_title', lang)}</h2><p class="sub">{t('markets_lead', lang)}</p>
+<section class="sec sec-grey"><div class="wrap feature">
+  <div class="feature-media">{img(cur, feat['image'], 'Aolan Wind Supremo industrial evaporative air cooler', small=True)}</div>
+  <div><span class="eyebrow">{t('eb_best', lang)} · Aolan</span><h2 class="h2">Wind <span class="acc">Supremo</span></h2>
+  <p class="lead">{esc(L(feat['summary'], lang))}</p>
+  <div class="kv">{feat_stats_html}</div>
+  <div class="btns"><a class="btn btn-pill btn-pill-dark" href="{href(cur, product_path(lang, feat))}">{t('featured_cta', lang)}<span class="btn-dot">{ICON['ne']}</span></a>
+  <a class="btn btn-ghost" href="{contact}?model=Wind%20Supremo&amp;brand=aolan">{t('cta_quote', lang)}</a></div></div>
+</div></section>
+
+<section class="sec" id="calculator"><div class="wrap">
+  {sec_head(t('eb_tools', lang), hx('calc_title', lang), t('calc_lead', lang))}
+  <div class="calc-wrap">{calculator(cur, lang)}{supply_table(lang)}</div>
+</div></section>
+
+<section class="sec sec-grey"><div class="wrap">
+  {sec_head(t('eb_markets', lang), hx('markets_title', lang), t('markets_lead', lang))}
   <ul class="markets">{markets}</ul>
-  <h2 class="h2 mt">{t('process_title', lang)}</h2>
-  <ol class="steps">{steps}</ol>
 </div></section>
+
+{cta_band(cur, lang, hx('cta_title', lang), t('cta_lead', lang))}
 
 <section class="sec"><div class="wrap faq-wrap">
-  <div><h2 class="h2">{t('faq_title', lang)}</h2><div class="faq">{faq}</div></div>
-  <div id="inquiry"><h2 class="h2">{t('contact_title', lang)}</h2><p class="sub">{t('contact_lead', lang)}</p>{inquiry_form(cur, lang)}</div>
+  <div><span class="eyebrow">{t('eb_faq', lang)}</span><h2 class="h2">{hx('faq_title', lang)}</h2><div class="faq">{faq}</div></div>
+  <div id="inquiry"><span class="eyebrow">{t('eb_contact', lang)}</span><h2 class="h2">{hx('contact_title', lang)}</h2><p class="sub">{t('contact_lead', lang)}</p>{inquiry_form(cur, lang)}</div>
 </div></section>
 """
     org = {
@@ -759,9 +824,9 @@ def build_calc_page(lang):
     cur = f"{lang}/cooler-sizing-calculator.html"
     crumbs, crumb_ld = breadcrumbs(cur, lang, [(f"{lang}/index.html", t("nav_home", lang)), (None, t("nav_calc", lang))])
     body = f"""
-<section class="page-hero"><div class="wrap">{crumbs}<h1>{t('calc_title', lang)}</h1><p class="lead">{t('calc_lead', lang)}</p></div></section>
+<section class="page-hero"><div class="wrap">{crumbs}<h1>{hx('calc_title', lang)}</h1><p class="lead">{t('calc_lead', lang)}</p></div></section>
 <section class="sec pt0"><div class="wrap calc-wrap">{calculator(cur, lang)}{supply_table(lang)}</div></section>
-{cta_band(cur, lang, t('contact_title', lang), t('contact_lead', lang))}
+{cta_band(cur, lang, hx('cta_title', lang), t('cta_lead', lang))}
 """
     title = {
         "en": "Evaporative Air Cooler Sizing Calculator: How Many Units Do You Need?",
@@ -778,7 +843,7 @@ def build_contact(lang):
     cur = f"{lang}/wholesale-inquiry.html"
     crumbs, crumb_ld = breadcrumbs(cur, lang, [(f"{lang}/index.html", t("nav_home", lang)), (None, t("nav_contact", lang))])
     body = f"""
-<section class="page-hero"><div class="wrap">{crumbs}<h1>{t('contact_title', lang)}</h1><p class="lead">{t('contact_lead', lang)}</p></div></section>
+<section class="page-hero"><div class="wrap">{crumbs}<h1>{hx('contact_title', lang)}</h1><p class="lead">{t('contact_lead', lang)}</p></div></section>
 <section class="sec pt0"><div class="wrap contact-grid">
   {inquiry_form(cur, lang)}
   <aside class="card contact-card"><h2>{t('f_direct', lang)}</h2>
@@ -820,7 +885,7 @@ a{{color:#0b3a6e;background:#fff;padding:.8rem 1.4rem;border-radius:.6rem;margin
 
 def build_404():
     cur = "en/404.html"
-    body = f"""<section class="sec"><div class="wrap center"><h1>{t('nf_title', 'en')} · <span lang="ar">{t('nf_title', 'ar')}</span></h1>
+    body = f"""<section class="page-hero nf"><div class="wrap center"><h1>{t('nf_title', 'en')} · <span lang="ar">{t('nf_title', 'ar')}</span></h1>
 <p class="lead">{t('nf_lead', 'en')}</p><p class="lead" lang="ar" dir="rtl">{t('nf_lead', 'ar')}</p>
 <div class="btns center"><a class="btn btn-primary" href="{BASE}/en/index.html">English</a><a class="btn btn-ghost" href="{BASE}/ar/index.html">العربية</a></div></div></section>"""
     out = page(cur, "en", "404 · " + t("nf_title", "en"), t("nf_lead", "en"), body, noindex=True, has_alt=False)

@@ -20,6 +20,26 @@
     banner.querySelector('.geo-x').addEventListener('click', function () { banner.hidden = true; store.set('cm_banner', '1'); });
   }
 
+  // Header turns solid once the page scrolls past the dark hero
+  var header = document.querySelector('.site-header');
+  function onScroll() { header.classList.toggle('scrolled', window.scrollY > 40); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Range list: hovering or focusing an item previews its picture and description
+  var svcImg = document.querySelector('.svc-media img');
+  var svcCap = document.querySelector('.svc-media figcaption');
+  document.querySelectorAll('.svc-list a').forEach(function (a, i) {
+    if (i === 0) a.classList.add('on');
+    function show() {
+      if (svcImg.getAttribute('src') !== a.getAttribute('data-img')) { svcImg.src = a.getAttribute('data-img'); svcImg.alt = a.querySelector('.svc-t').textContent; }
+      svcCap.textContent = a.getAttribute('data-desc');
+      document.querySelectorAll('.svc-list a').forEach(function (x) { x.classList.toggle('on', x === a); });
+    }
+    a.addEventListener('mouseenter', show);
+    a.addEventListener('focus', show);
+  });
+
   // Product gallery thumbnails
   var main = document.querySelector('.pmain img');
   document.querySelectorAll('.thumbs button').forEach(function (b, i) {
