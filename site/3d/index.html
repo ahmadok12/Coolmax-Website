@@ -161,6 +161,7 @@ dl.specs dd { margin: 0; font-weight: 600; }
 .meter .trk i { display: block; height: 100%; width: 0; border-radius: 99px; background: var(--cyan); transition: width .15s linear; }
 .meter .v { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .78rem; }
 .meter.warm .trk i { background: var(--gold); }
+.meter.elec .trk i { background: var(--off); }
 
 .snaps .body { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .snaps .slot { aspect-ratio: 4 / 3; border: 1.5px dashed var(--line); border-radius: 10px; display: grid; place-items: center; color: var(--muted); font-size: .8rem; overflow: hidden; max-width: 100%; }
@@ -329,6 +330,8 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
           <div class="meter"><span>Pump flow</span><div class="trk"><i id="m-water"></i></div><span class="v" id="v-water">0 L/min</span></div>
           <div class="meter"><span>Pad wetness</span><div class="trk"><i id="m-wet"></i></div><span class="v" id="v-wet">0%</span></div>
           <div class="meter warm"><span>Air out</span><div class="trk"><i id="m-temp"></i></div><span class="v" id="v-temp">42.0 °C</span></div>
+          <div class="meter elec"><span>Power draw</span><div class="trk"><i id="m-watt"></i></div><span class="v" id="v-watt">0 W</span></div>
+          <div class="meter elec"><span>Current</span><div class="trk"><i id="m-amp"></i></div><span class="v" id="v-amp">0.00 A</span></div>
         </div>
       </section>
     </aside>
@@ -341,7 +344,7 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
     </div>
   </section>
 
-  <footer>Modelled in Blender and rendered live in your browser. Specifications are typical figures for the CM-18 range; outside air is assumed to be 42 °C at 25% humidity.</footer>
+  <footer>Modelled in Blender and rendered live in your browser. Specifications are typical figures for the CM-18 range; outside air is assumed to be 42 °C at 25% humidity. Electricity is estimated for the 1.5 kW motor on a 230 V single-phase supply.</footer>
 </div>
 
 <script type="importmap">
@@ -374,7 +377,7 @@ const PARTS = [
     notes: 'The fan sits under the outlet and sucks air up through the cabinet. Because it pulls rather than pushes, air enters evenly through all four wet pads before being thrown out of the top.',
     fun: 'Airflow rises in step with fan speed, but the power needed rises with its cube. Speed 8 uses less than half the energy of speed 12.' },
   { id: 'motor', nodes: ['Motor', 'Motor_Mount'], name: 'Motor', tag: 'Drives the fan directly', anchor: [0.10, 0.82, 0.02], internal: true, ex: [0, 0.22, 0],
-    specs: [['Power', '1.1 kW'], ['Supply', '380 V 3-phase or 220 V'], ['Protection', 'IPX4, thermal cut-out'], ['Bearings', 'Sealed ball bearings']],
+    specs: [['Power', '1.5 kW rated'], ['Supply', '230 V single phase'], ['Protection', 'IPX4, thermal cut-out'], ['Bearings', 'Sealed ball bearings']],
     notes: 'A direct-drive motor hangs from four steel arms at the centre of the outlet. No belts means less maintenance and quieter running.',
     fun: 'The cooling fins on the case sit right in the cold air stream, so the motor runs cooler than in a normal fan.' },
   { id: 'grilles', nodes: ['Side_Grilles'], name: 'Louvre panels', tag: 'Air enters on all four sides', anchor: [-0.30, 0.80, 0.565], key: true, ex: 'radial:0.38',
@@ -468,15 +471,16 @@ const DOT = dotTexture();
 // ---------- state ----------
 const S = {
   power: false, speed: 6, cool: true, timer: 0, timerEnd: 0,
-  omega: 0, pumpFlow: 0, fill: 0, wet: 0, tOut: 42,
+  omega: 0, pumpFlow: 0, fill: 0, wet: 0, tOut: 42, watts: 0,
   view: 'solid', explode: 0, explodeTarget: 0,
   labels: true, allLabels: false, cut: false, selected: null,
 };
 const SPEEDS = 12;
 // visual rad/s and real rpm per speed step (0 = off), evenly spaced from 300 to 960 rpm
-const OMEGA = Array.from({ length: SPEEDS + 1 }, (_, i) => i ? 2 * Math.PI * (1.0 + 3.6 * (i - 1) / (SPEEDS - 1)) : 0);
 const RPM = Array.from({ length: SPEEDS + 1 }, (_, i) => i ? Math.round(300 + 660 * (i - 1) / (SPEEDS - 1)) : 0);
+const OMEGA = RPM.map((r) => 2 * Math.PI * 4.6 * r / 960); // on-screen spin, proportional to the real rpm
 const W_MAX = OMEGA[SPEEDS];
+const MOTOR_W = 1500, PUMP_W = 40, VOLTS = 230, PF = 0.85; // rated motor, pump, supply, motor power factor
 const T_IN = 42, T_WB = 25.5; // outside dry-bulb and wet-bulb (°C)
 
 let model, fanNode, ledMat, padMats = [], meshes = [], nodeByName = {};
@@ -980,6 +984,13 @@ function step(dt) {
   const tTarget = T_IN - eff * (T_IN - T_WB);
   S.tOut += (tTarget - S.tOut) * (1 - Math.exp(-dt / 3));
 
+  // electricity: fan load follows the cube of speed (fan affinity law) on the 1.5 kW motor,
+  // plus no-load losses, extra torque while spinning up, the 40 W pump and the 2 W control board
+  const spinUp = S.power && target > S.omega ? (target - S.omega) / tau / W_MAX : 0;
+  const motorW = S.power ? 75 + 1425 * s * s * s + 900 * spinUp * (0.3 + s) : 0;
+  const wTarget = Math.min(MOTOR_W * 1.2, motorW) + PUMP_W * S.pumpFlow + 2;
+  S.watts += (wTarget - S.watts) * (1 - Math.exp(-dt / 0.3));
+
   if (padMats.length) {
     tmpC.copy(padDry).lerp(padWet, S.wet);
     padMats.forEach((m) => { m.color.copy(tmpC); m.roughness = 0.8 - 0.4 * S.wet; });
@@ -1005,6 +1016,9 @@ function step(dt) {
   $('m-water').style.width = `${S.pumpFlow * 100}%`; $('v-water').textContent = `${(S.pumpFlow * 12).toFixed(1)} L/min`;
   $('m-wet').style.width = `${S.wet * 100}%`; $('v-wet').textContent = `${Math.round(S.wet * 100)}%`;
   $('m-temp').style.width = `${((S.tOut - 20) / 25) * 100}%`; $('v-temp').textContent = `${S.tOut.toFixed(1)} °C`;
+  const amps = S.watts / (VOLTS * PF);
+  $('m-watt').style.width = `${Math.min(100, (S.watts / (MOTOR_W + PUMP_W)) * 100)}%`; $('v-watt').textContent = `${Math.round(S.watts).toLocaleString()} W`;
+  $('m-amp').style.width = `${Math.min(100, (amps / 8) * 100)}%`; $('v-amp').textContent = `${amps.toFixed(2)} A`;
 }
 
 function frame() {
