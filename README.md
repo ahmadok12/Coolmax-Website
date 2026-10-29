@@ -12,6 +12,12 @@ Static, SEO-ready website for wholesale evaporative air coolers. No framework an
 4. Rebuild: `pip install pillow` once, then `python3 tools/build.py`.
 5. Product photos were cropped from the catalogue PDF with `tools/crop_aolan.py`.
 
+## 3D cooler viewer
+`site/3d/` is a hand-made interactive 3D page for the Coolmax CM-18 top-discharge cooler (three.js + `coolmax_cm18.glb`).
+The build script does not touch it. The CM-18/CM-30 product pages and the home page link to it ("Explore in 3D").
+The Blender model and page source live outside this repo in the "Coolmax 3D Viewer" folder; run `make_outputs.py` there
+to refresh `site/3d/`.
+
 ## Publish
 Currently hosted on GitHub Pages: every push to `main` runs `.github/workflows/pages.yml`, which deploys the `site/` folder
 to https://ahmadok12.github.io/Coolmax-Website/ (rebuild with `python3 tools/build.py` and commit `site/` first).

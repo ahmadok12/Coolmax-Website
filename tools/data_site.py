@@ -154,6 +154,7 @@ T = {
     "lang_switch": {"en": "العربية", "ar": "English"},
     "lang_switch_label": {"en": "View this page in Arabic", "ar": "View this page in English"},
     "cta_quote": {"en": "Get wholesale price", "ar": "اطلب سعر الجملة"},
+    "cta_3d": {"en": "Explore in 3D", "ar": "استكشف المبرد بالأبعاد الثلاثية"},
     "cta_whatsapp": {"en": "WhatsApp us", "ar": "راسلنا واتساب"},
     "cta_models": {"en": "Browse models", "ar": "تصفح الموديلات"},
     "menu": {"en": "Menu", "ar": "القائمة"},
