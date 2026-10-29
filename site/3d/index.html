@@ -137,7 +137,7 @@ button:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
 .lcd.off { opacity: .35; }
 .lcd .big { font-size: 1.35rem; font-weight: 600; }
 .bars { display: inline-flex; gap: 3px; align-items: end; }
-.bars b { width: 7px; background: currentColor; opacity: .2; border-radius: 1px; }
+.bars b { width: 4px; background: currentColor; opacity: .2; border-radius: 1px; }
 .bars b.on { opacity: 1; }
 .keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .key { border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 10px; padding: 9px 4px; font: 700 .78rem var(--font); cursor: pointer; display: grid; justify-items: center; gap: 3px; }
@@ -272,7 +272,7 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
           </div>
           <div class="lcd off" id="lcd" aria-live="polite">
             <div><span class="big" id="lcd-mode">OFF</span></div>
-            <div class="bars" id="lcd-bars"><b style="height:8px"></b><b style="height:13px"></b><b style="height:18px"></b></div>
+            <div class="bars" id="lcd-bars" aria-hidden="true"></div>
             <div id="lcd-sub">PRESS POWER</div>
             <div id="lcd-timer"></div>
           </div>
@@ -355,9 +355,9 @@ const PARTS = [
     notes: 'The shroud is a short tube that hugs the fan tips. A tight gap stops air slipping back around the blades, so more of the motor\'s work turns into airflow.',
     fun: 'Halving the tip gap can raise airflow by several percent with the same motor.' },
   { id: 'fan', nodes: ['Fan'], name: 'Axial fan', tag: 'Pulls air through the pads', anchor: [0.18, 0.95, 0.12], internal: true, ex: [0, 0.36, 0],
-    specs: [['Blades', '6 broad PP paddles'], ['Diameter', '660 mm'], ['Speed', '3 steps, up to 960 rpm'], ['Airflow', 'Up to 18,000 m³/h']],
+    specs: [['Blades', '6 broad PP paddles'], ['Diameter', '660 mm'], ['Speed', '12 steps, 300 to 960 rpm'], ['Airflow', 'Up to 18,000 m³/h']],
     notes: 'The fan sits under the outlet and sucks air up through the cabinet. Because it pulls rather than pushes, air enters evenly through all four wet pads before being thrown out of the top.',
-    fun: 'Airflow rises in step with fan speed, but the power needed rises with its cube. Speed 2 uses roughly half the energy of speed 3.' },
+    fun: 'Airflow rises in step with fan speed, but the power needed rises with its cube. Speed 8 uses less than half the energy of speed 12.' },
   { id: 'motor', nodes: ['Motor', 'Motor_Mount'], name: 'Motor', tag: 'Drives the fan directly', anchor: [0.10, 0.82, 0.02], internal: true, ex: [0, 0.22, 0],
     specs: [['Power', '1.1 kW'], ['Supply', '380 V 3-phase or 220 V'], ['Protection', 'IPX4, thermal cut-out'], ['Bearings', 'Sealed ball bearings']],
     notes: 'A direct-drive motor hangs from four steel arms at the centre of the outlet. No belts means less maintenance and quieter running.',
@@ -452,13 +452,16 @@ const DOT = dotTexture();
 
 // ---------- state ----------
 const S = {
-  power: false, speed: 2, cool: true, timer: 0, timerEnd: 0,
+  power: false, speed: 6, cool: true, timer: 0, timerEnd: 0,
   omega: 0, pumpFlow: 0, fill: 0, wet: 0, tOut: 42,
   view: 'solid', explode: 0, explodeTarget: 0,
   labels: true, allLabels: false, cut: false, selected: null,
 };
-const OMEGA = [0, 2 * Math.PI * 2.2, 2 * Math.PI * 3.4, 2 * Math.PI * 4.6]; // visual rad/s per speed step
-const RPM = [0, 620, 800, 960];
+const SPEEDS = 12;
+// visual rad/s and real rpm per speed step (0 = off), evenly spaced from 300 to 960 rpm
+const OMEGA = Array.from({ length: SPEEDS + 1 }, (_, i) => i ? 2 * Math.PI * (1.0 + 3.6 * (i - 1) / (SPEEDS - 1)) : 0);
+const RPM = Array.from({ length: SPEEDS + 1 }, (_, i) => i ? Math.round(300 + 660 * (i - 1) / (SPEEDS - 1)) : 0);
+const W_MAX = OMEGA[SPEEDS];
 const T_IN = 42, T_WB = 25.5; // outside dry-bulb and wet-bulb (°C)
 
 let model, fanNode, ledMat, padMats = [], meshes = [], nodeByName = {};
@@ -558,7 +561,7 @@ const SIDE_N = [[0, 1], [1, 0], [0, -1], [-1, 0]]; // outward normal (x, z) for 
 const sideXZ = (side, u, d) => { const [nx, nz] = SIDE_N[side]; return [nx * d + nz * u, nz * d - nx * u]; };
 
 function updateParticles(dt) {
-  const s = S.omega / OMEGA[3]; // 0..1 airflow fraction
+  const s = S.omega / W_MAX; // 0..1 airflow fraction
   // exhaust
   {
     const pos = EX.g.attributes.position.array, col = EX.g.attributes.color.array, c = EX.color;
@@ -693,7 +696,7 @@ function beep(seq) {
 const BEEP = { on: [[2400, 0.09], [3200, 0.16]], off: [[3200, 0.09], [2000, 0.2]], key: [[2800, 0.08]], max: [[2800, 0.06], [2800, 0.06]] };
 function updateAudio() {
   if (!A.ctx) return;
-  const t = A.ctx.currentTime, s = S.omega / OMEGA[3];
+  const t = A.ctx.currentTime, s = S.omega / W_MAX;
   const st = (p, v) => p.setTargetAtTime(v, t, 0.08);
   st(A.air.gain, 0.32 * Math.pow(s, 1.4));
   st(A.lfoG.gain, 0.05 * s);
@@ -708,6 +711,7 @@ function updateAudio() {
 }
 
 // ---------- controls UI ----------
+$('lcd-bars').innerHTML = Array.from({ length: SPEEDS }, (_, i) => `<b style="height:${5 + i * 1.4}px"></b>`).join('');
 function refreshUI() {
   const on = S.power;
   $('power').setAttribute('aria-pressed', on);
@@ -732,7 +736,7 @@ function setPower(v) {
   refreshUI(); updateTimerText();
 }
 $('power').addEventListener('click', () => setPower(!S.power));
-$('k-up').addEventListener('click', () => { if (S.speed < 3) { S.speed++; beep(BEEP.key); } else beep(BEEP.max); refreshUI(); });
+$('k-up').addEventListener('click', () => { if (S.speed < SPEEDS) { S.speed++; beep(BEEP.key); } else beep(BEEP.max); refreshUI(); });
 $('k-down').addEventListener('click', () => { if (S.speed > 1) { S.speed--; beep(BEEP.key); } else beep(BEEP.max); refreshUI(); });
 $('k-cool').addEventListener('click', () => { S.cool = true; beep(BEEP.key); refreshUI(); });
 $('k-fan').addEventListener('click', () => { S.cool = false; beep(BEEP.key); refreshUI(); });
@@ -953,7 +957,7 @@ function step(dt) {
   S.pumpFlow += ((pumpOn ? 1 : 0) - S.pumpFlow) * (1 - Math.exp(-dt / 0.4));
   S.fill = Math.min(1, Math.max(0, S.fill + (pumpOn ? dt / 1.5 : -dt / 2.5)));
   // pads soak up in ~6 s and dry in ~40 s (faster with more air)
-  const s = S.omega / OMEGA[3];
+  const s = S.omega / W_MAX;
   const flowIn = S.pumpFlow * S.fill;
   S.wet += flowIn > 0.05 ? (1 - S.wet) * (1 - Math.exp(-dt / 6)) : -S.wet * (1 - Math.exp(-dt * (0.02 + 0.05 * s)));
   // outlet temperature: direct evaporative effectiveness up to 85 %, slightly lower at high air speed
@@ -979,7 +983,7 @@ function step(dt) {
   updateAudio();
 
   // readouts
-  const rpm = Math.round((S.omega / OMEGA[3]) * 960);
+  const rpm = Math.round((S.omega / W_MAX) * 960);
   $('m-rpm').style.width = `${(rpm / 960) * 100}%`; $('v-rpm').textContent = `${rpm} rpm`;
   const air = Math.round(s * 18000 / 50) * 50;
   $('m-air').style.width = `${s * 100}%`; $('v-air').textContent = `${air.toLocaleString()} m³/h`;
