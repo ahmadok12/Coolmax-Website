@@ -580,7 +580,8 @@ def build_home(lang):
   <p class="lead">{esc(L(feat['summary'], lang))}</p>
   <div class="kv">{feat_stats_html}</div>
   <div class="btns"><a class="btn btn-pill btn-pill-dark" href="{href(cur, product_path(lang, feat))}">{t('featured_cta', lang)}<span class="btn-dot">{ICON['ne']}</span></a>
-  <a class="btn btn-ghost" href="{contact}?model=CM-18TC&amp;brand=coolmax">{t('cta_quote', lang)}</a></div></div>
+  <a class="btn btn-ghost" href="{contact}?model=CM-18TC&amp;brand=coolmax">{t('cta_quote', lang)}</a>
+  <a class="btn btn-ghost" href="{href(cur, '3d/index.html')}">{t('cta_3d', lang)}</a></div></div>
 </div></section>
 
 <section class="sec" id="brands"><div class="wrap">
@@ -774,6 +775,10 @@ def specs_table(lang, p):
     return f'<div class="tscroll"><table class="tbl spec"><thead><tr><th scope="col">{t("model_col", lang)}</th>{cols}</tr></thead><tbody>{rows}</tbody></table></div>'
 
 
+# Products that link to the interactive 3D cooler in site/3d/ (a hand-made page the build leaves alone).
+VIEWER_3D_SLUGS = {"cm-18-25-axial", "cm-18-25-centrifugal", "cm-30-50-axial", "cm-30-50-centrifugal"}
+
+
 def build_product(lang, p):
     cur = product_path(lang, p)
     b = p["brand"]
@@ -834,6 +839,9 @@ def build_product(lang, p):
     h1 = f"{bn} {p['name']}"
     if p.get("new"):
         solar = f'<span class="chip chip-new">{t("new_kicker", lang)}</span> ' + solar
+    viewer_btn = ""
+    if b["slug"] == "coolmax" and p["slug"] in VIEWER_3D_SLUGS:
+        viewer_btn = f'\n    <a class="btn btn-ghost btn-lg" href="{href(cur, "3d/index.html")}">{t("cta_3d", lang)}</a>'
     body = f"""
 <section class="page-hero slim"><div class="wrap">{crumbs}</div></section>
 <section class="sec pt0"><div class="wrap product">
@@ -846,7 +854,7 @@ def build_product(lang, p):
     <div class="kv">{kv_html}</div>
     <p class="small muted"><b>{t('model_col', lang)}:</b> <span dir="ltr">{esc(models_list)}</span></p>
     <div class="btns"><a class="btn btn-primary btn-lg" href="{contact}?model={quote(p['name'])}&amp;brand={b['slug']}">{t('cta_quote', lang)}</a>
-    <a class="btn btn-wa btn-lg" href="{wa_link(wa_text)}" rel="noopener">{ICON['wa']}{t('cta_whatsapp', lang)}</a></div>
+    <a class="btn btn-wa btn-lg" href="{wa_link(wa_text)}" rel="noopener">{ICON['wa']}{t('cta_whatsapp', lang)}</a>{viewer_btn}</div>
   </div>
 </div></section>
 <section class="sec pt0"><div class="wrap">
