@@ -5,7 +5,7 @@ Edit SITE first: business name, domain, phone/WhatsApp and email appear on every
 
 SITE = {
     "name": {"en": "Coolmax Wholesale", "ar": "كولماكس للجملة"},
-    "url": "https://www.example.com",  # production domain, no trailing slash (used for canonical, hreflang, sitemap)
+    "url": "https://ahmadok12.github.io/Coolmax-Website",  # site address, no trailing slash (canonical, hreflang, sitemap). Change when you get your own domain.
     "whatsapp": "923000000000",  # international format, digits only (placeholder)
     "phone_display": "+92 300 0000000",
     "email": "sales@example.com",

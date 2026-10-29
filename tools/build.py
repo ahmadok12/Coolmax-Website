@@ -20,6 +20,8 @@ OUT = os.path.join(ROOT, "site")
 IMG = "assets/img/aolan"
 LANGS = ["en", "ar"]
 TODAY = date.today().isoformat()
+# Path prefix when the site lives in a sub-folder (e.g. GitHub Pages project sites); "" on a root domain.
+BASE = __import__("urllib.parse").parse.urlparse(SITE["url"]).path.rstrip("/")
 
 ME_TIMEZONES = [
     "Asia/Riyadh", "Asia/Dubai", "Asia/Qatar", "Asia/Kuwait", "Asia/Bahrain", "Asia/Muscat", "Asia/Baghdad",
@@ -820,11 +822,11 @@ def build_404():
     cur = "en/404.html"
     body = f"""<section class="sec"><div class="wrap center"><h1>{t('nf_title', 'en')} · <span lang="ar">{t('nf_title', 'ar')}</span></h1>
 <p class="lead">{t('nf_lead', 'en')}</p><p class="lead" lang="ar" dir="rtl">{t('nf_lead', 'ar')}</p>
-<div class="btns center"><a class="btn btn-primary" href="/en/index.html">English</a><a class="btn btn-ghost" href="/ar/index.html">العربية</a></div></div></section>"""
+<div class="btns center"><a class="btn btn-primary" href="{BASE}/en/index.html">English</a><a class="btn btn-ghost" href="{BASE}/ar/index.html">العربية</a></div></div></section>"""
     out = page(cur, "en", "404 · " + t("nf_title", "en"), t("nf_lead", "en"), body, noindex=True, has_alt=False)
     # 404 is served from any URL, so make asset links root-absolute.
-    out = re.sub(r'(href|src)="\.\./assets/', r'\1="/assets/', out)
-    out = re.sub(r'href="(?!https?:|/|#|mailto:)([^"]+)"', r'href="/en/\1"', out).replace("/en/../ar/404.html", "/ar/index.html")
+    out = re.sub(r'(href|src)="\.\./assets/', r'\1="' + BASE + '/assets/', out)
+    out = re.sub(r'href="(?!https?:|/|#|mailto:)([^"]+)"', r'href="' + BASE + r'/en/\1"', out).replace(f"{BASE}/en/../ar/404.html", f"{BASE}/ar/index.html")
     out = re.sub(r"<script>\(function\(\)\{try\{if\(localStorage.*?</script>", "", out, flags=re.S)
     write("404.html", out)
 

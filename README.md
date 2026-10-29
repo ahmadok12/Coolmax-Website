@@ -13,6 +13,10 @@ Static, SEO-ready website for wholesale evaporative air coolers. No framework an
 5. Product photos were cropped from the catalogue PDF with `tools/crop_aolan.py`.
 
 ## Publish
+Currently hosted on GitHub Pages: every push to `main` runs `.github/workflows/pages.yml`, which deploys the `site/` folder
+to https://ahmadok12.github.io/Coolmax-Website/ (rebuild with `python3 tools/build.py` and commit `site/` first).
+
+Other hosts:
 Upload the `site/` folder to any static host (Netlify, Cloudflare Pages, Vercel, or cPanel `public_html`).
 Then set `SITE["url"]` to the real domain, rebuild, and submit `sitemap.xml` in Google Search Console.
 
