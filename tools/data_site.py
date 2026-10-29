@@ -15,45 +15,8 @@ SITE = {
     "form_endpoint": "",
 }
 
-# Placeholder brands. Their pages are noindex until real catalogues arrive.
-PLACEHOLDER_BRANDS = [
-    {
-        "slug": "coolmax",
-        "name": "Coolmax",
-        "status": "soon",
-        "tagline": {
-            "en": "Coolmax evaporative air coolers: full range coming soon",
-            "ar": "مكيفات كولماكس الصحراوية: التشكيلة الكاملة قريباً",
-        },
-        "intro": {
-            "en": "We are adding the full Coolmax catalogue with model specifications and container loading details. "
-            "Wholesale buyers can request the current Coolmax price list and availability on WhatsApp today.",
-            "ar": "نعمل على إضافة كتالوج كولماكس الكامل مع المواصفات وتفاصيل التحميل في الحاويات. "
-            "يمكن لتجار الجملة طلب قائمة أسعار كولماكس الحالية والتوفر عبر واتساب الآن.",
-        },
-        "sections": ["industrial", "outdoor", "home"],
-    },
-    {
-        "slug": "dunefrost",
-        "name": "DuneFrost",
-        "demo": True,
-        "status": "new",
-        "badge": {"en": "New · Canton Fair 2026", "ar": "جديد · معرض كانتون 2026"},
-        "tagline": {
-            "en": "The new cooler from the 2026 Canton Fair, made for Gulf heat",
-            "ar": "المبرد الجديد من معرض كانتون 2026، مصمم لحرارة الخليج",
-        },
-        "intro": {
-            "en": "DuneFrost is a new evaporative cooler range showcased at the Canton Fair in Guangzhou. "
-            "Distributors and dealers in Saudi Arabia, the UAE, Qatar, Kuwait, Oman, Bahrain, Iraq and Pakistan can register now "
-            "for launch pricing and first-container allocation.",
-            "ar": "ديون فروست تشكيلة جديدة من المبردات التبخيرية عُرضت في معرض كانتون في قوانغتشو. "
-            "يمكن للموزعين والوكلاء في السعودية والإمارات وقطر والكويت وعُمان والبحرين والعراق وباكستان التسجيل الآن "
-            "للحصول على أسعار الإطلاق وأولوية حجز الحاوية الأولى.",
-        },
-        "sections": ["outdoor"],
-    },
-]
+# Brands without a catalogue yet (pages are noindex). Empty now that all three brands have full data.
+PLACEHOLDER_BRANDS = []
 
 MARKETS = [
     ("PK", {"en": "Pakistan", "ar": "باكستان"}),
@@ -103,6 +66,11 @@ SPEC_LABELS = {
     "alushell": {"en": "Aluminium-alloy shell", "ar": "هيكل من سبائك الألمنيوم"},
     "solar": {"en": "Solar panel & battery", "ar": "لوح شمسي وبطارية"},
     "qty40": {"en": "Units per 40HQ (assembled)", "ar": "عدد الوحدات في حاوية 40HQ (مجمّعة)"},
+    "qty40hq": {"en": "Units per 40HQ", "ar": "عدد الوحدات في حاوية 40HQ"},
+    "fanwheel": {"en": "Fan wheel", "ar": "المروحة"},
+    "outletform": {"en": "Air outlet direction", "ar": "اتجاه مخرج الهواء"},
+    "nwgw": {"en": "Net / gross weight (kg)", "ar": "الوزن الصافي / الإجمالي (كجم)"},
+    "topcover": {"en": "Top cover", "ar": "الغطاء العلوي"},
     "qtyskd": {"en": "Units per 40HQ (SKD)", "ar": "عدد الوحدات في حاوية 40HQ (SKD مفككة جزئياً)"},
     # extraction fan table
     "model": {"en": "Model", "ar": "الموديل"},
@@ -119,6 +87,25 @@ SPEC_LABELS = {
 
 # Phrase-level translations for spec values (longest first is applied automatically).
 VALUE_AR = {
+    "Manual controller or touch screen with remote": "تحكم يدوي أو شاشة لمس مع ريموت",
+    "LCD with remote or manual controller": "شاشة LCD مع ريموت أو تحكم يدوي",
+    "Single speed or frequency inverter": "سرعة واحدة أو إنفرتر",
+    "Frequency inverter": "إنفرتر (تردد متغير)",
+    "LCD with remote": "شاشة LCD مع ريموت",
+    "Manual controller": "تحكم يدوي",
+    "Mechanical or remote": "ميكانيكي أو ريموت",
+    "Mechanical or digital": "ميكانيكي أو رقمي",
+    "Plastic or glass": "بلاستيك أو زجاج",
+    "External rotor motor": "محرك بدوّار خارجي",
+    "Conventional motor": "محرك تقليدي",
+    "BLDC motor": "محرك BLDC بدون فرش",
+    "3-speed motor": "محرك 3 سرعات",
+    "Blow-up": "تصريف علوي",
+    "Blow-side": "تصريف جانبي",
+    "with outlet": "مع مخرج",
+    "Glass": "زجاج",
+    "Remote": "ريموت",
+    "Mechanical": "ميكانيكي",
     "Multi-speed, silicon control": "متعدد السرعات، تحكم سيليكون",
     "Multi-speed, inverter": "متعدد السرعات، إنفرتر",
     "Button + knob switch": "أزرار + مفتاح دوّار",
@@ -155,6 +142,7 @@ VALUE_AR = {
     "side": "جانبي",
     "up": "علوي",
     "Yes": "نعم",
+    "or": "أو",
 }
 
 T = {
@@ -186,8 +174,8 @@ T = {
     },
     "brands_title": {"en": "Three brands, [[one wholesale]] partner", "ar": "ثلاث علامات تجارية و[[شريك جملة واحد]]"},
     "brands_lead": {
-        "en": "Choose by budget, capacity and market. We quote all three side by side.",
-        "ar": "اختر حسب الميزانية والقدرة والسوق، ونقدم لك عروض أسعار للعلامات الثلاث جنباً إلى جنب.",
+        "en": "Coolmax is the range we sell every day, Aolan covers big industrial and solar jobs, and PureBreeze is our new home cooler brand. We quote all three side by side.",
+        "ar": "كولماكس هي التشكيلة التي نبيعها يومياً، وأولان للمشاريع الصناعية الكبيرة والطاقة الشمسية، وبيور بريز علامتنا الجديدة للمكيفات المنزلية. ونقدم عروض أسعار للعلامات الثلاث جنباً إلى جنب.",
     },
     "models_count": {"en": "{n} model families", "ar": "{n} فئة موديلات"},
     "soon": {"en": "Catalogue coming soon", "ar": "الكتالوج قريباً"},
@@ -244,8 +232,8 @@ T = {
             ("Do you sell wholesale only?", "Wholesale, dealer and project orders are our focus. Retail customers are welcome at our store in Pakistan."),
             ("Do you supply Saudi Arabia, the UAE and other Gulf countries?", "Yes. Send your city or destination port and quantity, and we will quote with container loading and shipping options."),
             ("What is the minimum order quantity?", "It depends on the model and on whether goods ship from our Pakistan stock or directly from the factory. Send your requirement and we will confirm the MOQ."),
-            ("How many coolers fit in a 40-foot container?", "Each product page lists the factory's 40HQ loading quantity. For example, the Wind Supremo loads 40 units assembled or up to 70 units SKD."),
-            ("Are the coolers SASO certified for Saudi Arabia?", "Aolan states CE, SASO and BV approvals. Ask us for the certificate for your exact model before ordering."),
+            ("How many coolers fit in a 40-foot container?", "Each product page lists the factory's 40HQ loading quantity. For example, the Aolan Wind Supremo loads 40 units assembled or up to 70 units SKD."),
+            ("Are the coolers SASO certified for Saudi Arabia?", "Certificates differ by brand and model. Aolan states CE, SASO and BV approvals. Ask us for the certificate for your exact model before ordering."),
             ("Which voltage do the coolers use?", "Home and portable models run on 220–240 V single-phase, and most list 110/220 V, 50/60 Hz. Large industrial units are 380–415 V 3-phase, with single-phase versions up to 18,000 m³/h."),
             ("Do evaporative coolers work in humid areas?", "They work best in hot, dry air. In humid coastal areas they still provide strong fresh-air ventilation, and we will recommend the right model and air-change rate."),
         ],
@@ -254,7 +242,7 @@ T = {
             ("هل توردون إلى السعودية والإمارات ودول الخليج؟", "نعم. أرسل لنا مدينتك أو ميناء الوصول والكمية المطلوبة وسنرسل عرض سعر مع كميات التحميل وخيارات الشحن."),
             ("ما هو الحد الأدنى للطلب؟", "يعتمد على الموديل وعلى ما إذا كان الشحن من مخزوننا في باكستان أو مباشرة من المصنع. أرسل طلبك وسنؤكد لك الحد الأدنى."),
             ("كم مكيفاً يتسع في حاوية 40 قدم؟", "كل صفحة منتج تذكر كمية التحميل في حاوية 40HQ حسب المصنع. مثلاً موديل ويند سوبريمو: 40 وحدة مجمّعة أو حتى 70 وحدة SKD."),
-            ("هل المكيفات حاصلة على شهادة SASO للسعودية؟", "تذكر أولان أن منتجاتها حاصلة على شهادات CE وSASO وBV. اطلب منا شهادة الموديل المحدد قبل الطلب."),
+            ("هل المكيفات حاصلة على شهادة SASO للسعودية؟", "تختلف الشهادات حسب العلامة والموديل. تذكر أولان أن منتجاتها حاصلة على شهادات CE وSASO وBV. اطلب منا شهادة الموديل المحدد قبل الطلب."),
             ("ما هو الجهد الكهربائي للمكيفات؟", "الموديلات المنزلية والمتنقلة تعمل على 220–240 فولت أحادي الطور، ومعظمها مذكور 110/220 فولت 50/60 هرتز. الوحدات الصناعية الكبيرة 380–415 فولت ثلاثي الطور، مع نسخ أحادية الطور حتى 18,000 م³/ساعة."),
             ("هل تعمل المكيفات الصحراوية في المناطق الرطبة؟", "تعمل بأفضل أداء في الهواء الحار الجاف. وفي المناطق الساحلية الرطبة توفر تهوية قوية بهواء نقي، وسننصحك بالموديل ومعدل تغيير الهواء المناسب."),
         ],
@@ -323,8 +311,8 @@ T = {
     },
     "solar_badge": {"en": "Solar DC", "ar": "طاقة شمسية"},
     "spec_source": {
-        "en": "Specifications from the {brand} 2026 catalogue. Models and specs may change; confirm before ordering.",
-        "ar": "المواصفات من كتالوج {brand} لعام 2026. قد تتغير الموديلات والمواصفات، يرجى التأكيد قبل الطلب.",
+        "en": "Specifications from the {brand} catalogue. Models and specs may change; confirm before ordering.",
+        "ar": "المواصفات من كتالوج {brand}. قد تتغير الموديلات والمواصفات، يرجى التأكيد قبل الطلب.",
     },
     "brand_about": {"en": "About {brand}", "ar": "عن {brand}"},
     "projects": {"en": "Project references", "ar": "مشاريع منفذة"},
@@ -339,6 +327,12 @@ T = {
         "en": "Aolan's newest invention: real air-conditioner cooling built on evaporative technology. Up to 50% less energy than conventional AC, COP 5, and installed with simple PVC water pipes.",
         "ar": "أحدث ابتكارات أولان: تبريد حقيقي بمستوى المكيفات مبني على التقنية التبخيرية. توفير حتى 50% من الطاقة مقارنة بالمكيفات التقليدية، ومعامل أداء COP 5، وتركيب بأنابيب مياه PVC بسيطة.",
     },
+    "pb_lead": {
+        "en": "Shown for the first time at the 2026 Canton Fair: a centrifugal cube cooler with an energy-saving BLDC motor, 120° wide-angle air supply and a booster vent. Two sizes, 15,000 and 18,000 m³/h, on 110–240 V.",
+        "ar": "عُرض لأول مرة في معرض كانتون 2026: مكيف مكعب بمروحة طاردة ومحرك BLDC موفر للطاقة، وتوزيع هواء بزاوية 120 درجة، وفتحة هواء معززة. مقاسان بتدفق 15,000 و18,000 م³/ساعة على 110–240 فولت.",
+    },
+    "new_kicker_short": {"en": "Also new", "ar": "جديد أيضاً"},
+    "motor": {"en": "Motor", "ar": "المحرك"},
     "capacity": {"en": "Cooling capacity", "ar": "قدرة التبريد"},
     "energy_saving": {"en": "Energy saving vs AC", "ar": "توفير الطاقة مقارنة بالمكيف"},
     "how_it_works": {"en": "How it works", "ar": "طريقة العمل"},
@@ -355,8 +349,8 @@ T = {
     "eb_contact": {"en": "Get in touch", "ar": "تواصل معنا"},
     "eb_markets": {"en": "Where we deliver", "ar": "أين نوّرد"},
     "range_lead": {
-        "en": "From 200 m³/h desk coolers to 80,000 m³/h central units, plus the new Mini Chiller. Pick a range to see every model and its full specifications.",
-        "ar": "من مبردات مكتبية بتدفق 200 م³/ساعة إلى وحدات مركزية بتدفق 80,000 م³/ساعة، بالإضافة إلى الميني تشيلر الجديد. اختر الفئة لعرض جميع الموديلات ومواصفاتها الكاملة.",
+        "en": "From compact room coolers to 80,000 m³/h central units, plus the new PureBreeze BLDC cube and the Aolan Mini Chiller. Pick a range to see every model and its full specifications.",
+        "ar": "من مكيفات الغرف الصغيرة إلى وحدات مركزية بتدفق 80,000 م³/ساعة، بالإضافة إلى مكيف بيور بريز المكعب الجديد بمحرك BLDC وميني تشيلر أولان. اختر الفئة لعرض جميع الموديلات ومواصفاتها الكاملة.",
     },
     "process_lead": {
         "en": "One contact for three brands: we size the job, compare models side by side and handle loading, so you order with confidence.",
@@ -368,7 +362,7 @@ T = {
         "ar": "أرسل لنا مدينتك والكميات عبر واتساب، ونرد بالأسعار والتوفر وكميات التحميل خلال يوم عمل واحد عادة.",
     },
     "call_us": {"en": "WhatsApp / call", "ar": "واتساب / اتصال"},
-    "hero_card": {"en": "Model families: industrial, portable, solar and home", "ar": "فئة موديلات: صناعية ومتنقلة وشمسية ومنزلية"},
+    "hero_card": {"en": "Model families across Coolmax, Aolan and PureBreeze", "ar": "فئة موديلات من كولماكس وأولان وبيور بريز"},
     "scroll": {"en": "Scroll down", "ar": "مرر للأسفل"},
     "soon_card": {"en": "Model details coming soon", "ar": "تفاصيل الموديل قريباً"},
     "soon_cta": {"en": "Ask for the current price list", "ar": "اطلب قائمة الأسعار الحالية"},
@@ -377,8 +371,8 @@ T = {
     "nf_title": {"en": "Page not found", "ar": "الصفحة غير موجودة"},
     "nf_lead": {"en": "The page you are looking for has moved. Try our coolers instead.", "ar": "الصفحة التي تبحث عنها غير متوفرة. تصفح مكيفاتنا بدلاً من ذلك."},
     "footer_about": {
-        "en": "Wholesale supplier of evaporative air coolers for Pakistan and the Middle East. Industrial, portable, solar and home models.",
-        "ar": "مورد جملة للمكيفات الصحراوية ومبردات الهواء التبخيرية في باكستان والشرق الأوسط. موديلات صناعية ومتنقلة وشمسية ومنزلية.",
+        "en": "Wholesale supplier of Coolmax, Aolan and PureBreeze evaporative air coolers for Pakistan and the Middle East. Industrial, portable, solar and home models.",
+        "ar": "مورد جملة لمكيفات كولماكس وأولان وبيور بريز الصحراوية في باكستان والشرق الأوسط. موديلات صناعية ومتنقلة وشمسية ومنزلية.",
     },
     "footer_rights": {"en": "All rights reserved. Brand names belong to their owners.", "ar": "جميع الحقوق محفوظة. العلامات التجارية مملوكة لأصحابها."},
     "geo_banner": {"en": "هذا الموقع متوفر باللغة العربية", "ar": "This site is available in English"},

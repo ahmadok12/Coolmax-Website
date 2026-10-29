@@ -12,12 +12,15 @@ from datetime import date
 
 from PIL import Image
 
-from data_aolan import BRAND as AOLAN, CATEGORIES, PRODUCTS, SUPPLY_AIR
+import data_aolan
+import data_coolmax
+import data_purebreeze
+from data_aolan import BRAND as AOLAN, SUPPLY_AIR
 from data_site import MARKETS, PLACEHOLDER_BRANDS, SITE, SPEC_LABELS, T, VALUE_AR
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "site")
-IMG = "assets/img/aolan"
+IMG = "assets/img"
 LANGS = ["en", "ar"]
 TODAY = date.today().isoformat()
 # Path prefix when the site lives in a sub-folder (e.g. GitHub Pages project sites); "" on a root domain.
@@ -30,14 +33,29 @@ ME_TIMEZONES = [
 ]
 
 CATEGORY_IMAGE = {"chiller": "mini-chiller", "industrial": "wind-domination", "outdoor": "azl-300", "home": "azl045-zy13a", "ventilation": "extraction-fan"}
+for _c in data_aolan.CATEGORIES:
+    _c["image"] = CATEGORY_IMAGE[_c["slug"]]
 
+# Brand order is the order used in menus, cards and the inquiry form. "catalogue" names the spec source.
+BRANDS = []
+for _mod, _cat in ((data_coolmax, "Coolmax 2026"), (data_aolan, "Aolan 2026"), (data_purebreeze, "PureBreeze")):
+    _b = dict(_mod.BRAND, categories=_mod.CATEGORIES, products=_mod.PRODUCTS, catalogue=_cat)
+    for _p in _mod.PRODUCTS:
+        _p["brand"] = _b
+    BRANDS.append(_b)
+BRAND = {b["slug"]: b for b in BRANDS}
+PRODUCTS = [p for b in BRANDS for p in b["products"]]
+
+# (brand, product slug, label, airflow per unit)
 CALC_OPTIONS = [
-    ("wind-supremo", "Aolan Wind Supremo", 18000),
-    ("wind-domination", "Aolan Wind Domination AZL30", 30000),
-    ("wind-superior", "Aolan Wind Superior AZL50", 50000),
-    ("azl-300", "Aolan AZL-300 (portable)", 30000),
-    ("azl-180", "Aolan AZL-180 (portable)", 18000),
-    ("azl08-azl12-zy13b", "Aolan AZL12-ZY13B (portable)", 12000),
+    ("coolmax", "cm-18-25-centrifugal", "Coolmax CM-18TC (industrial)", 13000),
+    ("coolmax", "cm-30-50-centrifugal", "Coolmax CM-50TC (industrial)", 25000),
+    ("purebreeze", "pb-bldc-cube", "PureBreeze PB-98C BLDC", 18000),
+    ("aolan", "wind-supremo", "Aolan Wind Supremo", 18000),
+    ("aolan", "wind-domination", "Aolan Wind Domination AZL30", 30000),
+    ("aolan", "wind-superior", "Aolan Wind Superior AZL50", 50000),
+    ("aolan", "azl-300", "Aolan AZL-300 (portable)", 30000),
+    ("aolan", "azl-180", "Aolan AZL-180 (portable)", 18000),
 ]
 
 SITEMAP = []  # (en_path, ar_path)
@@ -105,8 +123,18 @@ def img_size(rel):
     return _size_cache[rel]
 
 
+def img_rel(name, small=False, ext="webp"):
+    """Image names are "folder/name"; bare names are Aolan images."""
+    name = name if "/" in name else f"aolan/{name}"
+    return f"{IMG}/{name}{'-sm' if small else ''}.{ext}"
+
+
+def og_rel(name):
+    return img_rel(name, ext="jpg").replace("assets/img/", "assets/img/og/", 1)
+
+
 def img(cur, name, alt, small=False, eager=False, cls=""):
-    rel = f"{IMG}/{name}{'-sm' if small else ''}.webp"
+    rel = img_rel(name, small)
     w, h = img_size(rel)
     loading = 'fetchpriority="high"' if eager else 'loading="lazy" decoding="async"'
     c = f' class="{cls}"' if cls else ""
@@ -143,7 +171,17 @@ def airflow_range(p):
 
 
 def product_path(lang, p):
-    return f"{lang}/brands/aolan/{p['slug']}.html"
+    return f"{lang}/brands/{p['brand']['slug']}/{p['slug']}.html"
+
+
+def brand_path(lang, b):
+    return f"{lang}/brands/{b['slug']}/index.html"
+
+
+def logo_img(cur, cls="logo-mark"):
+    rel = "assets/img/brands/coolmax-mark.png"
+    w, h = img_size(rel)
+    return f'<img class="{cls}" src="{href(cur, rel)}" alt="" width="{w}" height="{h}">'
 
 
 def ld(obj):
@@ -168,9 +206,7 @@ ICON = {
 # ---------------------------------------------------------------- layout
 def header(cur, lang):
     home = href(cur, f"{lang}/index.html")
-    brand_links = [(f"{lang}/brands/aolan/index.html", "Aolan")] + [
-        (f"{lang}/brands/{b['slug']}/index.html", b["name"]) for b in PLACEHOLDER_BRANDS
-    ]
+    brand_links = [(brand_path(lang, b), b["name"]) for b in BRANDS + PLACEHOLDER_BRANDS]
     brands = "".join(f'<a href="{href(cur, p)}">{esc(n)}</a>' for p, n in brand_links)
     calc = href(cur, f"{lang}/cooler-sizing-calculator.html")
     contact = href(cur, f"{lang}/wholesale-inquiry.html")
@@ -185,7 +221,7 @@ def header(cur, lang):
 <header class="site-header">
   <div id="geo-banner" class="geo-banner" hidden><span lang="{o}">{t('geo_banner', lang)}</span> <a href="{alt}" lang="{o}" data-setlang="{o}">{t('geo_banner_btn', lang)}</a><button type="button" class="geo-x" aria-label="Close">×</button></div>
   <div class="wrap header-in">
-    <a class="logo" href="{home}">{ICON['logo']}<span>{esc(L(SITE['name'], lang))}</span></a>
+    <a class="logo" href="{home}">{logo_img(cur)}<span>{esc(L(SITE['name'], lang))}</span></a>
     <nav class="main-nav" aria-label="Main">{nav}</nav>
     <a class="hdr-phone" href="{wa_link()}" rel="noopener"><span class="hdr-ico">{ICON['phone']}</span><span><small>{t('call_us', lang)}</small><b dir="ltr">{esc(SITE['phone_display'])}</b></span></a>
     <a class="lang-switch" href="{alt}" hreflang="{o}" lang="{o}" data-setlang="{o}" title="{esc(t('lang_switch_label', lang))}">{t('lang_switch', lang)}</a>
@@ -198,17 +234,16 @@ def header(cur, lang):
 
 
 def footer(cur, lang):
-    brand_links = [(f"{lang}/brands/aolan/index.html", "Aolan")] + [
-        (f"{lang}/brands/{b['slug']}/index.html", b["name"]) for b in PLACEHOLDER_BRANDS
-    ]
+    brand_links = [(brand_path(lang, b), b["name"]) for b in BRANDS + PLACEHOLDER_BRANDS]
     brands = "".join(f'<li><a href="{href(cur, p)}">{esc(n)}</a></li>' for p, n in brand_links)
     cats = "".join(
-        f'<li><a href="{href(cur, f"{lang}/brands/aolan/index.html")}#{c["slug"]}">{esc(c[lang])}</a></li>' for c in CATEGORIES
+        f'<li><a href="{href(cur, brand_path(lang, b))}#{c["slug"]}">{esc(b["name"])} · {esc(c[lang])}</a></li>'
+        for b in BRANDS for c in b["categories"][:2]
     )
     markets = " · ".join(L(n, lang) for _, n in MARKETS)
     return f"""<footer class="site-footer">
   <div class="wrap footer-grid">
-    <div><a class="logo logo-light" href="{href(cur, f'{lang}/index.html')}">{ICON['logo']}<span>{esc(L(SITE['name'], lang))}</span></a>
+    <div><a class="logo logo-light" href="{href(cur, f'{lang}/index.html')}">{logo_img(cur)}<span>{esc(L(SITE['name'], lang))}</span></a>
       <p>{t('footer_about', lang)}</p><p class="muted-light">{esc(markets)}</p></div>
     <div><h2>{t('nav_brands', lang)}</h2><ul>{brands}</ul></div>
     <div><h2>{t('cats_title', lang)}</h2><ul>{cats}</ul></div>
@@ -274,7 +309,7 @@ def page(cur, lang, title, desc, body, schema=(), noindex=False, og_image="asset
 <meta property="og:locale" content="{locale}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#161616">
-<link rel="icon" href="{href(cur, 'assets/favicon.svg')}" type="image/svg+xml">
+<link rel="icon" href="{href(cur, 'assets/favicon.png')}" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?{fonts}&display=swap">
@@ -324,7 +359,7 @@ def product_card(cur, lang, p):
 
     af = airflow_range(p)
     return f"""<a class="pcard" href="{href(cur, product_path(lang, p))}">
-  <div class="pcard-img">{img(cur, p['image'], f"Aolan {p['name']}", small=True)}</div>
+  <div class="pcard-img">{img(cur, p['image'], f"{p['brand']['name']} {p['name']}", small=True)}</div>
   <div class="pcard-body">{feat}{solar}<h3>{esc(p['name'])}</h3><p>{esc(L(p['headline'], lang))}</p>
   <p class="pcard-meta"><span>{t('airflow', lang)}</span> <b dir="ltr">{af} m³/h</b></p></div>
 </a>"""
@@ -333,7 +368,7 @@ def product_card(cur, lang, p):
 def calculator(cur, lang):
     opts = "".join(f'<option value="{v}">{esc(lbl)}</option>' for v, lbl in T["calc_use_opts"][lang])
     models = json.dumps(
-        [{"name": n, "airflow": a, "href": href(cur, f"{lang}/brands/aolan/{s}.html")} for s, n, a in CALC_OPTIONS]
+        [{"name": n, "airflow": a, "href": href(cur, f"{lang}/brands/{b}/{s}.html")} for b, s, n, a in CALC_OPTIONS]
     )
     contact = href(cur, f"{lang}/wholesale-inquiry.html")
     return f"""<div class="calc card" data-models='{esc(models)}' data-contact="{contact}">
@@ -357,8 +392,8 @@ def inquiry_form(cur, lang, model="", brand=""):
     countries += f'<option value="Other">{t("f_other", lang)}</option>'
     types = "".join(f'<option>{esc(x)}</option>' for x in T["f_types"][lang])
     brands = f'<option value="">{t("f_any", lang)}</option>' + "".join(
-        f'<option{" selected" if b.lower() == brand else ""}>{b}</option>'
-        for b in ["Aolan", "Coolmax", "DuneFrost"]
+        f'<option{" selected" if b["slug"] == brand else ""}>{b["name"]}</option>'
+        for b in BRANDS
     )
     submit = t("f_submit", lang) if SITE["form_endpoint"] else t("f_submit_wa", lang)
     return f"""<form class="inq card" method="post" action="{esc(SITE['form_endpoint'] or '#')}" novalidate>
@@ -386,7 +421,7 @@ def cta_band(cur, lang, title, lead, model="", brand=""):
 
     q = urlencode({k: v for k, v in (("model", model), ("brand", brand)) if v})
     contact = href(cur, f"{lang}/wholesale-inquiry.html") + (f"?{q}" if q else "")
-    wa_text = f"{t('cta_quote', lang)}: {brand.title()} {model}".strip() if model else ""
+    wa_text = f"{t('cta_quote', lang)}: {BRAND[brand]['name'] if brand in BRAND else ''} {model}".replace("  ", " ").strip() if model else ""
     return f"""<section class="cta-band"><div class="wrap cta-in">
   <div><h2>{title if '<span' in title else esc(title)}</h2><p>{esc(lead)}</p></div>
   <div class="cta-btns"><a class="btn btn-gold" href="{contact}">{t('cta_quote', lang)}</a>
@@ -409,10 +444,10 @@ def supply_table(lang):
 def build_home(lang):
     cur = f"{lang}/index.html"
     contact = href(cur, f"{lang}/wholesale-inquiry.html")
-    aolan_path = f"{lang}/brands/aolan/index.html"
-    points = "".join(f"<li>{ICON['check']}{esc(x)}</li>" for x in T["hero_points"][lang])
-    feat = next(p for p in PRODUCTS if p.get("featured"))
-    newp = next(p for p in PRODUCTS if p.get("new"))
+    cm, pb = BRAND["coolmax"], BRAND["purebreeze"]
+    feat = next(p for p in cm["products"] if p.get("featured"))
+    newp = next(p for p in pb["products"] if p.get("new"))
+    chiller = next(p for p in BRAND["aolan"]["products"] if p.get("new"))
     new_stats = [
         (t("capacity", lang), "25–35 kW"),
         ("COP", "5"),
@@ -422,16 +457,23 @@ def build_home(lang):
     new_stats_html = "".join(f'<div><span>{esc(k)}</span><b dir="auto">{esc(v)}</b></div>' for k, v in new_stats)
     new_spot = f"""<section class="sec new-spot"><div class="wrap feature">
   <div><span class="chip chip-new">{t('new_kicker', lang)}</span>
-  <h2 class="h2"><span dir="ltr">Aolan Mini Chiller</span></h2>
+  <h2 class="h2">Aolan <span class="acc">Mini Chiller</span></h2>
   <p class="lead">{t('new_lead', lang)}</p>
   <div class="kv">{new_stats_html}</div>
-  <div class="btns"><a class="btn btn-primary" href="{href(cur, product_path(lang, newp))}">{t('featured_cta', lang)} {ICON['arrow']}</a>
+  <div class="btns"><a class="btn btn-pill btn-pill-dark" href="{href(cur, product_path(lang, chiller))}">{t('featured_cta', lang)}<span class="btn-dot">{ICON['ne']}</span></a>
   <a class="btn btn-ghost" href="{contact}?model=Mini%20Chiller&amp;brand=aolan">{t('cta_quote', lang)}</a></div></div>
   <div class="feature-media">{img(cur, 'mini-chiller', 'Aolan Mini Chiller indoor and outdoor units', small=True)}</div>
 </div></section>"""
+    pb_stats = [
+        (t("airflow", lang), "15,000–18,000 m³/h"),
+        (t("power", lang), "450–1,100 W"),
+        (t("motor", lang), "BLDC"),
+        (t("loading", lang), {"en": "100–150 SKD", "ar": "100–150 SKD"}),
+    ]
+    pb_stats_html = "".join(f'<div><span>{esc(k)}</span><b dir="auto">{esc(L(v, lang))}</b></div>' for k, v in pb_stats)
 
     stats = [
-        ("3", {"en": "Brands", "ar": "علامات تجارية"}),
+        (str(len(BRANDS)), {"en": "Brands", "ar": "علامات تجارية"}),
         (f"{len(PRODUCTS)}+", {"en": "Model families", "ar": "فئة موديلات"}),
         ("80,000", {"en": "m³/h top airflow", "ar": "م³/ساعة أعلى تدفق هواء"}),
         (str(len(MARKETS)), {"en": "Core markets", "ar": "أسواق رئيسية"}),
@@ -439,34 +481,27 @@ def build_home(lang):
     stats_html = "".join(f'<div><b dir="ltr">{n}</b><span>{L(l, lang)}</span></div>' for n, l in stats)
 
     # brand cards
-    cards = f"""<a class="bcard" href="{href(cur, aolan_path)}">
-  <div class="bcard-img">{img(cur, 'wind-supremo-row', 'Aolan industrial air coolers', small=True)}</div>
-  <div class="bcard-body"><span class="chip chip-ok">{t('models_count', lang, n=len(PRODUCTS))}</span><h3>Aolan</h3>
-  <p>{esc(L(AOLAN['tagline'], lang))}</p><span class="link">{t('view_range', lang)} {ICON['arrow']}</span></div></a>"""
-    for b in PLACEHOLDER_BRANDS:
-        badge = L(b["badge"], lang) if b.get("badge") else t("soon", lang)
-        cards += f"""<a class="bcard bcard-{b['slug']}" href="{href(cur, f"{lang}/brands/{b['slug']}/index.html")}">
-  <div class="bcard-img bcard-ph"><span>{esc(b['name'])}</span></div>
-  <div class="bcard-body"><span class="chip{' chip-new' if b.get('badge') else ''}">{esc(badge)}</span><h3>{esc(b['name'])}</h3>
+    cards = ""
+    for b in BRANDS:
+        chip = (f'<span class="chip chip-new">{esc(L(b["badge"], lang))}</span>' if b.get("badge")
+                else f'<span class="chip chip-ok">{t("models_count", lang, n=len(b["products"]))}</span>')
+        logo = (f'<img class="bcard-logo" src="{href(cur, img_rel(b["logo"], ext="png"))}" alt="{esc(b["name"])} logo" loading="lazy">'
+                if b.get("logo") else "")
+        pic = b.get("card_image", "wind-supremo-row")
+        cards += f"""<a class="bcard bcard-{b['slug']}" href="{href(cur, brand_path(lang, b))}">
+  <div class="bcard-img">{img(cur, pic, f"{b['name']} evaporative air coolers", small=True)}{logo}</div>
+  <div class="bcard-body">{chip}<h3>{esc(b['name'])}</h3>
   <p>{esc(L(b['tagline'], lang))}</p><span class="link">{t('view_range', lang)} {ICON['arrow']}</span></div></a>"""
 
-    cats = "".join(
-        f"""<a class="ccard" href="{href(cur, aolan_path)}#{c['slug']}">{img(cur, CATEGORY_IMAGE[c['slug']], c[lang], small=True)}
-<div><h3>{esc(c[lang])}</h3><p>{esc(L(c['desc'], lang))}</p></div></a>"""
-        for c in CATEGORIES if c["slug"] != "chiller"
-    )
     why = "".join(f"<div class=\"why\"><h3>{esc(h)}</h3><p>{esc(d)}</p></div>" for h, d in T["why_points"][lang])
     markets = "".join(f'<li><span class="flag">{code}</span>{esc(L(n, lang))}</li>' for code, n in MARKETS)
-    steps = "".join(
-        f'<li><span class="step-n">{i}</span><h3>{esc(h)}</h3><p>{esc(d)}</p></li>' for i, (h, d) in enumerate(T["process"][lang], 1)
-    )
     faq = "".join(f"<details><summary>{esc(q)}</summary><p>{esc(a)}</p></details>" for q, a in T["faq"][lang])
 
     feat_stats = [
-        (t("airflow", lang), "18,000 m³/h"),
-        (t("power", lang), "1.1 kW"),
+        (t("airflow", lang), "13,000–17,000 m³/h"),
+        (t("power", lang), "750–1,500 W"),
         (t("coverage", lang), feat["area"]),
-        (t("loading", lang), {"en": "40 assembled · 70 SKD", "ar": "40 مجمّعة · 70 SKD"}),
+        (SPEC_LABELS["pressure"][lang], "210–255 Pa"),
     ]
     feat_stats_html = "".join(f"<div><span>{esc(k)}</span><b dir=\"auto\">{esc(L(v, lang))}</b></div>" for k, v in feat_stats)
 
@@ -474,15 +509,18 @@ def build_home(lang):
         f'<div class="icard"><div class="icard-top"><h3>{esc(h)}</h3><span class="icard-ico">{ICON["c" + str(i)]}</span></div><p>{esc(d)}</p></div>'
         for i, (h, d) in enumerate(T["why_points"][lang], 1)
     )
+    # Range list: the main categories of all three brands, best sellers first.
+    range_cats = [("coolmax", "industrial"), ("coolmax", "mobile"), ("purebreeze", "bldc"), ("aolan", "industrial"),
+                  ("aolan", "outdoor"), ("coolmax", "window"), ("purebreeze", "home")]
+    svc = [(BRAND[b], next(c for c in BRAND[b]["categories"] if c["slug"] == s)) for b, s in range_cats]
     svc_items = ""
-    for i, c in enumerate(CATEGORIES, 1):
-        im = f"{IMG}/{CATEGORY_IMAGE[c['slug']]}-sm.webp"
+    for i, (b, c) in enumerate(svc, 1):
         svc_items += (
-            f'<li><a href="{href(cur, aolan_path)}#{c["slug"]}" data-img="{href(cur, im)}" data-desc="{esc(L(c["desc"], lang))}">'
-            f'<span class="svc-n">0{i}</span><span class="svc-t">{esc(c[lang])}</span><span class="svc-a">{ICON["ne"]}</span></a></li>'
+            f'<li><a href="{href(cur, brand_path(lang, b))}#{c["slug"]}" data-img="{href(cur, img_rel(c["image"], small=True))}" data-desc="{esc(L(c["desc"], lang))}">'
+            f'<span class="svc-n">0{i}</span><span class="svc-t">{esc(c[lang])} <small dir="ltr">{esc(b["name"])}</small></span><span class="svc-a">{ICON["ne"]}</span></a></li>'
         )
-    first_cat = CATEGORIES[0]
-    step_imgs = ["azl-180-app", "wind-supremo-detail", "projects-2", "projects-1"]
+    first_cat = svc[0][1]
+    step_imgs = ["azl-180-app", "coolmax/lifestyle", "projects-2", "projects-1"]
     steps = "".join(
         f'<li class="pstep">{img(cur, step_imgs[i - 1], "", small=True)}<div><h3><span class="acc">{i:02d}.</span> {esc(h)}</h3><p>{esc(d)}</p></div><span class="pstep-n" aria-hidden="true">{i:02d}</span></li>'
         for i, (h, d) in enumerate(T["process"][lang], 1)
@@ -503,7 +541,7 @@ def build_home(lang):
     <div class="hero-side">
       <div class="glass"><b dir="ltr">{len(PRODUCTS)}+</b><span>{t('hero_card', lang)}</span>
         <ul>{''.join(f'<li>{esc(x)}</li>' for x in T['hero_points'][lang])}</ul></div>
-      <a class="hero-thumb" href="{href(cur, product_path(lang, newp))}">{img(cur, 'mini-chiller', 'Aolan Mini Chiller', small=True)}<span class="chip chip-new">{t('new_badge', lang)}</span></a>
+      <a class="hero-thumb" href="{href(cur, product_path(lang, newp))}">{img(cur, newp['image'], 'PureBreeze BLDC cube air cooler', small=True)}<span class="chip chip-new">{t('new_badge', lang)}</span></a>
     </div>
   </div>
   <a class="scroll-dot" href="#why" aria-label="{t('scroll', lang)}">{ICON['down']}</a>
@@ -517,28 +555,32 @@ def build_home(lang):
 <section class="dband"><div class="wrap dband-in">
   <div class="dband-copy">
     <span class="eyebrow eyebrow-light">{t('new_kicker', lang)}</span>
-    <h2 class="h2">Aolan <span class="acc">Mini Chiller</span></h2>
+    <h2 class="h2">PureBreeze <span class="acc">BLDC Cube</span></h2>
     <ul class="ticks ticks-2">{new_ticks}</ul>
-    <p>{t('new_lead', lang)}</p>
-    <div class="kv kv-dark">{new_stats_html}</div>
+    <p>{t('pb_lead', lang)}</p>
+    <div class="kv kv-dark">{pb_stats_html}</div>
     <div class="btns"><a class="btn btn-pill btn-pill-light" href="{href(cur, product_path(lang, newp))}">{t('featured_cta', lang)}<span class="btn-dot">{ICON['ne']}</span></a></div>
   </div>
-  <div class="dband-media">{img(cur, 'mini-chiller', 'Aolan Mini Chiller indoor and outdoor units', small=True)}</div>
+  <div class="dband-media">{img(cur, newp['image'], 'PureBreeze BLDC cube evaporative air coolers PB-88C and PB-98C', small=True)}</div>
   <div class="wm wm-dark" aria-hidden="true">2026</div>
 </div></section>
 
 <section class="sec"><div class="wrap">
   {sec_head(t('eb_range', lang), hx('cats_title', lang), t('range_lead', lang))}
   <div class="svc">
-    <figure class="svc-media">{img(cur, CATEGORY_IMAGE[first_cat['slug']], first_cat[lang], small=True)}<figcaption>{esc(L(first_cat['desc'], lang))}</figcaption></figure>
+    <figure class="svc-media">{img(cur, first_cat['image'], first_cat[lang], small=True)}<figcaption>{esc(L(first_cat['desc'], lang))}</figcaption></figure>
     <ol class="svc-list">{svc_items}</ol>
   </div>
   <div class="stats">{stats_html}</div>
 </div></section>
 
-<section class="sec sec-grey sec-wm"><div class="wm" aria-hidden="true">{wm}</div><div class="wrap">
-  <div class="split-head"><div><span class="eyebrow">{t('eb_process', lang)}</span><h2 class="h2">{hx('process_title', lang)}</h2></div><p class="sub">{t('process_lead', lang)}</p></div>
-  <ol class="psteps">{steps}</ol>
+<section class="sec sec-grey"><div class="wrap feature">
+  <div class="feature-media">{img(cur, feat['image'], 'Coolmax CM-18TC industrial centrifugal evaporative air cooler', small=True)}</div>
+  <div><span class="eyebrow">{t('eb_best', lang)} · Coolmax</span><h2 class="h2"><span dir="ltr">CM-18 <span class="acc">Centrifugal</span></span></h2>
+  <p class="lead">{esc(L(feat['summary'], lang))}</p>
+  <div class="kv">{feat_stats_html}</div>
+  <div class="btns"><a class="btn btn-pill btn-pill-dark" href="{href(cur, product_path(lang, feat))}">{t('featured_cta', lang)}<span class="btn-dot">{ICON['ne']}</span></a>
+  <a class="btn btn-ghost" href="{contact}?model=CM-18TC&amp;brand=coolmax">{t('cta_quote', lang)}</a></div></div>
 </div></section>
 
 <section class="sec" id="brands"><div class="wrap">
@@ -546,13 +588,11 @@ def build_home(lang):
   <div class="grid3">{cards}</div>
 </div></section>
 
-<section class="sec sec-grey"><div class="wrap feature">
-  <div class="feature-media">{img(cur, feat['image'], 'Aolan Wind Supremo industrial evaporative air cooler', small=True)}</div>
-  <div><span class="eyebrow">{t('eb_best', lang)} · Aolan</span><h2 class="h2">Wind <span class="acc">Supremo</span></h2>
-  <p class="lead">{esc(L(feat['summary'], lang))}</p>
-  <div class="kv">{feat_stats_html}</div>
-  <div class="btns"><a class="btn btn-pill btn-pill-dark" href="{href(cur, product_path(lang, feat))}">{t('featured_cta', lang)}<span class="btn-dot">{ICON['ne']}</span></a>
-  <a class="btn btn-ghost" href="{contact}?model=Wind%20Supremo&amp;brand=aolan">{t('cta_quote', lang)}</a></div></div>
+{new_spot}
+
+<section class="sec sec-grey sec-wm"><div class="wm" aria-hidden="true">{wm}</div><div class="wrap">
+  <div class="split-head"><div><span class="eyebrow">{t('eb_process', lang)}</span><h2 class="h2">{hx('process_title', lang)}</h2></div><p class="sub">{t('process_lead', lang)}</p></div>
+  <ol class="psteps">{steps}</ol>
 </div></section>
 
 <section class="sec" id="calculator"><div class="wrap">
@@ -577,7 +617,7 @@ def build_home(lang):
         "@type": "Organization",
         "name": L(SITE["name"], lang),
         "url": abs_url(cur),
-        "logo": f"{SITE['url']}/assets/favicon.svg",
+        "logo": f"{SITE['url']}/assets/img/brands/coolmax-logo.png",
         "email": SITE["email"],
         "telephone": SITE["phone_display"],
         "areaServed": [L(n, "en") for _, n in MARKETS],
@@ -595,14 +635,15 @@ def build_home(lang):
         "ar": "مكيفات صحراوية بالجملة | السعودية والإمارات والخليج | " + SITE["name"]["ar"],
     }[lang]
     desc = {
-        "en": "Wholesale industrial, portable and solar evaporative air coolers from Aolan, Coolmax and more. Full specs, 40HQ loading and fast WhatsApp quotes for Pakistan and the Middle East.",
-        "ar": "مكيفات صحراوية صناعية ومتنقلة وشمسية بالجملة من أولان وكولماكس وغيرها. مواصفات كاملة وكميات التحميل وعروض أسعار سريعة عبر واتساب للسعودية والإمارات والخليج وباكستان.",
+        "en": "Wholesale industrial, portable and solar evaporative air coolers from Coolmax, Aolan and PureBreeze. Full specs, 40HQ loading and fast WhatsApp quotes for Pakistan and the Middle East.",
+        "ar": "مكيفات صحراوية صناعية ومتنقلة وشمسية بالجملة من كولماكس وأولان وبيور بريز. مواصفات كاملة وكميات التحميل وعروض أسعار سريعة عبر واتساب للسعودية والإمارات والخليج وباكستان.",
     }[lang]
     write(cur, page(cur, lang, title, desc, body, schema=[org, website, faq_ld]))
 
 
 def build_aolan_brand(lang):
     cur = f"{lang}/brands/aolan/index.html"
+    CATEGORIES, PRODUCTS = BRAND["aolan"]["categories"], BRAND["aolan"]["products"]
     crumbs, crumb_ld = breadcrumbs(cur, lang, [(f"{lang}/index.html", t("nav_home", lang)), (None, "Aolan")])
     facts = "".join(f'<div><b dir="ltr">{f["n"]}</b><span>{esc(f[lang])}</span></div>' for f in AOLAN["facts"])
     about = "".join(f"<p>{esc(x)}</p>" for x in AOLAN["about"][lang])
@@ -658,6 +699,57 @@ def build_aolan_brand(lang):
     write(cur, page(cur, lang, title, desc, body, schema=[crumb_ld, item_list]))
 
 
+def build_brand(lang, b):
+    """Brand page for brands with catalogue data and their own logo (Coolmax, PureBreeze)."""
+    cur = brand_path(lang, b)
+    cats, prods = b["categories"], b["products"]
+    crumbs, crumb_ld = breadcrumbs(cur, lang, [(f"{lang}/index.html", t("nav_home", lang)), (None, b["name"])])
+    facts = "".join(f'<div><b dir="ltr">{esc(f["n"])}</b><span>{esc(f[lang])}</span></div>' for f in b["facts"])
+    about = "".join(f"<p>{esc(x)}</p>" for x in b["about"][lang])
+    sections = ""
+    for c in cats:
+        cards = "".join(product_card(cur, lang, p) for p in prods if p["category"] == c["slug"])
+        sections += f"""<section class="sec" id="{c['slug']}"><div class="wrap">
+<h2 class="h2">{esc(c[lang])}</h2><p class="sub">{esc(L(c['desc'], lang))}</p><div class="grid4 pgrid">{cards}</div></div></section>"""
+    badge = f'<span class="chip chip-new">{esc(L(b["badge"], lang))}</span>' if b.get("badge") else ""
+    logo_rel = img_rel(b["logo"], ext="png")
+    lw, lh = img_size(logo_rel)
+    logo = f'<img class="brand-logo" src="{href(cur, logo_rel)}" alt="{esc(b["name"])}" width="{lw}" height="{lh}">'
+    note = f'<p class="small muted">{esc(L(b["note"], lang))}</p>' if b.get("note") else ""
+    body = f"""
+<section class="page-hero"><div class="wrap">
+  {crumbs}
+  <div class="brand-hero">
+    <div>{logo}{badge}<p class="kicker">{esc(L(b['kicker'], lang))}</p>
+    <h1>{esc(L(b['title'], lang))}</h1>
+    <p class="lead">{esc(L(b['tagline'], lang))}</p>
+    <nav class="pills">{''.join(f'<a href="#{c["slug"]}">{esc(c[lang])}</a>' for c in cats)}</nav></div>
+    <div class="hero-media">{img(cur, b['hero_image'], f"{b['name']} evaporative air cooler range", eager=True)}</div>
+  </div>
+  <div class="stats stats-inline">{facts}</div>
+</div></section>
+{sections}
+<section class="sec sec-tint"><div class="wrap two">
+  <div><h2 class="h2">{t('brand_about', lang, brand=b['name'])}</h2>{about}{note}</div>
+  <div>{img(cur, b['about_image'], f"{b['name']} air cooler", small=True, cls='rounded')}</div>
+</div></section>
+{cta_band(cur, lang, t('product_cta_title', lang, name=b['name']), t('product_cta_lead', lang), brand=b['slug'])}
+"""
+    item_list = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": i, "url": abs_url(product_path(lang, p)), "name": f"{b['name']} {p['name']}"}
+            for i, p in enumerate(prods, 1)
+        ],
+    }
+    title = f"{L(b['title'], lang)} | {'Wholesale' if lang == 'en' else 'بالجملة'} · {L(SITE['name'], lang)}"
+    desc = L(b["tagline"], lang) + (". " if lang == "en" else "، ") + (
+        f"{len(prods)} series with full specifications, wholesale to Pakistan and the Gulf." if lang == "en"
+        else f"{len(prods)} سلسلة بالمواصفات الكاملة، بالجملة إلى الخليج وباكستان.")
+    write(cur, page(cur, lang, title, desc, body, schema=[crumb_ld, item_list], og_image=og_rel(b["hero_image"])))
+
+
 def specs_table(lang, p):
     if p.get("table"):
         tb = p["table"]
@@ -684,17 +776,19 @@ def specs_table(lang, p):
 
 def build_product(lang, p):
     cur = product_path(lang, p)
-    cat = next(c for c in CATEGORIES if c["slug"] == p["category"])
+    b = p["brand"]
+    bn = b["name"]
+    cat = next(c for c in b["categories"] if c["slug"] == p["category"])
     crumbs, crumb_ld = breadcrumbs(cur, lang, [
         (f"{lang}/index.html", t("nav_home", lang)),
-        (f"{lang}/brands/aolan/index.html", "Aolan"),
+        (brand_path(lang, b), bn),
         (None, p["name"]),
     ])
     gallery = [p["image"]] + p.get("gallery", [])
     thumbs = ""
     if len(gallery) > 1:
         thumbs = '<div class="thumbs">' + "".join(
-            f'<button type="button" data-src="{href(cur, f"{IMG}/{g}.webp")}" aria-label="{i + 1}">{img(cur, g, "", small=True)}</button>'
+            f'<button type="button" data-src="{href(cur, img_rel(g))}" aria-label="{i + 1}">{img(cur, g, "", small=True)}</button>'
             for i, g in enumerate(gallery)
         ) + "</div>"
     af = airflow_range(p)
@@ -708,7 +802,7 @@ def build_product(lang, p):
         kv.append((t("power", lang), pw[0] if pw[0] == pw[-1] else f"{pw[0]} – {pw[-1]}"))
     if p.get("area"):
         kv.append((t("coverage", lang), p["area"]))
-    q = spec(p, "qty40")
+    q = spec(p, "qty40") or spec(p, "qty40hq")
     if q:
         kv.append((t("loading", lang), q[0] if len(set(q)) == 1 else f"{min(q, key=first_num)}–{max(q, key=first_num)}"))
     kv_html = "".join(f'<div><span>{esc(k)}</span><b dir="auto">{esc(tr_value(v, lang))}</b></div>' for k, v in kv)
@@ -730,28 +824,28 @@ def build_product(lang, p):
         extra += f"""<section class="sec"><div class="wrap"><h2 class="h2">{t('compare_title', lang)}</h2>
 <div class="tscroll"><table class="tbl compare"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>
 <h2 class="h2 mt">{t('projects_short', lang)}</h2>{img(cur, 'mini-chiller-cases', 'Aolan Mini Chiller installations in factories and warehouses', small=True, cls='rounded')}</div></section>"""
-    related = [r for r in PRODUCTS if r["category"] == p["category"] and r is not p][:4]
+    related = [r for r in b["products"] if r["category"] == p["category"] and r is not p][:4]
     rel_html = "".join(product_card(cur, lang, r) for r in related)
     contact = href(cur, f"{lang}/wholesale-inquiry.html")
     from urllib.parse import quote
 
-    wa_text = f"{t('cta_quote', lang)}: Aolan {p['name']}"
+    wa_text = f"{t('cta_quote', lang)}: {bn} {p['name']}"
     solar = f'<span class="chip chip-sun">{t("solar_badge", lang)}</span>' if p.get("solar") else ""
-    h1 = f"Aolan {p['name']}"
+    h1 = f"{bn} {p['name']}"
     if p.get("new"):
         solar = f'<span class="chip chip-new">{t("new_kicker", lang)}</span> ' + solar
     body = f"""
 <section class="page-hero slim"><div class="wrap">{crumbs}</div></section>
 <section class="sec pt0"><div class="wrap product">
-  <div class="pgallery"><div class="pmain">{img(cur, p['image'], f"Aolan {p['name']} {L(p['headline'], 'en')}", eager=True)}</div>{thumbs}</div>
+  <div class="pgallery"><div class="pmain">{img(cur, p['image'], f"{bn} {p['name']} {L(p['headline'], 'en')}", eager=True)}</div>{thumbs}</div>
   <div class="pinfo">
-    <p class="kicker"><a href="{href(cur, f'{lang}/brands/aolan/index.html')}#{cat['slug']}">{esc(cat[lang])}</a></p>
+    <p class="kicker"><a href="{href(cur, brand_path(lang, b))}#{cat['slug']}">{esc(cat[lang])}</a></p>
     <h1><span dir="ltr">{esc(h1)}</span></h1>
     <p class="subtitle">{solar}{esc(L(p['headline'], lang))}</p>
     <p>{esc(L(p['summary'], lang))}</p>
     <div class="kv">{kv_html}</div>
     <p class="small muted"><b>{t('model_col', lang)}:</b> <span dir="ltr">{esc(models_list)}</span></p>
-    <div class="btns"><a class="btn btn-primary btn-lg" href="{contact}?model={quote(p['name'])}&amp;brand=aolan">{t('cta_quote', lang)}</a>
+    <div class="btns"><a class="btn btn-primary btn-lg" href="{contact}?model={quote(p['name'])}&amp;brand={b['slug']}">{t('cta_quote', lang)}</a>
     <a class="btn btn-wa btn-lg" href="{wa_link(wa_text)}" rel="noopener">{ICON['wa']}{t('cta_whatsapp', lang)}</a></div>
   </div>
 </div></section>
@@ -761,34 +855,34 @@ def build_product(lang, p):
   {note}
   {f'<h2 class="h2 mt">{t("features", lang)}</h2>' if p.get("new") else ""}{bullets}
   <h2 class="h2 mt">{t('applications', lang)}</h2><p>{esc(L(p['apps'], lang))}</p>
-  <p class="small muted">{t('spec_source', lang, brand='Aolan') if not p.get('source') else esc(L(p['source'], lang)) + '. ' + t('spec_source', lang, brand='Aolan').split('. ', 1)[1]}</p>
+  <p class="small muted">{t('spec_source', lang, brand=b['catalogue']) if not p.get('source') else esc(L(p['source'], lang)) + '. ' + t('spec_source', lang, brand=b['catalogue']).split('. ', 1)[1]}</p>
 </div></section>
 {extra}
 {f'<section class="sec sec-tint"><div class="wrap"><h2 class="h2">{t("related", lang)}</h2><div class="grid4 pgrid">{rel_html}</div></div></section>' if rel_html else ''}
-{cta_band(cur, lang, t('product_cta_title', lang, name=p['name']), t('product_cta_lead', lang), model=p['name'], brand='aolan')}
+{cta_band(cur, lang, t('product_cta_title', lang, name=p['name']), t('product_cta_lead', lang), model=p['name'], brand=b['slug'])}
 """
     props = []
-    for key in ("capacity", "airflow", "power", "voltage", "noise", "pressure", "water", "qty40"):
+    for key in ("capacity", "airflow", "power", "voltage", "motor", "noise", "pressure", "water", "qty40", "qty40hq"):
         vals = spec(p, key)
         if vals:
             props.append({"@type": "PropertyValue", "name": SPEC_LABELS[key]["en"], "value": " | ".join(dict.fromkeys(vals))})
     product_ld = {
         "@context": "https://schema.org",
         "@type": "Product",
-        "name": f"Aolan {p['name']}",
+        "name": f"{bn} {p['name']}",
         "description": L(p["summary"], lang),
-        "image": [f"{SITE['url']}/{IMG}/{g}.webp" for g in gallery],
+        "image": [f"{SITE['url']}/{img_rel(g)}" for g in gallery],
         "url": abs_url(cur),
-        "brand": {"@type": "Brand", "name": "Aolan"},
-        "manufacturer": {"@type": "Organization", "name": AOLAN["legal"]},
+        "brand": {"@type": "Brand", "name": bn},
+        **({"manufacturer": {"@type": "Organization", "name": b["legal"]}} if b.get("legal") else {}),
         "category": cat["en"],
         "model": models_list,
         "additionalProperty": props,
     }
-    title = f"Aolan {p['name']}: {L(p['headline'], lang)} | {'Wholesale' if lang == 'en' else 'بالجملة'}"
+    title = f"{bn} {p['name']}: {L(p['headline'], lang)} | {'Wholesale' if lang == 'en' else 'بالجملة'}"
     desc = L(p["summary"], lang)
     desc = desc if len(desc) < 158 else desc[:155].rsplit(" ", 1)[0] + "…"
-    write(cur, page(cur, lang, title, desc, body, schema=[product_ld, crumb_ld], og_image=f"assets/img/og/{p['image']}.jpg"))
+    write(cur, page(cur, lang, title, desc, body, schema=[product_ld, crumb_ld], og_image=og_rel(p["image"])))
 
 
 def build_placeholder_brand(lang, b):
@@ -796,7 +890,7 @@ def build_placeholder_brand(lang, b):
     crumbs, _ = breadcrumbs(cur, lang, [(f"{lang}/index.html", t("nav_home", lang)), (None, b["name"])])
     secs = ""
     for slug in b["sections"]:
-        c = next(c for c in CATEGORIES if c["slug"] == slug)
+        c = next(c for b2 in BRANDS for c in b2["categories"] if c["slug"] == slug)
         cards = "".join(
             f'<div class="pcard pcard-ph"><div class="pcard-img bcard-ph"><span>{esc(b["name"])}</span></div><div class="pcard-body"><h3>{esc(b["name"])} · {esc(c[lang])}</h3><p>{t("soon_card", lang)}</p></div></div>'
             for _ in range(3)
@@ -872,7 +966,7 @@ location.replace(l+'/index.html')}})()</script>"""
 <link rel="canonical" href="{SITE['url']}/">
 <link rel="alternate" hreflang="en" href="{SITE['url']}/en/"><link rel="alternate" hreflang="ar" href="{SITE['url']}/ar/">
 <link rel="alternate" hreflang="x-default" href="{SITE['url']}/">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon.png" type="image/png">
 {redirect}
 <style>body{{font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#0b3a6e;color:#fff}}
 a{{color:#0b3a6e;background:#fff;padding:.8rem 1.4rem;border-radius:.6rem;margin:.4rem;text-decoration:none;font-weight:700;display:inline-block}}</style>
@@ -912,29 +1006,38 @@ def build_sitemap():
 
 
 def build_images():
-    src = os.path.join(OUT, IMG)
-    for f in os.listdir(src):
-        if f.endswith(".webp") and not f.endswith("-sm.webp"):
-            sm = os.path.join(src, f[:-5] + "-sm.webp")
-            if not os.path.exists(sm):
-                with Image.open(os.path.join(src, f)) as im:
-                    im.thumbnail((720, 720))
-                    im.save(sm, "WEBP", quality=78, method=6)
-    og = os.path.join(OUT, "assets/img/og")
-    os.makedirs(og, exist_ok=True)
-    for p in PRODUCTS:
-        dst = os.path.join(og, p["image"] + ".jpg")
+    base = os.path.join(OUT, IMG)
+    for folder in ("aolan", "coolmax", "purebreeze"):
+        src = os.path.join(base, folder)
+        for f in os.listdir(src):
+            if f.endswith(".webp") and not f.endswith("-sm.webp"):
+                sm = os.path.join(src, f[:-5] + "-sm.webp")
+                if not os.path.exists(sm):
+                    with Image.open(os.path.join(src, f)) as im:
+                        im.thumbnail((720, 720))
+                        im.save(sm, "WEBP", quality=78, method=6)
+    for name in [p["image"] for p in PRODUCTS] + [b["hero_image"] for b in BRANDS if b.get("hero_image")]:
+        dst = os.path.join(OUT, og_rel(name))
         if not os.path.exists(dst):
-            with Image.open(os.path.join(src, p["image"] + ".webp")) as im:
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            with Image.open(os.path.join(OUT, img_rel(name))) as im:
                 canvas = Image.new("RGB", (1200, 630), "white")
-                im = im.convert("RGB")
+                im = im.convert("RGBA")
                 im.thumbnail((1100, 580))
-                canvas.paste(im, ((1200 - im.width) // 2, (630 - im.height) // 2))
+                canvas.paste(im, ((1200 - im.width) // 2, (630 - im.height) // 2), im)
                 canvas.save(dst, "JPEG", quality=82)
     main_og = os.path.join(OUT, "assets/img/og.jpg")
     if not os.path.exists(main_og):
-        with Image.open(os.path.join(src, "cover.webp")) as im:
+        with Image.open(os.path.join(base, "aolan", "cover.webp")) as im:
             im.convert("RGB").resize((1200, 630)).save(main_og, "JPEG", quality=82)
+    fav = os.path.join(OUT, "assets/favicon.png")
+    if not os.path.exists(fav):
+        with Image.open(os.path.join(base, "brands", "coolmax-mark.png")) as im:
+            im = im.convert("RGBA")
+            side = max(im.size)
+            sq = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+            sq.paste(im, ((side - im.width) // 2, (side - im.height) // 2))
+            sq.resize((64, 64), Image.LANCZOS).save(fav)
 
 
 def main():
@@ -944,6 +1047,9 @@ def main():
     for lang in LANGS:
         build_home(lang)
         build_aolan_brand(lang)
+        for b in BRANDS:
+            if b["slug"] != "aolan":
+                build_brand(lang, b)
         for p in PRODUCTS:
             build_product(lang, p)
         for b in PLACEHOLDER_BRANDS:
