@@ -77,7 +77,7 @@ header.top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .card .body { padding: 14px 18px 16px; }
 
 /* stage */
-.stage { position: relative; height: min(680px, 74vh); min-height: 460px; border-radius: var(--radius); overflow: hidden; background: radial-gradient(ellipse at 50% 35%, var(--stage-top), var(--stage-bot)); border: 1px solid var(--line); box-shadow: var(--shadow); touch-action: none; }
+.stage { position: relative; height: min(640px, calc(100vh - 230px)); min-height: 460px; border-radius: var(--radius); overflow: hidden; background: radial-gradient(ellipse at 50% 35%, var(--stage-top), var(--stage-bot)); border: 1px solid var(--line); box-shadow: var(--shadow); touch-action: none; }
 .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
 .stage .title { position: absolute; left: 22px; top: 18px; pointer-events: none; z-index: 3; }
 .stage .title h2 { margin: 0; font-size: 1.7rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; text-wrap: balance; }
@@ -168,6 +168,20 @@ dl.specs dd { margin: 0; font-weight: 600; }
 .snaps h2 span { float: right; letter-spacing: 0; text-transform: none; font-weight: 600; }
 footer { color: var(--muted); font-size: .8rem; text-align: center; }
 
+/* control panel as a strip above the 3D view */
+.center { display: grid; gap: 16px; min-width: 0; }
+.ctrlbar .unit { grid-template-columns: auto minmax(250px, 1fr) minmax(0, 1.5fr); align-items: center; gap: 16px; }
+.ctrlbar .keys { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.ctrlbar .lcd { min-height: 58px; font-size: .76rem; }
+.ctrlbar #lcd-sub { white-space: nowrap; }
+@media (max-width: 1100px) {
+  .ctrlbar .unit { grid-template-columns: auto minmax(0, 1fr); }
+  .ctrlbar .keys { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  .ctrlbar .unit { grid-template-columns: minmax(0, 1fr); }
+  .ctrlbar .keys { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 @media (max-width: 1240px) {
   .grid { grid-template-columns: minmax(0, 1fr) 330px; }
   .plist { grid-column: 1 / -1; order: 3; }
@@ -222,6 +236,33 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
       <h2>Cooler parts <span id="ptagged"></span></h2>
       <ol id="plist"></ol>
     </nav>
+    <div class="center">
+        <section class="card ctrlbar" aria-label="Control panel">
+          <h2>Control panel</h2>
+          <div class="body unit">
+            <div class="powerrow">
+              <button class="power" id="power" aria-pressed="false" aria-label="Power"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.3a8 8 0 1 0 11.4 0"/></svg></button>
+              <div class="leds">
+                <div class="led red lit" id="led-red"><i></i>Standby</div>
+                <div class="led green" id="led-green"><i></i>Running</div>
+              </div>
+            </div>
+            <div class="lcd off" id="lcd" aria-live="polite">
+              <div><span class="big" id="lcd-mode">OFF</span></div>
+              <div class="bars" id="lcd-bars" aria-hidden="true"></div>
+              <div id="lcd-sub">PRESS POWER</div>
+              <div id="lcd-timer"></div>
+            </div>
+            <div class="keys">
+              <button class="key" id="k-down" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/></svg>Speed</button>
+              <button class="key" id="k-up" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5v14"/></svg>Speed</button>
+              <button class="key" id="k-timer" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>Timer</button>
+              <button class="key" id="k-cool" aria-pressed="true" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>Cool</button>
+              <button class="key" id="k-fan" aria-pressed="false" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M12 10c0-4 1-7 4-7s2 5-2 7M14 12c4 0 7 1 7 4s-5 2-7-2M12 14c0 4-1 7-4 7s-2-5 2-7M10 12c-4 0-7-1-7-4s5-2 7 2"/></svg>Fan only</button>
+              <button class="key" id="k-sound" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>Sound</button>
+            </div>
+          </div>
+        </section>
     <section class="stage" id="stage" aria-label="3D model of the Coolmax CM-18 air cooler">
       <div class="title">
         <h2>CM-18 Top Discharge</h2>
@@ -258,35 +299,9 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
         </div>
       </div>
     </section>
+    </div>
 
     <aside style="display:grid; gap:16px; min-width:0;">
-      <section class="card">
-        <h2>Control panel</h2>
-        <div class="body unit">
-          <div class="powerrow">
-            <button class="power" id="power" aria-pressed="false" aria-label="Power"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.3a8 8 0 1 0 11.4 0"/></svg></button>
-            <div class="leds">
-              <div class="led red lit" id="led-red"><i></i>Standby</div>
-              <div class="led green" id="led-green"><i></i>Running</div>
-            </div>
-          </div>
-          <div class="lcd off" id="lcd" aria-live="polite">
-            <div><span class="big" id="lcd-mode">OFF</span></div>
-            <div class="bars" id="lcd-bars" aria-hidden="true"></div>
-            <div id="lcd-sub">PRESS POWER</div>
-            <div id="lcd-timer"></div>
-          </div>
-          <div class="keys">
-            <button class="key" id="k-down" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/></svg>Speed</button>
-            <button class="key" id="k-up" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5v14"/></svg>Speed</button>
-            <button class="key" id="k-timer" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>Timer</button>
-            <button class="key" id="k-cool" aria-pressed="true" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>Cool</button>
-            <button class="key" id="k-fan" aria-pressed="false" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M12 10c0-4 1-7 4-7s2 5-2 7M14 12c4 0 7 1 7 4s-5 2-7-2M12 14c0 4-1 7-4 7s-2-5 2-7M10 12c-4 0-7-1-7-4s5-2 7 2"/></svg>Fan only</button>
-            <button class="key" id="k-sound" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>Sound</button>
-          </div>
-        </div>
-      </section>
-
       <section class="card">
         <h2>Part details</h2>
         <div class="body">
