@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Coolmax CM-18 Studio</title>
 <meta name="description" content="Explore the Coolmax CM-18 top-discharge evaporative air cooler in 3D: turn it on, see the airflow and water, and look inside every part.">
-<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../assets/favicon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -189,6 +189,17 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
   .stage .title h2 { font-size: 1.3rem; }
   .tbgroup button span { display: none; }
   .filechip { margin-left: 0; }
+}
+@media (max-width: 600px) {
+  /* leave room above and below the 3D stage so a thumb can still scroll the page */
+  .stage { height: 64svh; min-height: 400px; max-height: 560px; }
+  .filechip { display: none; }
+  .tbgroup button { min-width: 44px; min-height: 44px; justify-content: center; }
+  .seg button { font-size: .78rem; min-height: 48px; }
+  .tog { font-size: .82rem; min-height: 40px; }
+  .back { display: inline-block; padding: 10px 0; }
+  .plist li button { min-height: 48px; }
+  .key { min-height: 52px; font-size: .82rem; }
 }
 @media (prefers-reduced-motion: reduce) { .hint, .lcd, .meter .trk i { transition: none; } }
 </style>

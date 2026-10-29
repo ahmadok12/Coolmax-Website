@@ -179,7 +179,7 @@ def brand_path(lang, b):
 
 
 def logo_img(cur, cls="logo-mark"):
-    rel = "assets/img/brands/coolmax-mark.png"
+    rel = "assets/img/brands/coolmax-mark.webp"
     w, h = img_size(rel)
     return f'<img class="{cls}" src="{href(cur, rel)}" alt="" width="{w}" height="{h}">'
 
@@ -256,7 +256,8 @@ def footer(cur, lang):
   <div class="footer-wm" aria-hidden="true">{esc(L(SITE['name'], lang)).split()[0]}</div>
   <div class="wrap footer-bottom">© 2026 {esc(L(SITE['name'], lang))}. {t('footer_rights', lang)}</div>
 </footer>
-<a class="wa-float" href="{wa_link()}" rel="noopener" aria-label="WhatsApp">{ICON['wa']}</a>"""
+<a class="wa-float" href="{wa_link()}" rel="noopener" aria-label="WhatsApp">{ICON['wa']}</a>
+<nav class="mbar" aria-label="{t('cta_quote', lang)}"><a class="mbar-q" href="{href(cur, f'{lang}/wholesale-inquiry.html')}">{t('cta_quote', lang)}</a><a class="mbar-wa" href="{wa_link()}" rel="noopener">{ICON['wa']}{t('cta_whatsapp', lang)}</a></nav>"""
 
 
 def page(cur, lang, title, desc, body, schema=(), noindex=False, og_image="assets/img/og.jpg", has_alt=True):
@@ -485,7 +486,7 @@ def build_home(lang):
     for b in BRANDS:
         chip = (f'<span class="chip chip-new">{esc(L(b["badge"], lang))}</span>' if b.get("badge")
                 else f'<span class="chip chip-ok">{t("models_count", lang, n=len(b["products"]))}</span>')
-        logo = (f'<img class="bcard-logo" src="{href(cur, img_rel(b["logo"], ext="png"))}" alt="{esc(b["name"])} logo" loading="lazy">'
+        logo = (f'<img class="bcard-logo" src="{href(cur, img_rel(b["logo"], ext="webp"))}" alt="{esc(b["name"])} logo" width="{img_size(img_rel(b["logo"], ext="webp"))[0]}" height="{img_size(img_rel(b["logo"], ext="webp"))[1]}" loading="lazy" decoding="async">'
                 if b.get("logo") else "")
         pic = b.get("card_image", "wind-supremo-row")
         cards += f"""<a class="bcard bcard-{b['slug']}" href="{href(cur, brand_path(lang, b))}">
@@ -713,7 +714,7 @@ def build_brand(lang, b):
         sections += f"""<section class="sec" id="{c['slug']}"><div class="wrap">
 <h2 class="h2">{esc(c[lang])}</h2><p class="sub">{esc(L(c['desc'], lang))}</p><div class="grid4 pgrid">{cards}</div></div></section>"""
     badge = f'<span class="chip chip-new">{esc(L(b["badge"], lang))}</span>' if b.get("badge") else ""
-    logo_rel = img_rel(b["logo"], ext="png")
+    logo_rel = img_rel(b["logo"], ext="webp")
     lw, lh = img_size(logo_rel)
     logo = f'<img class="brand-logo" src="{href(cur, logo_rel)}" alt="{esc(b["name"])}" width="{lw}" height="{lh}">'
     note = f'<p class="small muted">{esc(L(b["note"], lang))}</p>' if b.get("note") else ""

@@ -114,3 +114,10 @@
     status.textContent = status.getAttribute('data-ok');
   });
 })();
+
+// Phone action bar: hidden while the home hero (which has the same buttons) is on screen.
+(function () {
+  var bar = document.querySelector('.mbar'), hero = document.querySelector('.hero');
+  if (!bar || !hero || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(function (e) { bar.classList.toggle('mbar-off', e[0].isIntersecting); }, { rootMargin: '-40% 0px 0px 0px' }).observe(hero);
+})();
