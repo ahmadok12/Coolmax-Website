@@ -224,6 +224,21 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
   .key { min-height: 52px; font-size: .82rem; }
 }
 @media (prefers-reduced-motion: reduce) { .hint, .lcd, .meter .trk i { transition: none; } }
+/* --- site integration (2026-10-31): quote buttons, phone layout. Port to the source in "Coolmax 3D Viewer" --- */
+.buy { display: flex; gap: 8px; }
+.buy a { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 16px; border-radius: 999px; font-weight: 700; font-size: .88rem; text-decoration: none; white-space: nowrap; }
+.buy .q { background: #c79a55; color: #fff; }
+.buy .w { background: #1fa855; color: #fff; }
+.filechip { display: none; }
+@media (max-width: 760px) {
+  .brand p { display: none; }
+  .center { display: flex; flex-direction: column; }
+  .stage { order: -1; height: 62vh; min-height: 380px; }
+  .snaps, footer { display: none; }
+  .page { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+  .buy { position: fixed; z-index: 50; inset-inline: 0; bottom: 0; padding: 9px 12px calc(9px + env(safe-area-inset-bottom)); background: rgba(22, 22, 22, .96); }
+  .buy a { flex: 1; min-height: 46px; font-size: .95rem; }
+}
 </style>
 
 <div class="page">
@@ -233,9 +248,10 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
     </div>
     <div class="brand">
       <h1>Coolmax CM-18 Studio</h1>
-      <p>Turn it on, look inside, and see how evaporative cooling works</p>
+      <p>Turn it on and look inside</p>
     </div>
-    <a class="back" href="../en/brands/coolmax/">&larr; Coolmax range</a>
+    <a class="back" id="back" href="../en/brands/coolmax/">&larr; Coolmax range</a>
+    <div class="buy"><a class="q" id="buy-q" href="../en/wholesale-inquiry.html?model=CM-18TC&amp;brand=coolmax">Get CM-18 price</a><a class="w" id="buy-w" href="https://wa.me/923000000000?text=CM-18%20price" rel="noopener">WhatsApp</a></div>
     <div class="filechip" id="filechip"><b>coolmax_cm18.glb</b> · loading…</div>
   </header>
 
@@ -365,7 +381,20 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
     </div>
   </section>
 
-  <footer>Modelled in Blender and rendered live in your browser. Specifications are typical figures for the CM-18 range; outside air is assumed to be 42 °C at 25% humidity. Electricity is estimated for the 1.5 kW motor on a 230 V single-phase supply.</footer>
+  <footer>Typical CM-18 figures at 42 °C and 25% humidity, 1.5 kW motor on 230 V.</footer>
+<script>
+// Arabic visitors (saved choice or arriving from an Arabic page): Arabic buttons and links back to the Arabic site.
+(function () {
+  var ar = false;
+  try { ar = localStorage.getItem('cm_lang') === 'ar'; } catch (e) {}
+  if (!ar && /\/ar\//.test(document.referrer)) ar = true;
+  if (!ar) return;
+  var back = document.getElementById('back'), q = document.getElementById('buy-q'), w = document.getElementById('buy-w');
+  back.href = '../ar/brands/coolmax/'; back.textContent = 'تشكيلة كولماكس \u2190'; back.dir = 'rtl';
+  q.href = '../ar/wholesale-inquiry.html?model=CM-18TC&brand=coolmax'; q.textContent = 'اطلب سعر CM-18';
+  w.textContent = 'واتساب'; w.href = 'https://wa.me/923000000000?text=' + encodeURIComponent('سعر CM-18');
+})();
+</script>
 </div>
 
 <script type="importmap">

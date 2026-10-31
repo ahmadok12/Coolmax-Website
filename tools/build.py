@@ -204,17 +204,72 @@ ICON = {
 
 
 # ---------------------------------------------------------------- layout
+# Mega menu: the hero products shown under each brand (product slug, short label), and a one-line pitch per brand.
+MEGA = {
+    "coolmax": [("cm-18-25-centrifugal", "CM-18 Centrifugal"), ("cm-30-50-axial", "CM-50 Axial"), ("cm-700", "CM-700")],
+    "aolan": [("mini-chiller", "Mini Chiller"), ("wind-supremo", "Wind Supremo"), ("azl-300", "AZL-300")],
+    "purebreeze": [("pb-bldc-cube", "BLDC Cube"), ("pb-28000", "PB-28000"), ("pb-900-turbo", "PB-900 Turbo")],
+}
+BRAND_LINE = {
+    "coolmax": {"en": "Everyday sellers: industrial to home", "ar": "الأكثر مبيعاً يومياً: من الصناعي إلى المنزلي"},
+    "aolan": {"en": "Big industrial, solar and Mini Chiller", "ar": "صناعي كبير وطاقة شمسية وميني تشيلر"},
+    "purebreeze": {"en": "New BLDC cube and home coolers", "ar": "المكعب الجديد BLDC ومكيفات منزلية"},
+}
+
+
+def key_stat(p):
+    """The one number a buyer compares first: cooling capacity for chillers, airflow for everything else."""
+    cap = spec(p, "capacity")
+    return f"{cap[0]}–{cap[-1]} kW" if cap else f"{airflow_range(p)} m³/h"
+
+
+def brand_chip(lang, b):
+    if b.get("badge"):
+        return f'<span class="chip chip-new">{t("new_badge", lang)}</span>'
+    return f'<span class="chip chip-ok">{t("models_count", lang, n=len(b["products"]))}</span>'
+
+
+def mega_menu(cur, lang):
+    cols = ""
+    for b in BRANDS:
+        prods = {p["slug"]: p for p in b["products"]}
+        tiles = "".join(
+            f'<a class="mm-tile" href="{href(cur, product_path(lang, prods[s]))}">'
+            f'<span class="mm-img">{img(cur, prods[s]["image"], "", small=True)}</span>'
+            f'<b dir="ltr">{esc(label)}</b><small dir="ltr">{esc(key_stat(prods[s]))}</small></a>'
+            for s, label in MEGA[b["slug"]]
+        )
+        bp = href(cur, brand_path(lang, b))
+        cols += (
+            f'<div class="mm-col"><a class="mm-brand" href="{bp}"><span class="mm-name">{esc(b["name"])}{brand_chip(lang, b)}</span>'
+            f'<span class="mm-line">{esc(L(BRAND_LINE[b["slug"]], lang))}</span></a>'
+            f'<div class="mm-tiles">{tiles}</div>'
+            f'<a class="mm-all" href="{bp}">{t("mm_all", lang, n=len(b["products"]))} {ICON["arrow"]}</a></div>'
+        )
+    return (f'<div class="mm"><div class="mm-cols">{cols}</div>'
+            f'<div class="mm-foot"><span>{t("mm_help", lang)}</span>'
+            f'<a class="btn btn-wa" href="{wa_link()}" rel="noopener">{ICON["wa"]}{t("cta_whatsapp", lang)}</a></div></div>')
+
+
+def category_sections(cur, lang, cats, prods):
+    out = ""
+    for c in cats:
+        cards = "".join(product_card(cur, lang, p) for p in prods if p["category"] == c["slug"])
+        out += f"""<section class="sec cat" id="{c['slug']}"><div class="wrap">
+<div class="cat-head"><h2 class="h2">{esc(c[lang])}</h2><p class="sub">{esc(L(c['desc'], lang))}</p></div><div class="grid4 pgrid">{cards}</div></div></section>"""
+    return out
+
+
 def header(cur, lang):
     home = href(cur, f"{lang}/index.html")
-    brand_links = [(brand_path(lang, b), b["name"]) for b in BRANDS + PLACEHOLDER_BRANDS]
-    brands = "".join(f'<a href="{href(cur, p)}">{esc(n)}</a>' for p, n in brand_links)
     calc = href(cur, f"{lang}/cooler-sizing-calculator.html")
     contact = href(cur, f"{lang}/wholesale-inquiry.html")
     alt = href(cur, swap_lang(cur, lang))
     o = other(lang)
+    mm = mega_menu(cur, lang)
     nav = (
         f'<a href="{home}">{t("nav_home", lang)}</a>'
-        f'<details class="dd"><summary>{t("nav_brands", lang)}</summary><div class="dd-menu">{brands}</div></details>'
+        f'<details class="dd"><summary>{t("nav_brands", lang)}</summary>{mm}</details>'
         f'<a href="{calc}">{t("nav_calc", lang)}</a><a href="{contact}">{t("nav_contact", lang)}</a>'
     )
     return f"""<a class="skip" href="#main">{t('skip', lang)}</a>
@@ -227,7 +282,10 @@ def header(cur, lang):
     <a class="lang-switch" href="{alt}" hreflang="{o}" lang="{o}" data-setlang="{o}" title="{esc(t('lang_switch_label', lang))}">{t('lang_switch', lang)}</a>
     <a class="btn btn-gold hdr-cta" href="{contact}">{t('cta_quote', lang)}</a>
     <details class="mnav"><summary aria-label="{t('menu', lang)}"><span></span><span></span><span></span></summary>
-      <div class="mnav-panel"><a href="{home}">{t('nav_home', lang)}</a>{brands}<a href="{calc}">{t('nav_calc', lang)}</a><a href="{contact}">{t('nav_contact', lang)}</a></div>
+      <div class="mnav-panel">
+        <p class="mnav-h">{t('nav_brands', lang)}</p>{mm}
+        <div class="mnav-links"><a href="{home}">{t('nav_home', lang)}</a><a href="{calc}">{t('nav_calc', lang)}</a><a href="{contact}">{t('nav_contact', lang)}</a></div>
+      </div>
     </details>
   </div>
 </header>"""
@@ -243,10 +301,10 @@ def footer(cur, lang):
     markets = " · ".join(L(n, lang) for _, n in MARKETS)
     return f"""<footer class="site-footer">
   <div class="wrap footer-grid">
-    <div><a class="logo logo-light" href="{href(cur, f'{lang}/index.html')}">{logo_img(cur)}<span>{esc(L(SITE['name'], lang))}</span></a>
+    <div class="f-about"><a class="logo logo-light" href="{href(cur, f'{lang}/index.html')}">{logo_img(cur)}<span>{esc(L(SITE['name'], lang))}</span></a>
       <p>{t('footer_about', lang)}</p><p class="muted-light">{esc(markets)}</p></div>
     <div><h2>{t('nav_brands', lang)}</h2><ul>{brands}</ul></div>
-    <div><h2>{t('cats_title', lang)}</h2><ul>{cats}</ul></div>
+    <div class="f-cats"><h2>{t('cats_title', lang)}</h2><ul>{cats}</ul></div>
     <div><h2>{t('nav_contact', lang)}</h2><ul>
       <li><a href="{wa_link()}" rel="noopener">WhatsApp <span dir="ltr">{esc(SITE['phone_display'])}</span></a></li>
       <li><a href="mailto:{SITE['email']}">{esc(SITE['email'])}</a></li>
@@ -400,17 +458,19 @@ def inquiry_form(cur, lang, model="", brand=""):
     return f"""<form class="inq card" method="post" action="{esc(SITE['form_endpoint'] or '#')}" novalidate>
   <div class="grid2">
     <label>{t('f_name', lang)} *<input name="name" required autocomplete="name"></label>
-    <label>{t('f_company', lang)}<input name="company" autocomplete="organization"></label>
-    <label>{t('f_country', lang)} *<select name="country" required>{countries}</select></label>
-    <label>{t('f_city', lang)}<input name="city"></label>
     <label>{t('f_phone', lang)} *<input name="phone" type="tel" required autocomplete="tel" dir="ltr"></label>
-    <label>{t('f_email', lang)}<input name="email" type="email" autocomplete="email" dir="ltr"></label>
-    <label>{t('f_type', lang)}<select name="buyer_type">{types}</select></label>
+    <label>{t('f_country', lang)} *<select name="country" required>{countries}</select></label>
     <label>{t('f_brand', lang)}<select name="brand">{brands}</select></label>
     <label>{t('f_model', lang)}<input name="model" value="{esc(model)}" dir="auto"></label>
     <label>{t('f_qty', lang)}<input name="quantity" inputmode="numeric"></label>
-    <label class="span2">{t('f_msg', lang)}<textarea name="message" rows="4" placeholder="{esc(t('f_msg_ph', lang))}"></textarea></label>
+    <label class="span2">{t('f_msg', lang)}<textarea name="message" rows="3" placeholder="{esc(t('f_msg_ph', lang))}"></textarea></label>
   </div>
+  <details class="more"><summary>{t('f_more', lang)}</summary><div class="grid2">
+    <label>{t('f_company', lang)}<input name="company" autocomplete="organization"></label>
+    <label>{t('f_email', lang)}<input name="email" type="email" autocomplete="email" dir="ltr"></label>
+    <label>{t('f_city', lang)}<input name="city"></label>
+    <label>{t('f_type', lang)}<select name="buyer_type">{types}</select></label>
+  </div></details>
   <input type="hidden" name="language" value="{lang}">
   <button class="btn btn-primary btn-lg" type="submit">{ICON['wa'] if not SITE['form_endpoint'] else ''}{submit}</button>
   <p class="form-status" role="status" data-ok="{esc(t('f_ok', lang))}" data-err="{esc(t('f_err', lang))}"></p>
@@ -436,9 +496,9 @@ def supply_table(lang):
     for amb, vals in SUPPLY_AIR["rows"]:
         cells = "".join(f'<td class="{"hot" if v and amb - v >= 15 else ""}">{v if v else "—"}</td>' for v in vals)
         rows += f"<tr><th scope=\"row\">{amb}°</th>{cells}</tr>"
-    return f"""<figure class="supply card"><figcaption><b>{t('supply_title', lang)}</b></figcaption>
+    return f"""<details class="supply card"><summary><b>{t('supply_q', lang)}</b> <span class="small muted">{t('supply_title', lang)}</span></summary>
 <div class="tscroll"><table class="tbl tbl-center" dir="ltr"><thead><tr><th>{t('ambient', lang)} \\ {t('rh', lang)}</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>
-<p class="small muted">{t('supply_caption', lang)}</p></figure>"""
+<p class="small muted">{t('supply_caption', lang)}</p></details>"""
 
 
 # ---------------------------------------------------------------- pages
@@ -449,68 +509,39 @@ def build_home(lang):
     feat = next(p for p in cm["products"] if p.get("featured"))
     newp = next(p for p in pb["products"] if p.get("new"))
     chiller = next(p for p in BRAND["aolan"]["products"] if p.get("new"))
-    new_stats = [
-        (t("capacity", lang), "25–35 kW"),
-        ("COP", "5"),
-        (t("energy_saving", lang), "30–50%"),
-        (t("airflow", lang), "6,000–7,000 m³/h"),
-    ]
-    new_stats_html = "".join(f'<div><span>{esc(k)}</span><b dir="auto">{esc(v)}</b></div>' for k, v in new_stats)
-    new_spot = f"""<section class="sec new-spot"><div class="wrap feature">
-  <div><span class="chip chip-new">{t('new_kicker', lang)}</span>
-  <h2 class="h2">Aolan <span class="acc">Mini Chiller</span></h2>
-  <p class="lead">{t('new_lead', lang)}</p>
-  <div class="kv">{new_stats_html}</div>
-  <div class="btns"><a class="btn btn-pill btn-pill-dark" href="{href(cur, product_path(lang, chiller))}">{t('featured_cta', lang)}<span class="btn-dot">{ICON['ne']}</span></a>
-  <a class="btn btn-ghost" href="{contact}?model=Mini%20Chiller&amp;brand=aolan">{t('cta_quote', lang)}</a></div></div>
-  <div class="feature-media">{img(cur, 'mini-chiller', 'Aolan Mini Chiller indoor and outdoor units', small=True)}</div>
-</div></section>"""
-    pb_stats = [
-        (t("airflow", lang), "15,000–18,000 m³/h"),
-        (t("power", lang), "450–1,100 W"),
-        (t("motor", lang), "BLDC"),
-        (t("loading", lang), {"en": "100–150 SKD", "ar": "100–150 SKD"}),
-    ]
-    pb_stats_html = "".join(f'<div><span>{esc(k)}</span><b dir="auto">{esc(L(v, lang))}</b></div>' for k, v in pb_stats)
 
-    stats = [
-        (str(len(BRANDS)), {"en": "Brands", "ar": "علامات تجارية"}),
-        (f"{len(PRODUCTS)}+", {"en": "Model families", "ar": "فئة موديلات"}),
-        ("80,000", {"en": "m³/h top airflow", "ar": "م³/ساعة أعلى تدفق هواء"}),
-        (str(len(MARKETS)), {"en": "Core markets", "ar": "أسواق رئيسية"}),
-    ]
-    stats_html = "".join(f'<div><b dir="ltr">{n}</b><span>{L(l, lang)}</span></div>' for n, l in stats)
-
-    # brand cards
+    # 1. brands: the first decision
     cards = ""
     for b in BRANDS:
-        chip = (f'<span class="chip chip-new">{esc(L(b["badge"], lang))}</span>' if b.get("badge")
-                else f'<span class="chip chip-ok">{t("models_count", lang, n=len(b["products"]))}</span>')
-        logo = (f'<img class="bcard-logo" src="{href(cur, img_rel(b["logo"], ext="webp"))}" alt="{esc(b["name"])} logo" width="{img_size(img_rel(b["logo"], ext="webp"))[0]}" height="{img_size(img_rel(b["logo"], ext="webp"))[1]}" loading="lazy" decoding="async">'
-                if b.get("logo") else "")
-        pic = b.get("card_image", "wind-supremo-row")
+        pic = {"aolan": "wind-supremo"}.get(b["slug"], b.get("card_image"))
         cards += f"""<a class="bcard bcard-{b['slug']}" href="{href(cur, brand_path(lang, b))}">
-  <div class="bcard-img">{img(cur, pic, f"{b['name']} evaporative air coolers", small=True)}{logo}</div>
-  <div class="bcard-body">{chip}<h3>{esc(b['name'])}</h3>
-  <p>{esc(L(b['tagline'], lang))}</p><span class="link">{t('view_range', lang)} {ICON['arrow']}</span></div></a>"""
+  <div class="bcard-img">{img(cur, pic, f"{b['name']} evaporative air coolers", small=True)}</div>
+  <div class="bcard-body">{brand_chip(lang, b)}<h3>{esc(b['name'])}</h3>
+  <p>{esc(L(BRAND_LINE[b['slug']], lang))}</p><span class="link">{t('view_range', lang)} {ICON['arrow']}</span></div></a>"""
 
-    why = "".join(f"<div class=\"why\"><h3>{esc(h)}</h3><p>{esc(d)}</p></div>" for h, d in T["why_points"][lang])
-    markets = "".join(f'<li><span class="flag">{code}</span>{esc(L(n, lang))}</li>' for code, n in MARKETS)
-    faq = "".join(f"<details><summary>{esc(q)}</summary><p>{esc(a)}</p></details>" for q, a in T["faq"][lang])
-
-    feat_stats = [
-        (t("airflow", lang), "13,000–17,000 m³/h"),
-        (t("power", lang), "750–1,500 W"),
-        (t("coverage", lang), feat["area"]),
-        (SPEC_LABELS["pressure"][lang], "210–255 Pa"),
+    # 2. top picks: two new launches and the best seller, two numbers each
+    spots = [
+        (newp, f'<span class="chip chip-new">{t("new_badge", lang)}</span>', "BLDC Cube", t("pb_lead", lang),
+         [(t("airflow", lang), "15,000–18,000 m³/h"), (t("power", lang), "450–1,100 W")], ""),
+        (chiller, f'<span class="chip chip-new">{t("new_badge", lang)}</span>', "Mini Chiller", t("new_lead", lang),
+         [(t("capacity", lang), "25–35 kW"), ("COP", "5")], ""),
+        (feat, f'<span class="chip">{t("featured_kicker", lang)}</span>', "CM-18 Centrifugal", t("cm_lead", lang),
+         [(t("airflow", lang), "13,000–17,000 m³/h"), (t("coverage", lang), feat["area"])],
+         f'<a class="spot-3d" href="{href(cur, "3d/index.html")}">{t("cta_3d", lang)} {ICON["arrow"]}</a>'),
     ]
-    feat_stats_html = "".join(f"<div><span>{esc(k)}</span><b dir=\"auto\">{esc(L(v, lang))}</b></div>" for k, v in feat_stats)
+    spot_html = ""
+    for p, chip, name, lead, kv, extra in spots:
+        from urllib.parse import quote
+        kv_html = "".join(f'<div><span>{esc(k)}</span><b dir="auto">{esc(L(v, lang))}</b></div>' for k, v in kv)
+        pp = href(cur, product_path(lang, p))
+        spot_html += f"""<article class="spot">
+  <a class="spot-img" href="{pp}" tabindex="-1">{img(cur, p['image'], f"{p['brand']['name']} {name}", small=True)}</a>
+  <div class="spot-body">{chip}<h3><small>{esc(p['brand']['name'])}</small> <span dir="ltr">{esc(name)}</span></h3><p>{esc(lead)}</p>
+  <div class="kv kv-sm">{kv_html}</div>
+  <div class="spot-btns"><a class="btn btn-primary" href="{contact}?model={quote(name)}&amp;brand={p['brand']['slug']}">{t('cta_quote', lang)}</a>
+  <a class="btn btn-ghost" href="{pp}">{t('specs_short', lang)}</a></div>{extra}</div></article>"""
 
-    why_cards = "".join(
-        f'<div class="icard"><div class="icard-top"><h3>{esc(h)}</h3><span class="icard-ico">{ICON["c" + str(i)]}</span></div><p>{esc(d)}</p></div>'
-        for i, (h, d) in enumerate(T["why_points"][lang], 1)
-    )
-    # Range list: the main categories of all three brands, best sellers first.
+    # 3. shop by need
     range_cats = [("coolmax", "industrial"), ("coolmax", "mobile"), ("purebreeze", "bldc"), ("aolan", "industrial"),
                   ("aolan", "outdoor"), ("coolmax", "window"), ("purebreeze", "home")]
     svc = [(BRAND[b], next(c for c in BRAND[b]["categories"] if c["slug"] == s)) for b, s in range_cats]
@@ -521,13 +552,16 @@ def build_home(lang):
             f'<span class="svc-n">0{i}</span><span class="svc-t">{esc(c[lang])} <small dir="ltr">{esc(b["name"])}</small></span><span class="svc-a">{ICON["ne"]}</span></a></li>'
         )
     first_cat = svc[0][1]
-    step_imgs = ["azl-180-app", "coolmax/lifestyle", "projects-2", "projects-1"]
-    steps = "".join(
-        f'<li class="pstep">{img(cur, step_imgs[i - 1], "", small=True)}<div><h3><span class="acc">{i:02d}.</span> {esc(h)}</h3><p>{esc(d)}</p></div><span class="pstep-n" aria-hidden="true">{i:02d}</span></li>'
-        for i, (h, d) in enumerate(T["process"][lang], 1)
+
+    why_cards = "".join(
+        f'<div class="icard"><span class="icard-ico">{ICON["c" + str(i)]}</span><h3>{esc(h)}</h3><p>{esc(d)}</p></div>'
+        for i, (h, d) in enumerate(T["why_points"][lang], 1)
     )
-    new_ticks = "".join(f"<li>{ICON['check']}{esc(x.split(':')[0])}</li>" for x in newp["bullets"][lang][:4])
-    wm = esc(L(SITE["name"], lang)).split()[0]
+    steps = "".join(f'<li><span class="step-n">{i}</span><div><h3>{esc(h)}</h3><p>{esc(d)}</p></div></li>'
+                    for i, (h, d) in enumerate(T["process"][lang], 1))
+    markets = "".join(f'<li><span class="flag">{code}</span>{esc(L(n, lang))}</li>' for code, n in MARKETS)
+    faq = "".join(f"<details><summary>{esc(q)}</summary><p>{esc(a)}</p></details>" for q, a in T["faq"][lang])
+    pts = "".join(f"<li>{ICON['check']}{esc(x)}</li>" for x in T["hero_points"][lang])
 
     body = f"""
 <section class="hero hero-bg">
@@ -538,81 +572,54 @@ def build_home(lang):
       <p class="lead">{t('hero_lead', lang)}</p>
       <div class="btns"><a class="btn btn-pill" href="{contact}">{t('cta_quote', lang)}<span class="btn-dot">{ICON['ne']}</span></a>
       <a class="btn btn-wa" href="{wa_link()}" rel="noopener">{ICON['wa']}{t('cta_whatsapp', lang)}</a></div>
+      <ul class="hero-pts">{pts}</ul>
     </div>
     <div class="hero-side">
-      <div class="glass"><b dir="ltr">{len(PRODUCTS)}+</b><span>{t('hero_card', lang)}</span>
-        <ul>{''.join(f'<li>{esc(x)}</li>' for x in T['hero_points'][lang])}</ul></div>
+      <div class="glass"><b dir="ltr">{len(PRODUCTS)}+</b><span>{t('hero_card', lang)}</span></div>
       <a class="hero-thumb" href="{href(cur, product_path(lang, newp))}">{img(cur, newp['image'], 'PureBreeze BLDC cube air cooler', small=True)}<span class="chip chip-new">{t('new_badge', lang)}</span></a>
     </div>
   </div>
-  <a class="scroll-dot" href="#why" aria-label="{t('scroll', lang)}">{ICON['down']}</a>
 </section>
 
-<section class="sec" id="why"><div class="wrap">
-  {sec_head(t('eb_why', lang), hx('why_title', lang), t('why_lead', lang))}
-  <div class="grid4 icards">{why_cards}</div>
+<section class="sec" id="brands"><div class="wrap">
+  {sec_head(t('eb_brands', lang), hx('brands_title', lang), t('brands_lead', lang))}
+  <div class="grid3 bcards">{cards}</div>
 </div></section>
 
-<section class="dband"><div class="wrap dband-in">
-  <div class="dband-copy">
-    <span class="eyebrow eyebrow-light">{t('new_kicker', lang)}</span>
-    <h2 class="h2">PureBreeze <span class="acc">BLDC Cube</span></h2>
-    <ul class="ticks ticks-2">{new_ticks}</ul>
-    <p>{t('pb_lead', lang)}</p>
-    <div class="kv kv-dark">{pb_stats_html}</div>
-    <div class="btns"><a class="btn btn-pill btn-pill-light" href="{href(cur, product_path(lang, newp))}">{t('featured_cta', lang)}<span class="btn-dot">{ICON['ne']}</span></a></div>
-  </div>
-  <div class="dband-media">{img(cur, newp['image'], 'PureBreeze BLDC cube evaporative air coolers PB-88C and PB-98C', small=True)}</div>
-  <div class="wm wm-dark" aria-hidden="true">2026</div>
+<section class="sec sec-grey"><div class="wrap">
+  {sec_head(t('eb_spot', lang), hx('spot_title', lang))}
+  <div class="grid3 spots">{spot_html}</div>
 </div></section>
 
 <section class="sec"><div class="wrap">
-  {sec_head(t('eb_range', lang), hx('cats_title', lang), t('range_lead', lang))}
+  {sec_head(t('eb_range', lang), hx('cats_title', lang))}
   <div class="svc">
     <figure class="svc-media">{img(cur, first_cat['image'], first_cat[lang], small=True)}<figcaption>{esc(L(first_cat['desc'], lang))}</figcaption></figure>
     <ol class="svc-list">{svc_items}</ol>
   </div>
-  <div class="stats">{stats_html}</div>
 </div></section>
 
-<section class="sec sec-grey"><div class="wrap feature">
-  <div class="feature-media">{img(cur, feat['image'], 'Coolmax CM-18TC industrial centrifugal evaporative air cooler', small=True)}</div>
-  <div><span class="eyebrow">{t('eb_best', lang)} · Coolmax</span><h2 class="h2"><span dir="ltr">CM-18 <span class="acc">Centrifugal</span></span></h2>
-  <p class="lead">{esc(L(feat['summary'], lang))}</p>
-  <div class="kv">{feat_stats_html}</div>
-  <div class="btns"><a class="btn btn-pill btn-pill-dark" href="{href(cur, product_path(lang, feat))}">{t('featured_cta', lang)}<span class="btn-dot">{ICON['ne']}</span></a>
-  <a class="btn btn-ghost" href="{contact}?model=CM-18TC&amp;brand=coolmax">{t('cta_quote', lang)}</a>
-  <a class="btn btn-ghost" href="{href(cur, '3d/index.html')}">{t('cta_3d', lang)}</a></div></div>
+<section class="sec sec-grey" id="why"><div class="wrap">
+  {sec_head(t('eb_why', lang), hx('why_title', lang))}
+  <div class="grid4 icards">{why_cards}</div>
 </div></section>
 
-<section class="sec" id="brands"><div class="wrap">
-  {sec_head(t('eb_brands', lang), hx('brands_title', lang), t('brands_lead', lang))}
-  <div class="grid3">{cards}</div>
+<section class="sec"><div class="wrap">
+  {sec_head(t('eb_process', lang), hx('process_title', lang))}
+  <ol class="steps3">{steps}</ol>
+  <div class="grid2 duo">
+    <div class="card calc-teaser"><h3>{t('calc_title', lang)}</h3><p>{t('calc_lead', lang)}</p>
+      <a class="btn btn-pill btn-pill-dark" href="{href(cur, f'{lang}/cooler-sizing-calculator.html')}">{t('calc_open', lang)}<span class="btn-dot">{ICON['ne']}</span></a></div>
+    <div class="card"><h3>{t('markets_title', lang)}</h3><ul class="markets">{markets}</ul></div>
+  </div>
 </div></section>
 
-{new_spot}
-
-<section class="sec sec-grey sec-wm"><div class="wm" aria-hidden="true">{wm}</div><div class="wrap">
-  <div class="split-head"><div><span class="eyebrow">{t('eb_process', lang)}</span><h2 class="h2">{hx('process_title', lang)}</h2></div><p class="sub">{t('process_lead', lang)}</p></div>
-  <ol class="psteps">{steps}</ol>
-</div></section>
-
-<section class="sec" id="calculator"><div class="wrap">
-  {sec_head(t('eb_tools', lang), hx('calc_title', lang), t('calc_lead', lang))}
-  <div class="calc-wrap">{calculator(cur, lang)}{supply_table(lang)}</div>
-</div></section>
-
-<section class="sec sec-grey"><div class="wrap">
-  {sec_head(t('eb_markets', lang), hx('markets_title', lang), t('markets_lead', lang))}
-  <ul class="markets">{markets}</ul>
+<section class="sec sec-grey"><div class="wrap faq-one">
+  {sec_head(t('eb_faq', lang), hx('faq_title', lang))}
+  <div class="faq">{faq}</div>
 </div></section>
 
 {cta_band(cur, lang, hx('cta_title', lang), t('cta_lead', lang))}
-
-<section class="sec"><div class="wrap faq-wrap">
-  <div><span class="eyebrow">{t('eb_faq', lang)}</span><h2 class="h2">{hx('faq_title', lang)}</h2><div class="faq">{faq}</div></div>
-  <div id="inquiry"><span class="eyebrow">{t('eb_contact', lang)}</span><h2 class="h2">{hx('contact_title', lang)}</h2><p class="sub">{t('contact_lead', lang)}</p>{inquiry_form(cur, lang)}</div>
-</div></section>
 """
     org = {
         "@context": "https://schema.org",
@@ -648,35 +655,25 @@ def build_aolan_brand(lang):
     CATEGORIES, PRODUCTS = BRAND["aolan"]["categories"], BRAND["aolan"]["products"]
     crumbs, crumb_ld = breadcrumbs(cur, lang, [(f"{lang}/index.html", t("nav_home", lang)), (None, "Aolan")])
     facts = "".join(f'<div><b dir="ltr">{f["n"]}</b><span>{esc(f[lang])}</span></div>' for f in AOLAN["facts"])
-    about = "".join(f"<p>{esc(x)}</p>" for x in AOLAN["about"][lang])
-    sections = ""
-    for c in CATEGORIES:
-        items = [p for p in PRODUCTS if p["category"] == c["slug"]]
-        cards = "".join(product_card(cur, lang, p) for p in items)
-        sections += f"""<section class="sec" id="{c['slug']}"><div class="wrap">
-<h2 class="h2">{esc(c[lang])}</h2><p class="sub">{esc(L(c['desc'], lang))}</p><div class="grid4 pgrid">{cards}</div></div></section>"""
     body = f"""
 <section class="page-hero"><div class="wrap">
   {crumbs}
   <div class="brand-hero">
-    <div><p class="kicker">{esc(AOLAN['legal'])} · {esc(L(AOLAN['origin'], lang))}</p>
+    <div><p class="kicker">{esc(L(AOLAN['origin'], lang))} · 1998</p>
     <h1>{'Aolan evaporative air coolers' if lang == 'en' else 'مكيفات أولان الصحراوية (Aolan)'}</h1>
-    <p class="lead">{esc(L(AOLAN['tagline'], lang))}</p>
+    <p class="lead">{esc(L(BRAND_LINE['aolan'], lang))}</p>
     <nav class="pills">{''.join(f'<a href="#{c["slug"]}">{esc(c[lang])}</a>' for c in CATEGORIES)}</nav></div>
     <div class="hero-media">{img(cur, 'cover', 'Aolan evaporative air cooler range', eager=True)}</div>
   </div>
   <div class="stats stats-inline">{facts}</div>
 </div></section>
-{sections}
+{category_sections(cur, lang, CATEGORIES, PRODUCTS)}
 <section class="sec sec-tint"><div class="wrap two">
-  <div><h2 class="h2">{t('brand_about', lang, brand='Aolan')}</h2>{about}</div>
+  <div><h2 class="h2">{t('brand_about', lang, brand='Aolan')}</h2><p>{esc(AOLAN['about'][lang][0])}</p>
+  <p><b>{t('accessories', lang)}:</b> {t('accessories_lead', lang)}</p></div>
   <div>{img(cur, 'factory', 'Aolan Yixu Industry Park factory, Fuzhou', small=True, cls='rounded')}</div>
 </div></section>
-<section class="sec"><div class="wrap two">
-  <div><h2 class="h2">{t('accessories', lang)}</h2><p>{t('accessories_lead', lang)}</p>{img(cur, 'group-control', 'Aolan group control with hub', small=True, cls='rounded')}</div>
-  <div>{img(cur, 'accessories', 'Aolan evaporative cooler accessories', small=True, cls='rounded')}</div>
-</div></section>
-<section class="sec sec-tint"><div class="wrap">
+<section class="sec"><div class="wrap">
   <h2 class="h2">{t('projects', lang)}</h2>
   <div class="grid2 gallery">{img(cur, 'projects-1', 'Aolan evaporative cooler project cases', small=True, cls='rounded')}{img(cur, 'projects-2', 'Aolan roof-top and wall installation cases', small=True, cls='rounded')}</div>
 </div></section>
@@ -707,12 +704,6 @@ def build_brand(lang, b):
     cats, prods = b["categories"], b["products"]
     crumbs, crumb_ld = breadcrumbs(cur, lang, [(f"{lang}/index.html", t("nav_home", lang)), (None, b["name"])])
     facts = "".join(f'<div><b dir="ltr">{esc(f["n"])}</b><span>{esc(f[lang])}</span></div>' for f in b["facts"])
-    about = "".join(f"<p>{esc(x)}</p>" for x in b["about"][lang])
-    sections = ""
-    for c in cats:
-        cards = "".join(product_card(cur, lang, p) for p in prods if p["category"] == c["slug"])
-        sections += f"""<section class="sec" id="{c['slug']}"><div class="wrap">
-<h2 class="h2">{esc(c[lang])}</h2><p class="sub">{esc(L(c['desc'], lang))}</p><div class="grid4 pgrid">{cards}</div></div></section>"""
     badge = f'<span class="chip chip-new">{esc(L(b["badge"], lang))}</span>' if b.get("badge") else ""
     logo_rel = img_rel(b["logo"], ext="webp")
     lw, lh = img_size(logo_rel)
@@ -722,17 +713,17 @@ def build_brand(lang, b):
 <section class="page-hero"><div class="wrap">
   {crumbs}
   <div class="brand-hero">
-    <div>{logo}{badge}<p class="kicker">{esc(L(b['kicker'], lang))}</p>
+    <div>{logo}{badge}
     <h1>{esc(L(b['title'], lang))}</h1>
-    <p class="lead">{esc(L(b['tagline'], lang))}</p>
+    <p class="lead">{esc(L(BRAND_LINE[b['slug']], lang))}</p>
     <nav class="pills">{''.join(f'<a href="#{c["slug"]}">{esc(c[lang])}</a>' for c in cats)}</nav></div>
     <div class="hero-media">{img(cur, b['hero_image'], f"{b['name']} evaporative air cooler range", eager=True)}</div>
   </div>
   <div class="stats stats-inline">{facts}</div>
 </div></section>
-{sections}
+{category_sections(cur, lang, cats, prods)}
 <section class="sec sec-tint"><div class="wrap two">
-  <div><h2 class="h2">{t('brand_about', lang, brand=b['name'])}</h2>{about}{note}</div>
+  <div><h2 class="h2">{t('brand_about', lang, brand=b['name'])}</h2><p>{esc(b['about'][lang][0])}</p>{note}</div>
   <div>{img(cur, b['about_image'], f"{b['name']} air cooler", small=True, cls='rounded')}</div>
 </div></section>
 {cta_band(cur, lang, t('product_cta_title', lang, name=b['name']), t('product_cta_lead', lang), brand=b['slug'])}
@@ -842,7 +833,7 @@ def build_product(lang, p):
         solar = f'<span class="chip chip-new">{t("new_kicker", lang)}</span> ' + solar
     viewer_btn = ""
     if b["slug"] == "coolmax" and p["slug"] in VIEWER_3D_SLUGS:
-        viewer_btn = f'\n    <a class="btn btn-ghost btn-lg" href="{href(cur, "3d/index.html")}">{t("cta_3d", lang)}</a>'
+        viewer_btn = f'\n    <a class="btn btn-ghost btn-lg btn-3d" href="{href(cur, "3d/index.html")}">{t("cta_3d", lang)}</a>'
     body = f"""
 <section class="page-hero slim"><div class="wrap">{crumbs}</div></section>
 <section class="sec pt0"><div class="wrap product">
@@ -851,23 +842,23 @@ def build_product(lang, p):
     <p class="kicker"><a href="{href(cur, brand_path(lang, b))}#{cat['slug']}">{esc(cat[lang])}</a></p>
     <h1><span dir="ltr">{esc(h1)}</span></h1>
     <p class="subtitle">{solar}{esc(L(p['headline'], lang))}</p>
-    <p>{esc(L(p['summary'], lang))}</p>
     <div class="kv">{kv_html}</div>
-    <p class="small muted"><b>{t('model_col', lang)}:</b> <span dir="ltr">{esc(models_list)}</span></p>
     <div class="btns"><a class="btn btn-primary btn-lg" href="{contact}?model={quote(p['name'])}&amp;brand={b['slug']}">{t('cta_quote', lang)}</a>
     <a class="btn btn-wa btn-lg" href="{wa_link(wa_text)}" rel="noopener">{ICON['wa']}{t('cta_whatsapp', lang)}</a>{viewer_btn}</div>
+    <p class="psum">{esc(L(p['summary'], lang))}</p>
   </div>
 </div></section>
 <section class="sec pt0"><div class="wrap">
   <h2 class="h2">{t('specs', lang)}</h2>
   {specs_table(lang, p)}
+  <p class="small muted"><b>{t('model_col', lang)}:</b> <span dir="ltr">{esc(models_list)}</span></p>
   {note}
   {f'<h2 class="h2 mt">{t("features", lang)}</h2>' if p.get("new") else ""}{bullets}
-  <h2 class="h2 mt">{t('applications', lang)}</h2><p>{esc(L(p['apps'], lang))}</p>
+  <p class="apps"><b>{t('applications', lang)}:</b> {esc(L(p['apps'], lang))}</p>
   <p class="small muted">{t('spec_source', lang, brand=b['catalogue']) if not p.get('source') else esc(L(p['source'], lang)) + '. ' + t('spec_source', lang, brand=b['catalogue']).split('. ', 1)[1]}</p>
 </div></section>
 {extra}
-{f'<section class="sec sec-tint"><div class="wrap"><h2 class="h2">{t("related", lang)}</h2><div class="grid4 pgrid">{rel_html}</div></div></section>' if rel_html else ''}
+{f'<section class="sec sec-tint"><div class="wrap"><h2 class="h2">{t("related", lang)}</h2><div class="grid4 pgrid prow">{rel_html}</div></div></section>' if rel_html else ''}
 {cta_band(cur, lang, t('product_cta_title', lang, name=p['name']), t('product_cta_lead', lang), model=p['name'], brand=b['slug'])}
 """
     props = []
