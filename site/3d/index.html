@@ -163,6 +163,13 @@ dl.specs dd { margin: 0; font-weight: 600; }
 .meter.warm .trk i { background: var(--gold); }
 .meter.elec .trk i { background: var(--off); }
 
+.cycles .body { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.cyc-video { margin: 0; display: grid; gap: 8px; min-width: 0; }
+.cyc-video video { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; background: #1b2430; display: block; }
+.cyc-video figcaption { color: var(--muted); font-size: .84rem; }
+.cyc-stills { display: grid; gap: 14px; min-width: 0; }
+.cyc-stills img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; display: block; }
+@media (max-width: 760px) { .cycles .body { grid-template-columns: minmax(0, 1fr); } .cyc-stills { grid-template-columns: 1fr 1fr; } }
 .snaps .body { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .snaps .slot { aspect-ratio: 4 / 3; border: 1.5px dashed var(--line); border-radius: 10px; display: grid; place-items: center; color: var(--muted); font-size: .8rem; overflow: hidden; max-width: 100%; }
 .snaps .slot img { width: 100%; height: 100%; object-fit: cover; }
@@ -337,6 +344,20 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
     </aside>
   </div>
 
+  <section class="card cycles" aria-labelledby="cyc-h">
+    <h2 id="cyc-h">Rendered in Cycles</h2>
+    <div class="body">
+      <figure class="cyc-video">
+        <video id="cyc-video" src="cooler_cycles.mp4" poster="cycles_hero.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Cycles render of the CM-18 running: fan spinning and water running down the wet pads"></video>
+        <figcaption>The CM-18 running, path-traced in Blender Cycles: real motion blur on the fan, soft studio light and water trickling down the wet pads.</figcaption>
+      </figure>
+      <div class="cyc-stills">
+        <img src="cycles_hero.jpg" alt="Cycles studio render of the Coolmax CM-18, three-quarter view" loading="lazy" width="1920" height="1080">
+        <img src="cycles_top.jpg" alt="Cycles render looking down into the outlet and fan" loading="lazy" width="1920" height="1080">
+      </div>
+    </div>
+  </section>
+
   <section class="card snaps">
     <h2>Snapshots <span id="snapcount">0 taken</span></h2>
     <div class="body" id="snaps">
@@ -423,8 +444,8 @@ PARTS.forEach((p, i) => p.num = i + 1);
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.0;
+renderer.toneMapping = THREE.AgXToneMapping; // same colour pipeline as the Blender/Cycles renders
+renderer.toneMappingExposure = 1.3;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.localClippingEnabled = true;
@@ -454,7 +475,7 @@ sun.shadow.radius = 6; sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.02;
 scene.add(sun);
 scene.add(new THREE.HemisphereLight(0xeaf4ff, 0x8a8f95, 0.35));
 
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(12, 12), new THREE.ShadowMaterial({ opacity: 0.22 }));
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(12, 12), new THREE.ShadowMaterial({ opacity: 0.12 }));
 ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
 scene.add(ground);
 
@@ -496,6 +517,11 @@ function onModel(gltf) {
     if (o.name) nodeByName[o.name] = o;
     if (o.isMesh) {
       o.castShadow = true; o.receiveShadow = true;
+      if (o.name === 'Ground_Shadow') { // contact shadow baked in Cycles
+        o.castShadow = o.receiveShadow = false; o.renderOrder = -1;
+        o.material.transparent = true; o.material.depthWrite = false; o.material.toneMapped = false;
+      }
+      if (o.material.aoMap) o.material.aoMapIntensity = 1.0;
       o.material = o.material.clone();
       if (o.name === 'Water') { o.material.transparent = true; o.material.opacity = 0.55; o.material.transmission = 0; o.material.color.set(0x6fb7d8); o.material.roughness = 0.05; o.castShadow = false; }
       baseMat.set(o, { emissive: o.material.emissive.clone(), ei: o.material.emissiveIntensity, opacity: o.material.opacity, transparent: o.material.transparent, color: o.material.color.clone(), rough: o.material.roughness });
@@ -1000,6 +1026,8 @@ function step(dt) {
 
   // exploded view
   S.explode += (S.explodeTarget - S.explode) * (1 - Math.exp(-dt / 0.25));
+  const gs = nodeByName['Ground_Shadow'];
+  if (gs) gs.material.opacity = 1 - Math.min(1, S.explode * 1.5);
   const e = ease(Math.min(1, Math.max(0, S.explode)));
   for (const p of PARTS) if (p.moving) for (const m of p.moving) m.o.position.copy(m.base).addScaledVector(m.off, e);
 
