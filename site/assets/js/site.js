@@ -121,3 +121,30 @@
   if (!bar || !hero || !('IntersectionObserver' in window)) return;
   new IntersectionObserver(function (e) { bar.classList.toggle('mbar-off', e[0].isIntersecting); }, { rootMargin: '-40% 0px 0px 0px' }).observe(hero);
 })();
+
+// Brands mega menu and phone menu: close on outside click, Escape or link tap; lock page scroll under the phone menu.
+(function () {
+  var menus = document.querySelectorAll('.dd, .mnav');
+  function closeAll(except) { menus.forEach(function (d) { if (d !== except) d.open = false; }); }
+  menus.forEach(function (d) {
+    d.addEventListener('toggle', function () {
+      if (d.open) closeAll(d);
+      if (d.classList.contains('mnav')) document.documentElement.classList.toggle('menu-open', d.open);
+    });
+    d.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { d.open = false; }); });
+  });
+  document.addEventListener('click', function (e) { menus.forEach(function (d) { if (d.open && !d.contains(e.target)) d.open = false; }); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    menus.forEach(function (d) { if (d.open) { d.open = false; d.querySelector('summary').focus(); } });
+  });
+  // Desktop pointer: open on hover too
+  var dd = document.querySelector('.dd'), t;
+  if (dd && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    var hoverAt = 0;
+    dd.addEventListener('mouseenter', function () { clearTimeout(t); if (!dd.open) { dd.open = true; hoverAt = Date.now(); } });
+    // a click right after hover-open should not close the panel again
+    dd.querySelector('summary').addEventListener('click', function (e) { if (Date.now() - hoverAt < 600) e.preventDefault(); });
+    dd.addEventListener('mouseleave', function () { t = setTimeout(function () { dd.open = false; }, 250); });
+  }
+})();
