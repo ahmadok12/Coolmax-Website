@@ -116,10 +116,12 @@ def swap_lang(path, lang):
     return other(lang) + path[len(lang):]
 
 
-def img_size(rel):
+def img_info(rel):
+    """(width, height, is_cutout): cut-out product photos have a transparent background."""
     if rel not in _size_cache:
         with Image.open(os.path.join(OUT, rel)) as im:
-            _size_cache[rel] = im.size
+            cut = im.mode == "RGBA" and im.getchannel("A").getextrema()[0] < 255
+            _size_cache[rel] = (*im.size, cut)
     return _size_cache[rel]
 
 
@@ -135,8 +137,9 @@ def og_rel(name):
 
 def img(cur, name, alt, small=False, eager=False, cls=""):
     rel = img_rel(name, small)
-    w, h = img_size(rel)
+    w, h, cut = img_info(rel)
     loading = 'fetchpriority="high"' if eager else 'loading="lazy" decoding="async"'
+    cls = " ".join(x for x in (cls, "cut" if cut else "") if x)
     c = f' class="{cls}"' if cls else ""
     return f'<img src="{href(cur, rel)}" alt="{esc(alt)}" width="{w}" height="{h}" {loading}{c}>'
 
@@ -180,7 +183,7 @@ def brand_path(lang, b):
 
 def logo_img(cur, cls="logo-mark"):
     rel = "assets/img/brands/coolmax-mark.webp"
-    w, h = img_size(rel)
+    w, h, _ = img_info(rel)
     return f'<img class="{cls}" src="{href(cur, rel)}" alt="" width="{w}" height="{h}">'
 
 
@@ -706,7 +709,7 @@ def build_brand(lang, b):
     facts = "".join(f'<div><b dir="ltr">{esc(f["n"])}</b><span>{esc(f[lang])}</span></div>' for f in b["facts"])
     badge = f'<span class="chip chip-new">{esc(L(b["badge"], lang))}</span>' if b.get("badge") else ""
     logo_rel = img_rel(b["logo"], ext="webp")
-    lw, lh = img_size(logo_rel)
+    lw, lh, _ = img_info(logo_rel)
     logo = f'<img class="brand-logo" src="{href(cur, logo_rel)}" alt="{esc(b["name"])}" width="{lw}" height="{lh}">'
     note = f'<p class="small muted">{esc(L(b["note"], lang))}</p>' if b.get("note") else ""
     body = f"""
