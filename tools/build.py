@@ -522,7 +522,8 @@ def build_home(lang):
     # 2. top picks: two new launches and the best seller, two numbers each
     spots = [
         (newp, f'<span class="chip chip-new">{t("new_badge", lang)}</span>', "BLDC Cube", t("pb_lead", lang),
-         [(t("airflow", lang), "15,000–18,000 m³/h"), (t("power", lang), "450–1,100 W")], ""),
+         [(t("airflow", lang), "15,000–18,000 m³/h"), (t("power", lang), "450–1,100 W")],
+         f'<a class="spot-3d" href="{href(cur, "3d/pb-98c/index.html")}">{t("cta_3d", lang)} {ICON["arrow"]}</a>'),
         (chiller, f'<span class="chip chip-new">{t("new_badge", lang)}</span>', "Mini Chiller", t("new_lead", lang),
          [(t("capacity", lang), "25–35 kW"), ("COP", "5")], ""),
         (feat, f'<span class="chip">{t("featured_kicker", lang)}</span>', "CM-18 Centrifugal", t("cm_lead", lang),
@@ -767,8 +768,14 @@ def specs_table(lang, p):
     return f'<div class="tscroll"><table class="tbl spec"><thead><tr><th scope="col">{t("model_col", lang)}</th>{cols}</tr></thead><tbody>{rows}</tbody></table></div>'
 
 
-# Products that link to the interactive 3D cooler in site/3d/ (a hand-made page the build leaves alone).
-VIEWER_3D_SLUGS = {"cm-18-25-axial", "cm-18-25-centrifugal", "cm-30-50-axial", "cm-30-50-centrifugal"}
+# Products that link to an interactive 3D cooler under site/3d/ (hand-made pages the build leaves alone).
+VIEWER_3D = {
+    ("coolmax", "cm-18-25-axial"): "3d/index.html",
+    ("coolmax", "cm-18-25-centrifugal"): "3d/index.html",
+    ("coolmax", "cm-30-50-axial"): "3d/index.html",
+    ("coolmax", "cm-30-50-centrifugal"): "3d/index.html",
+    ("purebreeze", "pb-bldc-cube"): "3d/pb-98c/index.html",
+}
 
 
 def build_product(lang, p):
@@ -832,8 +839,9 @@ def build_product(lang, p):
     if p.get("new"):
         solar = f'<span class="chip chip-new">{t("new_kicker", lang)}</span> ' + solar
     viewer_btn = ""
-    if b["slug"] == "coolmax" and p["slug"] in VIEWER_3D_SLUGS:
-        viewer_btn = f'\n    <a class="btn btn-ghost btn-lg btn-3d" href="{href(cur, "3d/index.html")}">{t("cta_3d", lang)}</a>'
+    viewer = VIEWER_3D.get((b["slug"], p["slug"]))
+    if viewer:
+        viewer_btn = f'\n    <a class="btn btn-ghost btn-lg btn-3d" href="{href(cur, viewer)}">{t("cta_3d", lang)}</a>'
     body = f"""
 <section class="page-hero slim"><div class="wrap">{crumbs}</div></section>
 <section class="sec pt0"><div class="wrap product">
