@@ -725,3 +725,12 @@ input:focus, select:focus, textarea:focus { outline: 2px solid var(--gold); outl
 .pcard-img img, .spot-img img { position: absolute; inset: .75rem; width: calc(100% - 1.5rem); height: calc(100% - 1.5rem); max-height: none; object-fit: contain; }
 @media (max-width: 700px) { .pcard-img { aspect-ratio: 4 / 5; } }
 .contact-card .btn-wa { color: #fff; }
+
+/* Product cut-outs: photos with the background removed sit on one soft "stage" everywhere */
+:root { --stage: radial-gradient(120% 95% at 50% 38%, #fff 0%, #f6f5f2 52%, #ebe9e4 100%); }
+.pcard-img, .spot-img, .bcard-img, .pmain, .svc-media, .hero-thumb, .thumbs button { background: var(--stage); }
+.ccard img { background: var(--stage); }
+img.cut { filter: drop-shadow(0 14px 16px rgba(20, 20, 20, .13)) drop-shadow(0 2px 3px rgba(20, 20, 20, .08)); }
+.thumbs img.cut { object-fit: contain; filter: none; }
+.mm-img img.cut { filter: drop-shadow(0 6px 7px rgba(20, 20, 20, .12)); }
+.page-hero .hero-media img.cut { background: var(--stage); padding: clamp(1rem, 3vw, 2rem); }

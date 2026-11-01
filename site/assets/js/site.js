@@ -47,6 +47,7 @@
     b.addEventListener('click', function () {
       main.src = b.getAttribute('data-src');
       main.removeAttribute('srcset');
+      main.classList.toggle('cut', b.querySelector('img').classList.contains('cut'));
       document.querySelectorAll('.thumbs button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
     });
   });
