@@ -203,7 +203,7 @@ ICON = {
     "c2": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 16c8-6 14 6 22 0s14-6 14-6M6 26c8-6 14 6 22 0s14-6 14-6M6 36c8-6 14 6 22 0s14-6 14-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     "c3": '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M24 4v6M24 38v6M4 24h6M38 24h6M10 10l4 4M34 34l4 4M10 38l4-4M34 14l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     "c4": '<svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="20" cy="14" rx="12" ry="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 14v10c0 3 5 5 12 5s12-2 12-5V14M8 24v10c0 3 5 5 12 5 3 0 6-.5 8-1.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="36" cy="34" r="7" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
-    "logo": '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="#c79a55"/><g stroke="#161616" stroke-width="2.6" stroke-linecap="round" fill="none"><path d="M20 8v24M9.6 14l20.8 12M9.6 26l20.8-12"/><path d="M16.5 9.5 20 13l3.5-3.5M16.5 30.5 20 27l3.5 3.5"/></g></svg>',
+    "logo": '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="#2f5bd3"/><g stroke="#161616" stroke-width="2.6" stroke-linecap="round" fill="none"><path d="M20 8v24M9.6 14l20.8 12M9.6 26l20.8-12"/><path d="M16.5 9.5 20 13l3.5-3.5M16.5 30.5 20 27l3.5 3.5"/></g></svg>',
 }
 
 
@@ -370,7 +370,7 @@ def page(cur, lang, title, desc, body, schema=(), noindex=False, og_image="asset
 <meta property="og:image" content="{SITE['url']}/{og_image}">
 <meta property="og:locale" content="{locale}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#12110e">
+<meta name="theme-color" content="#0c1320">
 <link rel="icon" href="{href(cur, 'assets/favicon.png')}" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
