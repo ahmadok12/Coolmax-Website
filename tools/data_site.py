@@ -158,7 +158,7 @@ T = {
     "cta_whatsapp": {"en": "WhatsApp us", "ar": "راسلنا واتساب"},
     "cta_models": {"en": "Browse models", "ar": "تصفح الموديلات"},
     "menu": {"en": "Menu", "ar": "القائمة"},
-    "hero_kicker": {"en": "Wholesale · Pakistan & Middle East", "ar": "بالجملة · باكستان والشرق الأوسط"},
+    "hero_kicker": {"en": "Wholesale to Pakistan and the Middle East", "ar": "بالجملة إلى باكستان والشرق الأوسط"},
     "hero_title": {"en": 'Evaporative air coolers, [[wholesale]]', "ar": 'مكيفات صحراوية [[بالجملة]]'},
     "hero_lead": {"en": 'Coolmax, Aolan and PureBreeze. 1,000–80,000 m³/h. Wholesale prices on WhatsApp within one business day.', "ar": 'كولماكس وأولان وبيور بريز. من 1,000 إلى 80,000 م³/ساعة. أسعار الجملة عبر واتساب خلال يوم عمل واحد.'},
     "hero_points": {
@@ -286,7 +286,7 @@ T = {
     "projects": {"en": "Project references", "ar": "مشاريع منفذة"},
     "accessories": {"en": "Accessories and group control", "ar": "الملحقات والتحكم الجماعي"},
     "accessories_lead": {"en": 'Run up to 40 units from one controller. Grilles, UV lamps, sensors and Modbus boards available.', "ar": 'تشغيل حتى 40 وحدة من وحدة تحكم واحدة. تتوفر الشبكات ومصابيح UV والحساسات ولوحات Modbus.'},
-    "new_kicker": {"en": "New · Launched at Canton Fair 2026", "ar": "جديد · أُطلق في معرض كانتون 2026"},
+    "new_kicker": {"en": "New, launched at Canton Fair 2026", "ar": "جديد، أُطلق في معرض كانتون 2026"},
     "new_badge": {"en": "New 2026", "ar": "جديد 2026"},
     "new_lead": {"en": 'AC-level cooling on evaporative tech. Up to 50% less energy, COP 5.', "ar": 'تبريد بمستوى المكيفات بتقنية تبخيرية. توفير حتى 50% من الطاقة، ومعامل أداء COP 5.'},
     "pb_lead": {"en": 'Energy-saving BLDC motor and 120° air supply. Ships SKD.', "ar": 'محرك BLDC موفر للطاقة وتوزيع هواء بزاوية 120 درجة. يُشحن مفككاً SKD.'},
