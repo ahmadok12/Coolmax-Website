@@ -77,13 +77,14 @@ def t(key, lang, **kw):
 
 
 def hx(key, lang):
-    """Heading text with [[accent]] words wrapped for the two-tone heading style."""
-    return T[key][lang].replace("[[", '<span class="acc">').replace("]]", "</span>")
+    """Heading text. The [[accent]] markers in the copy are dropped: every heading is set in one colour."""
+    return T[key][lang].replace("[[", "").replace("]]", "")
 
 
 def sec_head(eyebrow, title, lead="", tag="h2"):
+    """Section heading: the title on the left, an optional lead beside it. `eyebrow` is kept for callers but not shown."""
     lead_html = f'<p class="sub">{lead}</p>' if lead else ""
-    return f"""<div class="sec-head"><span class="eyebrow">{eyebrow}</span><div><{tag} class="h2">{title}</{tag}>{lead_html}</div></div>"""
+    return f"""<div class="sec-head"><{tag} class="h2">{title}</{tag}>{lead_html}</div>"""
 
 
 _VALUE_KEYS = sorted(VALUE_AR, key=len, reverse=True)
@@ -298,10 +299,10 @@ def footer(cur, lang):
     brand_links = [(brand_path(lang, b), b["name"]) for b in BRANDS + PLACEHOLDER_BRANDS]
     brands = "".join(f'<li><a href="{href(cur, p)}">{esc(n)}</a></li>' for p, n in brand_links)
     cats = "".join(
-        f'<li><a href="{href(cur, brand_path(lang, b))}#{c["slug"]}">{esc(b["name"])} · {esc(c[lang])}</a></li>'
+        f'<li><a href="{href(cur, brand_path(lang, b))}#{c["slug"]}"><span class="f-brand">{esc(b["name"])}</span> {esc(c[lang])}</a></li>'
         for b in BRANDS for c in b["categories"][:2]
     )
-    markets = " · ".join(L(n, lang) for _, n in MARKETS)
+    markets = ("، " if lang == "ar" else ", ").join(L(n, lang) for _, n in MARKETS)
     return f"""<footer class="site-footer">
   <div class="wrap footer-grid">
     <div class="f-about"><a class="logo logo-light" href="{href(cur, f'{lang}/index.html')}">{logo_img(cur)}<span>{esc(L(SITE['name'], lang))}</span></a>
@@ -314,7 +315,6 @@ def footer(cur, lang):
       <li>{esc(L(SITE['address'], lang))}</li>
       <li><a href="{href(cur, f'{lang}/cooler-sizing-calculator.html')}">{t('nav_calc', lang)}</a></li></ul></div>
   </div>
-  <div class="footer-wm" aria-hidden="true">{esc(L(SITE['name'], lang)).split()[0]}</div>
   <div class="wrap footer-bottom">© 2026 {esc(L(SITE['name'], lang))}. {t('footer_rights', lang)}</div>
 </footer>
 <a class="wa-float" href="{wa_link()}" rel="noopener" aria-label="WhatsApp">{ICON['wa']}</a>
@@ -324,9 +324,9 @@ def footer(cur, lang):
 def page(cur, lang, title, desc, body, schema=(), noindex=False, og_image="assets/img/og.jpg", has_alt=True):
     alt_path = swap_lang(cur, lang)
     fonts = (
-        "family=Urbanist:wght@400;500;600;700;800"
+        "family=Gloock&family=Urbanist:wght@400;500;600;700"
         if lang == "en"
-        else "family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Urbanist:wght@600;700;800"
+        else "family=Gloock&family=Noto+Naskh+Arabic:wght@600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Urbanist:wght@500;600;700"
     )
     en_path, ar_path = (cur, alt_path) if lang == "en" else (alt_path, cur)
     x_default = "" if cur.endswith("/index.html") and cur.count("/") == 1 else en_path
@@ -370,7 +370,7 @@ def page(cur, lang, title, desc, body, schema=(), noindex=False, og_image="asset
 <meta property="og:image" content="{SITE['url']}/{og_image}">
 <meta property="og:locale" content="{locale}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#161616">
+<meta name="theme-color" content="#12110e">
 <link rel="icon" href="{href(cur, 'assets/favicon.png')}" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -565,25 +565,24 @@ def build_home(lang):
                     for i, (h, d) in enumerate(T["process"][lang], 1))
     markets = "".join(f'<li><span class="flag">{code}</span>{esc(L(n, lang))}</li>' for code, n in MARKETS)
     faq = "".join(f"<details><summary>{esc(q)}</summary><p>{esc(a)}</p></details>" for q, a in T["faq"][lang])
-    pts = "".join(f"<li>{ICON['check']}{esc(x)}</li>" for x in T["hero_points"][lang])
+    pts = "".join(f"<li>{esc(x)}</li>" for x in T["hero_points"][lang])
 
     body = f"""
 <section class="hero hero-bg">
   <div class="wrap hero-in">
     <div class="hero-copy">
-      <span class="eyebrow eyebrow-light">{t('hero_kicker', lang)}</span>
       <h1>{hx('hero_title', lang)}</h1>
       <p class="lead">{t('hero_lead', lang)}</p>
-      <div class="btns"><a class="btn btn-pill" href="{contact}">{t('cta_quote', lang)}<span class="btn-dot">{ICON['ne']}</span></a>
-      <a class="btn btn-wa" href="{wa_link()}" rel="noopener">{ICON['wa']}{t('cta_whatsapp', lang)}</a></div>
-      <ul class="hero-pts">{pts}</ul>
+      <div class="btns"><a class="btn btn-primary btn-lg" href="{contact}">{t('cta_quote', lang)}</a>
+      <a class="btn btn-line btn-lg" href="{wa_link()}" rel="noopener">{ICON['wa']}{t('cta_whatsapp', lang)}</a></div>
     </div>
     <div class="hero-side">
       <div class="glass"><b dir="ltr">{len(PRODUCTS)}+</b><span>{t('hero_card', lang)}</span></div>
-      <a class="hero-thumb" href="{href(cur, product_path(lang, newp))}">{img(cur, newp['image'], 'PureBreeze BLDC cube air cooler', small=True)}<span class="chip chip-new">{t('new_badge', lang)}</span></a>
+      <a class="hero-thumb" href="{href(cur, product_path(lang, newp))}">{img(cur, newp['image'], 'PureBreeze BLDC cube air cooler', small=True, eager=True)}<span class="chip chip-new">{t('new_badge', lang)}</span><span class="hero-cap"><span>PureBreeze</span> <b dir="ltr">BLDC Cube</b></span></a>
     </div>
   </div>
 </section>
+<section class="proof" aria-label="{esc(t('hero_kicker', lang))}"><ul class="wrap proof-in"><li>{t('hero_kicker', lang)}</li>{pts}</ul></section>
 
 <section class="sec" id="brands"><div class="wrap">
   {sec_head(t('eb_brands', lang), hx('brands_title', lang), t('brands_lead', lang))}
@@ -613,7 +612,7 @@ def build_home(lang):
   <ol class="steps3">{steps}</ol>
   <div class="grid2 duo">
     <div class="card calc-teaser"><h3>{t('calc_title', lang)}</h3><p>{t('calc_lead', lang)}</p>
-      <a class="btn btn-pill btn-pill-dark" href="{href(cur, f'{lang}/cooler-sizing-calculator.html')}">{t('calc_open', lang)}<span class="btn-dot">{ICON['ne']}</span></a></div>
+      <a class="btn btn-light" href="{href(cur, f'{lang}/cooler-sizing-calculator.html')}">{t('calc_open', lang)}</a></div>
     <div class="card"><h3>{t('markets_title', lang)}</h3><ul class="markets">{markets}</ul></div>
   </div>
 </div></section>
@@ -663,7 +662,7 @@ def build_aolan_brand(lang):
 <section class="page-hero"><div class="wrap">
   {crumbs}
   <div class="brand-hero">
-    <div><p class="kicker">{esc(L(AOLAN['origin'], lang))} · 1998</p>
+    <div><p class="kicker">{esc(L(AOLAN['origin'], lang))}{', since 1998' if lang == 'en' else '، منذ 1998'}</p>
     <h1>{'Aolan evaporative air coolers' if lang == 'en' else 'مكيفات أولان الصحراوية (Aolan)'}</h1>
     <p class="lead">{esc(L(BRAND_LINE['aolan'], lang))}</p>
     <nav class="pills">{''.join(f'<a href="#{c["slug"]}">{esc(c[lang])}</a>' for c in CATEGORIES)}</nav></div>
@@ -903,7 +902,7 @@ def build_placeholder_brand(lang, b):
     for slug in b["sections"]:
         c = next(c for b2 in BRANDS for c in b2["categories"] if c["slug"] == slug)
         cards = "".join(
-            f'<div class="pcard pcard-ph"><div class="pcard-img bcard-ph"><span>{esc(b["name"])}</span></div><div class="pcard-body"><h3>{esc(b["name"])} · {esc(c[lang])}</h3><p>{t("soon_card", lang)}</p></div></div>'
+            f'<div class="pcard pcard-ph"><div class="pcard-img bcard-ph"><span>{esc(b["name"])}</span></div><div class="pcard-body"><h3>{esc(b["name"])}: {esc(c[lang])}</h3><p>{t("soon_card", lang)}</p></div></div>'
             for _ in range(3)
         )
         secs += f'<section class="sec" id="{slug}"><div class="wrap"><h2 class="h2">{esc(c[lang])}</h2><div class="grid3 pgrid">{cards}</div></div></section>'
@@ -990,7 +989,7 @@ a{{color:#0b3a6e;background:#fff;padding:.8rem 1.4rem;border-radius:.6rem;margin
 
 def build_404():
     cur = "en/404.html"
-    body = f"""<section class="page-hero nf"><div class="wrap center"><h1>{t('nf_title', 'en')} · <span lang="ar">{t('nf_title', 'ar')}</span></h1>
+    body = f"""<section class="page-hero nf"><div class="wrap center"><h1>{t('nf_title', 'en')}<br><span lang="ar">{t('nf_title', 'ar')}</span></h1>
 <p class="lead">{t('nf_lead', 'en')}</p><p class="lead" lang="ar" dir="rtl">{t('nf_lead', 'ar')}</p>
 <div class="btns center"><a class="btn btn-primary" href="{BASE}/en/index.html">English</a><a class="btn btn-ghost" href="{BASE}/ar/index.html">العربية</a></div></div></section>"""
     out = page(cur, "en", "404 · " + t("nf_title", "en"), t("nf_lead", "en"), body, noindex=True, has_alt=False)
