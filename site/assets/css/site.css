@@ -1,5 +1,5 @@
 /* Hallmark · shape: kept (site-wide redesign of an existing build) · genre: editorial · theme: brand (Coolmax charcoal and royal blue, refined) · redesign: full
- * paper: #f6f3ed warm ivory · accent: #2f5bd3 royal blue · display: Gloock (Latin), Noto Naskh Arabic (Arabic) · body: Urbanist, IBM Plex Sans Arabic · hero: Stage (head on the left, one framed product on the right) · nav: kept · footer: kept, watermark removed · signature: the new BLDC Cube framed on its stage in the hero
+ * paper: #f5f7fa cool off-white · accent: #2f5bd3 royal blue · display: Gloock (Latin), Noto Naskh Arabic (Arabic) · body: Urbanist, IBM Plex Sans Arabic · hero: Stage (head on the left, one framed product on the right) · nav: kept · footer: kept, watermark removed · signature: the new BLDC Cube framed on its stage in the hero
  * axes: light/high-contrast-serif/warm · posture: restrained · contrast: pass · fold: pass · v2.0.0 */
 /* Hallmark · pre-emit critique: P3 H3 E3 S2 R3 V3 · weakest: S, sections keep their order and content; each was recomposed (hairline heads, flat surfaces) rather than re-sequenced */
 /* Hallmark · note 19 · remaining dash hits are en dashes inside numeric ranges in the spec data (1,000–3,000 m³/h); kept as typography */
@@ -8,32 +8,32 @@
 /* Hallmark · dropped section eyebrows, the two-tone gold heading words and the footer watermark word · gates 54 and 38iii name them, and the headings already say what the eyebrows said */
 
 /* Coolmax Wholesale: one stylesheet for English (LTR) and Arabic (RTL). Logical properties, so RTL needs almost no overrides.
-   Look: warm ivory paper, near-black ink, deep charcoal photo bands, one royal-blue signal, hairline rules, a high-contrast serif for headings. */
+   Look: cool off-white paper, deep navy ink, navy-charcoal photo bands, one royal-blue signal, hairline rules, a high-contrast serif for headings. */
 :root {
   /* paper and ink */
-  --paper: #f6f3ed;
-  --paper-2: #eee9df;
-  --paper-3: #e5ddcf;
-  --card: #fbf9f5;
-  --ink: #15130f;
-  --ink-2: #39342c;
-  --body: #5f584c;
-  --line: #ddd5c7;
-  --line-2: #cbbfac;
+  --paper: #f5f7fa;
+  --paper-2: #eaeef4;
+  --paper-3: #dde3ec;
+  --card: #fbfcfe;
+  --ink: #0f1726;
+  --ink-2: #2b3547;
+  --body: #536075;
+  --line: #dbe1ea;
+  --line-2: #c3ccd9;
   /* night bands */
-  --night: #12110e;
-  --night-2: #1c1a16;
-  --night-3: #26231e;
-  --on-night: #f3eee5;
-  --on-night-2: #c9c0b1;
-  --on-night-3: #9d9485;
-  --rule-night: rgba(243, 238, 229, .16);
-  --rule-night-2: rgba(243, 238, 229, .32);
-  --veil: rgba(18, 17, 14, .55);
-  --veil-1: rgba(18, 17, 14, .95);
-  --veil-2: rgba(18, 17, 14, .82);
-  --veil-3: rgba(18, 17, 14, .5);
-  --tint-night: rgba(243, 238, 229, .06);
+  --night: #0c1320;
+  --night-2: #141c2b;
+  --night-3: #1d2738;
+  --on-night: #eef2f8;
+  --on-night-2: #bcc6d6;
+  --on-night-3: #8f9aad;
+  --rule-night: rgba(238, 242, 248, .16);
+  --rule-night-2: rgba(238, 242, 248, .32);
+  --veil: rgba(12, 19, 32, .55);
+  --veil-1: rgba(12, 19, 32, .95);
+  --veil-2: rgba(12, 19, 32, .82);
+  --veil-3: rgba(12, 19, 32, .5);
+  --tint-night: rgba(238, 242, 248, .06);
   /* signal: royal blue, the cooling colour */
   --blue: #2f5bd3;
   --blue-d: #1f44a8;
@@ -47,9 +47,9 @@
   --wa-hi: #3fc77a;
   --ok: #17733e;
   --err: #b42318;
-  --shadow-ink: rgba(21, 19, 15, .14);
-  --shadow-ink-2: rgba(21, 19, 15, .08);
-  --stage: radial-gradient(120% 95% at 50% 36%, #fdfcf9 0%, #f3efe7 55%, #e6dfd2 100%);
+  --shadow-ink: rgba(15, 23, 38, .14);
+  --shadow-ink-2: rgba(15, 23, 38, .08);
+  --stage: radial-gradient(120% 95% at 50% 36%, #ffffff 0%, #f0f3f8 55%, #dfe5ee 100%);
   /* type */
   --font: "Urbanist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: "Gloock", "Noto Naskh Arabic", Georgia, "Times New Roman", serif;
@@ -63,7 +63,7 @@
   --hdr-space: calc(var(--hdr) + var(--hdr-gap));
   --hdr-radius: 20px;
   --hdr-radius-in: 12px;
-  --glass: rgba(250, 248, 243, .72);
+  --glass: rgba(248, 250, 253, .72);
   --glass-edge: rgba(255, 255, 255, .7);
   --gap: clamp(1rem, 2.4vw, 2rem);
   --ease: cubic-bezier(.16, 1, .3, 1);
@@ -132,14 +132,14 @@ svg { width: 1.1em; height: 1.1em; flex: none; }
 .site-header > * { pointer-events: auto; }
 .header-in { display: flex; align-items: center; gap: 1.6rem; min-height: var(--hdr); padding-inline: 1.1rem .9rem; border-radius: var(--hdr-radius); border: 1px solid var(--rule-night); isolation: isolate; transition: border-color .35s var(--ease), box-shadow .35s var(--ease), color .35s var(--ease); }
 /* the frosted layer sits on a pseudo-element: a backdrop-filter on the bar itself would trap the fixed phone menu inside it */
-.header-in::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: rgba(18, 17, 14, .18); transition: background-color .35s var(--ease); }
+.header-in::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: rgba(12, 19, 32, .18); transition: background-color .35s var(--ease); }
 .site-header.scrolled .header-in, .site-header:has(.dd[open]) .header-in, .site-header:has(.mnav[open]) .header-in { border-color: var(--glass-edge); box-shadow: 0 10px 30px -12px var(--shadow-ink), 0 1px 0 rgba(255, 255, 255, .55) inset; color: var(--ink); }
 .site-header.scrolled .header-in::before, .site-header:has(.dd[open]) .header-in::before, .site-header:has(.mnav[open]) .header-in::before { background: var(--glass); }
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .header-in::before { -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
   .site-header.scrolled .header-in::before, .site-header:has(.dd[open]) .header-in::before, .site-header:has(.mnav[open]) .header-in::before { -webkit-backdrop-filter: saturate(1.6) blur(18px); backdrop-filter: saturate(1.6) blur(18px); }
 }
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) { :root { --glass: rgba(246, 243, 237, .97); } }
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) { :root { --glass: rgba(245, 247, 250, .97); } }
 .site-header.scrolled, .site-header:has(.dd[open]), .site-header:has(.mnav[open]) { color: var(--ink); }
 .geo-banner { width: min(1240px, 100% - 32px); margin: 0 auto .5rem; border-radius: calc(var(--hdr-radius) - 4px); background: var(--blue-soft); color: var(--ink); padding: .5rem 2.75rem; text-align: center; font-size: .95rem; position: relative; box-shadow: 0 6px 20px -10px var(--shadow-ink); }
 .geo-banner a { font-weight: 700; margin-inline-start: .5rem; color: var(--blue-d); }

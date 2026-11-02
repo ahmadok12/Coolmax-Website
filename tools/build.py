@@ -370,7 +370,7 @@ def page(cur, lang, title, desc, body, schema=(), noindex=False, og_image="asset
 <meta property="og:image" content="{SITE['url']}/{og_image}">
 <meta property="og:locale" content="{locale}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#12110e">
+<meta name="theme-color" content="#0c1320">
 <link rel="icon" href="{href(cur, 'assets/favicon.png')}" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
