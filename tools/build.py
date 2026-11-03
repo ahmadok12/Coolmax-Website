@@ -817,6 +817,26 @@ def model_head(lang, m, tag="div"):
             + (f'<span class="msub">{esc(sub)}</span>' if sub else ""))
 
 
+def spec_cards(lang, p, keys, rest, shared, n):
+    models = p["models"]
+    own = [(k, v) for k, v in rest if (k, v) not in shared]
+    out = ""
+    if shared:
+        items = "".join(f'<div><dt>{esc(SPEC_LABELS[k][lang])}</dt><dd><bdi>{esc(tr_value(v[0], lang))}</bdi></dd></div>' for k, v in shared)
+        out += f'<div class="sshared"><p class="sshared-h">{t("all_models", lang) if n > 2 else t("both_models", lang)}</p><dl>{items}</dl></div>'
+    cards = ""
+    for i, m in enumerate(models):
+        codes = [x for x in m if isinstance(x, str)]
+        rows = "".join(f'<dt>{esc(SPEC_LABELS[k][lang])}</dt><dd><bdi>{esc(tr_value(v[i], lang))}</bdi></dd>' for k, v in own)
+        from urllib.parse import quote
+        link = f'../../wholesale-inquiry.html?model={quote(codes[0])}&amp;brand={p["brand"]["slug"]}'
+        cards += (f'<article class="scard"><header>{model_head(lang, m, "h3")}</header>'
+                  + (tiles_html(lang, p, keys, i) if keys else "")
+                  + (f'<dl class="slist">{rows}</dl>' if rows else "")
+                  + f'<a class="btn btn-ghost" href="{link}">{t("price_for", lang)} <span dir="ltr">{esc(codes[0])}</span></a></article>')
+    return out + f'<div class="scards scards-{n}">{cards}</div>'
+
+
 def spec_block(lang, p):
     """Product spec block. 1-3 models: one glass card per model with headline tiles, shared specs listed once above.
     4+ models: one table, each model column headed by its tiles; values shared by all models are repeated in grey."""
@@ -826,22 +846,7 @@ def spec_block(lang, p):
     rest = [(k, v) for k, v in p["specs"] if k not in keys]
     shared = [(k, v) for k, v in rest if n > 1 and len(set(map(str, v))) == 1]
     if n <= 3:
-        own = [(k, v) for k, v in rest if (k, v) not in shared]
-        out = ""
-        if shared:
-            items = "".join(f'<div><dt>{esc(SPEC_LABELS[k][lang])}</dt><dd><bdi>{esc(tr_value(v[0], lang))}</bdi></dd></div>' for k, v in shared)
-            out += f'<div class="sshared"><p class="sshared-h">{t("all_models", lang) if n > 2 else t("both_models", lang)}</p><dl>{items}</dl></div>'
-        cards = ""
-        for i, m in enumerate(models):
-            codes = [x for x in m if isinstance(x, str)]
-            rows = "".join(f'<dt>{esc(SPEC_LABELS[k][lang])}</dt><dd><bdi>{esc(tr_value(v[i], lang))}</bdi></dd>' for k, v in own)
-            from urllib.parse import quote
-            link = f'../../wholesale-inquiry.html?model={quote(codes[0])}&amp;brand={p["brand"]["slug"]}'
-            cards += (f'<article class="scard"><header>{model_head(lang, m, "h3")}</header>'
-                      + (tiles_html(lang, p, keys, i) if keys else "")
-                      + (f'<dl class="slist">{rows}</dl>' if rows else "")
-                      + f'<a class="btn btn-ghost" href="{link}">{t("price_for", lang)} <span dir="ltr">{esc(codes[0])}</span></a></article>')
-        return out + f'<div class="scards scards-{n}">{cards}</div>'
+        return spec_cards(lang, p, keys, rest, shared, n)
     head = "".join(f'<th scope="col">{model_head(lang, m, "span")}{tiles_html(lang, p, keys, i) if keys else ""}</th>' for i, m in enumerate(models))
     rows = ""
     for key, vals in rest:
@@ -849,8 +854,10 @@ def spec_block(lang, p):
         cells = "".join(f'<td><bdi>{esc(tr_value(v, lang))}</bdi></td>' for v in vals)
         rows += f'<tr{" class=same" if same else ""}><th scope="row">{esc(SPEC_LABELS[key][lang])}</th>{cells}</tr>'
     note = f'<p class="same-note"><i></i>{t("same_note", lang)}</p>' if shared else ""
-    return (f'<div class="tscroll"><table class="tbl spec spec-x"><thead><tr><th scope="col"><span class="sr">{t("model_col", lang)}</span></th>{head}</tr></thead>'
-            f'<tbody>{rows}</tbody></table></div>{note}')
+    # Phones get the cards instead: a 4-6 column table would have to scroll sideways.
+    return (f'<div class="spec-desk"><div class="tscroll"><table class="tbl spec spec-x"><thead><tr><th scope="col"><span class="sr">{t("model_col", lang)}</span></th>{head}</tr></thead>'
+            f'<tbody>{rows}</tbody></table></div>{note}</div>'
+            f'<div class="spec-phone">{spec_cards(lang, p, keys, rest, shared, n)}</div>')
 
 
 # Products that link to an interactive 3D cooler under site/3d/ (hand-made pages the build leaves alone).

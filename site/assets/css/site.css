@@ -921,16 +921,16 @@ html[lang="ar"] .mname { font-family: "Urbanist", sans-serif; font-weight: 800; 
 html[lang="ar"] .sshared-h { letter-spacing: 0; font-size: .85rem; }
 .sshared dl { margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: .55rem 1.4rem; }
 .sshared dt { font-size: .8rem; color: var(--body); }
-.sshared dd { margin: 0; font-weight: 600; color: var(--ink); font-size: .95rem; text-align: start; }
+.sshared dd { margin: 0; font-weight: 600; color: var(--ink); font-size: .95rem; text-align: start; overflow-wrap: anywhere; }
 
 .scards { display: grid; gap: 1rem; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); }
 .scards-1 { --cols: 1; } .scards-2 { --cols: 2; } .scards-3 { --cols: 3; }
 .scard { display: flex; flex-direction: column; padding: 1.4rem; border-radius: var(--radius); background: var(--glass-card); border: 1px solid var(--glass-card-edge); box-shadow: var(--glass-shadow); min-width: 0; }
-.slist { margin: .6rem 0 1.2rem; display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+.slist { margin: .6rem 0 1.2rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); }
 .slist dt, .slist dd { margin: 0; padding: .6rem 0; border-top: 1px dashed var(--line); font-size: .93rem; }
 .slist dt { color: var(--body); padding-inline-end: 1rem; }
-.slist dd { color: var(--ink); font-weight: 600; text-align: end; font-variant-numeric: tabular-nums; }
-.scards-1 .slist { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto; column-gap: 0; }
+.slist dd { color: var(--ink); font-weight: 600; text-align: end; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.scards-1 .slist { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1.2fr); column-gap: 0; }
 .scards-1 .slist dd { padding-inline-end: 1.5rem; }
 .scard .btn { margin-top: auto; justify-content: center; }
 .scards-1 .scard .btn { align-self: flex-start; }
@@ -940,7 +940,7 @@ html[lang="ar"] .sshared-h { letter-spacing: 0; font-size: .85rem; }
 @media (max-width: 760px) {
   .scards { --cols: 1; }
   .scard { padding: 1.1rem; }
-  .scards-1 .slist { grid-template-columns: minmax(0, 1fr) auto; }
+  .scards-1 .slist { grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); }
   .scards-1 .slist dd { padding-inline-end: 0; }
   .scards-1 .scard .btn { align-self: stretch; }
 }
@@ -951,11 +951,11 @@ html[lang="ar"] .sshared-h { letter-spacing: 0; font-size: .85rem; }
   .stile small { font-size: .72rem; }
 }
 
-.spec-x thead th { background: linear-gradient(180deg, rgba(228, 235, 251, .85), rgba(228, 235, 251, .35)); color: var(--ink); white-space: normal; vertical-align: top; padding: 1rem .9rem; min-width: 185px; }
+.spec-x thead th { background: linear-gradient(180deg, rgba(228, 235, 251, .85), rgba(228, 235, 251, .35)); color: var(--ink); white-space: normal; vertical-align: top; padding: 1rem .75rem; min-width: 0; }
 .spec-x thead .mname { white-space: nowrap; }
 .spec-x thead th:first-child { min-width: 0; }
-.spec-x thead .mname { font-size: 1.3rem; }
-html[lang="ar"] .spec-x thead .mname { font-size: 1.2rem; }
+.spec-x thead .mname { font-size: 1.12rem; }
+html[lang="ar"] .spec-x thead .mname { font-size: 1.05rem; }
 .spec-x .malso { font-weight: 500; }
 .spec-x .stiles { grid-template-columns: minmax(0, 1fr); gap: .4rem; margin: .75rem 0 0; }
 .spec-x .stile { background: rgba(255, 255, 255, .85); border: 1px solid rgba(219, 225, 234, .8); padding: .5rem .65rem; }
@@ -967,3 +967,6 @@ html[lang="ar"] .spec-x thead .mname { font-size: 1.2rem; }
 .spec-x tr.same td { color: #8a95a8; font-weight: 500; }
 .same-note { display: flex; align-items: center; gap: .5rem; font-size: .82rem; color: var(--body); margin: .6rem 0 0; }
 .same-note i { width: 22px; height: 8px; border-radius: 99px; background: #c9d0db; display: inline-block; }
+/* 4+ models: the table needs room; below 1020px the same specs show as cards (2 across on tablets, 1 on phones). */
+.spec-phone { display: none; }
+@media (max-width: 1020px) { .spec-desk { display: none; } .spec-phone { display: block; } }
