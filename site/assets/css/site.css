@@ -882,3 +882,19 @@ input, select, textarea { background: var(--glass-card-2); border-color: var(--g
   :root { --glass-card: rgba(255, 255, 255, .9); --glass-card-2: rgba(255, 255, 255, .95); --glass-dark-2: rgba(12, 19, 32, .9); }
   .dd > .mm, .mnav-panel { background: var(--paper); }
 }
+
+/* factory-direct + custom specs (home) */
+.dcards { gap: var(--gap); }
+.dcard { display: flex; gap: 1.1rem; align-items: flex-start; }
+.dcard h3 { font-size: clamp(1.25rem, 2vw, 1.6rem); margin: .1rem 0 .35rem; }
+.dcard p { margin: 0; }
+.dcard-ico { flex: none; display: grid; place-items: center; width: 56px; height: 56px; border-radius: var(--radius-sm); background: var(--blue-soft); color: var(--blue-d); }
+.dcard-ico svg { width: 30px; height: 30px; }
+.direct .btns { margin-top: 1.5rem; }
+@media (max-width: 640px) {
+  .dcard { gap: .9rem; padding: 1.1rem; }
+  .dcard-ico { width: 46px; height: 46px; }
+  .dcard-ico svg { width: 24px; height: 24px; }
+  .dcard h3 { font-size: 1.15rem; }
+  .dcard p { font-size: .9rem; }
+}
