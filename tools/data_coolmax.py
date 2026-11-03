@@ -21,7 +21,7 @@ BRAND = {
         {"n": "24", "en": "Cooler series", "ar": "سلسلة مكيفات"},
         {"n": "50,000", "en": "m³/h top airflow", "ar": "م³/ساعة أعلى تدفق"},
         {"n": "250 m²", "en": "Cooling area per unit, up to", "ar": "مساحة تبريد للوحدة حتى"},
-        {"n": "110–415 V", "en": "1-phase and 3-phase options", "ar": "خيارات أحادية وثلاثية الطور"},
+        {"n": "110–450 V", "en": "1-phase and 3-phase options", "ar": "خيارات أحادية وثلاثية الطور"},
     ],
     "about": {
         "en": [

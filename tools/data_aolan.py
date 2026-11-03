@@ -292,9 +292,9 @@ PRODUCTS = [
         "headline": {"en": "Energy-saving 18,000 m³/h cooler with DC brushless motor", "ar": "مكيف صحراوي 18,000 م³/ساعة بمحرك DC بدون فرش موفر للطاقة"},
         "summary": {
             "en": "Aolan's newest industrial range with a DC brushless (EC) motor. The axial version moves 18,000 m³/h on just 0.65 kW, "
-            "making it a strong choice where electricity is expensive or generator capacity is limited. A centrifugal version adds 183 Pa for longer duct runs.",
+            "making it a strong choice where electricity is expensive or generator capacity is limited. The centrifugal version (1.5 kW, 183 Pa) is the quieter choice at ≤65 dBA.",
             "ar": "أحدث فئة صناعية من أولان بمحرك DC بدون فرش (EC). النسخة المحورية تعطي 18,000 م³/ساعة باستهلاك 0.65 كيلوواط فقط، "
-            "ما يجعلها خياراً مثالياً حيث الكهرباء مرتفعة التكلفة أو قدرة المولد محدودة. وتوفر نسخة الطرد المركزي ضغط 183 باسكال لمجاري الهواء الطويلة.",
+            "ما يجعلها خياراً مثالياً حيث الكهرباء مرتفعة التكلفة أو قدرة المولد محدودة. أما نسخة الطرد المركزي (1.5 كيلوواط، 183 باسكال) فهي الأهدأ بمستوى ضجيج ≤65 ديسيبل.",
         },
         "area": "100–120 m²",
         "apps": {

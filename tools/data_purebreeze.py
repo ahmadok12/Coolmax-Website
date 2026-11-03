@@ -259,8 +259,8 @@ PRODUCTS = [
         "gallery": ["purebreeze/turbo-900r"],
         "headline": {"en": "7,000 m³/h slim tower cooler", "ar": "مكيف برجي نحيف بتدفق 7,000 م³/ساعة"},
         "summary": {
-            "en": "Slim tower cooler with turbo airflow of 7,000 m³/h from 150 W and a 55 L tank. Mechanical (PB-900) or digital display with remote (PB-900R).",
-            "ar": "مكيف برجي نحيف بتدفق قوي 7,000 م³/ساعة من 150 واط وخزان 55 لتراً. تحكم ميكانيكي (PB-900) أو شاشة رقمية مع ريموت (PB-900R).",
+            "en": "Slim tower cooler with turbo airflow of 7,000 m³/h from 150 W and a 55 L tank. Mechanical (PB-900) or digital control panel (PB-900R).",
+            "ar": "مكيف برجي نحيف بتدفق قوي 7,000 م³/ساعة من 150 واط وخزان 55 لتراً. تحكم ميكانيكي (PB-900) أو لوحة تحكم رقمية (PB-900R).",
         },
         "area": "45–65 m²",
         "apps": APPS_HOME,

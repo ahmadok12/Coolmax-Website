@@ -14,7 +14,7 @@ Static, SEO-ready website for wholesale evaporative air coolers. No framework an
 
 ## 3D cooler viewer
 `site/3d/` is a hand-made interactive 3D page for the Coolmax CM-18 top-discharge cooler (three.js + `coolmax_cm18.glb`).
-The build script does not touch it. The CM-18/CM-30 product pages and the home page link to it ("Explore in 3D").
+The build script does not touch it. The CM-18 and CM-30 axial product pages link to it ("Explore in 3D"). The model has an axial fan, so the centrifugal pages do not.
 The Blender model and page source live outside this repo in the "Coolmax 3D Viewer" folder; run `make_outputs.py` there
 to refresh `site/3d/`.
 

@@ -531,7 +531,8 @@ def build_home(lang):
          [(t("capacity", lang), "25–35 kW"), ("COP", "5")], ""),
         (feat, f'<span class="chip">{t("featured_kicker", lang)}</span>', "CM-18 Centrifugal", t("cm_lead", lang),
          [(t("airflow", lang), "13,000–17,000 m³/h"), (t("coverage", lang), feat["area"])],
-         f'<a class="spot-3d" href="{href(cur, "3d/index.html")}">{t("cta_3d", lang)} {ICON["arrow"]}</a>'),
+         # no 3D link here: the 3D studio shows the axial CM-18 (CM-18TA), not this centrifugal model
+         ""),
     ]
     spot_html = ""
     for p, chip, name, lead, kv, extra in spots:
@@ -773,9 +774,7 @@ def specs_table(lang, p):
 # Products that link to an interactive 3D cooler under site/3d/ (hand-made pages the build leaves alone).
 VIEWER_3D = {
     ("coolmax", "cm-18-25-axial"): "3d/index.html",
-    ("coolmax", "cm-18-25-centrifugal"): "3d/index.html",
     ("coolmax", "cm-30-50-axial"): "3d/index.html",
-    ("coolmax", "cm-30-50-centrifugal"): "3d/index.html",
     ("purebreeze", "pb-bldc-cube"): "3d/pb-98c/index.html",
 }
 
