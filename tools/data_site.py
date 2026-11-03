@@ -165,6 +165,20 @@ T = {
         "en": ["Up to 90% cheaper to run than AC", "SASO, CE & BV approved", "Full or mixed containers"],
         "ar": ["تشغيل أوفر حتى 90% من المكيف العادي", "شهادات SASO وCE وBV", "حاويات كاملة أو موديلات مختلطة"],
     },
+    "direct_title": {"en": 'Factory-direct, [[built to your specs]]', "ar": 'من المصنع مباشرة، [[وبمواصفاتك]]'},
+    "direct_lead": {"en": 'Order straight from the factory in China, made the way your market needs.', "ar": 'اطلب مباشرة من المصنع في الصين، وبالمواصفات التي يحتاجها سوقك.'},
+    "direct_points": {
+        "en": [
+            ("Buy direct from the factory", "Order straight from the factory in China at factory prices, with no middlemen."),
+            ("Customise the specs", "Tell us the voltage, airflow, size or colour you need and the factory builds to it."),
+        ],
+        "ar": [
+            ("اشترِ مباشرة من المصنع", "اطلب مباشرة من المصنع في الصين بسعر المصنع، وبدون وسطاء."),
+            ("خصّص المواصفات", "حدد الجهد الكهربائي وقوة الهواء والحجم واللون، ويصنعه المصنع حسب طلبك."),
+        ],
+    },
+    "direct_cta": {"en": "Ask about custom specs", "ar": "اسأل عن المواصفات الخاصة"},
+    "direct_msg": {"en": "Factory-direct order with custom specs: ", "ar": "طلب مباشر من المصنع بمواصفات خاصة: "},
     "brands_title": {"en": 'Choose a [[brand]]', "ar": 'اختر [[العلامة التجارية]]'},
     "brands_lead": {"en": 'Coolmax for everyday sales, Aolan for big industrial jobs, PureBreeze for homes.', "ar": 'كولماكس للبيع اليومي، وأولان للمشاريع الصناعية الكبيرة، وبيور بريز للمنازل.'},
     "models_count": {"en": "{n} model families", "ar": "{n} فئة موديلات"},
@@ -213,6 +227,7 @@ T = {
         "en": [
             ("Do you supply Saudi Arabia, the UAE and the Gulf?", "Yes. Send your city or port and quantity, and we quote with shipping."),
             ("What is the minimum order?", "It depends on the model and stock. Send your need and we confirm the MOQ."),
+            ("Can I change the specifications?", "Yes. You buy direct from the factory in China, so voltage, airflow, size and colour can be set to your order."),
             ("How many coolers fit in a 40HQ container?", "Each product page shows it. Example: Wind Supremo, 40 assembled or 70 SKD."),
             ("Are they SASO certified?", "Aolan holds CE, SASO and BV. Ask us for your model's certificate."),
             ("Which voltage?", "Home models 220–240 V. Industrial 380–415 V 3-phase, with 1-phase up to 18,000 m³/h."),
@@ -221,6 +236,7 @@ T = {
         "ar": [
             ("هل توردون إلى السعودية والإمارات والخليج؟", "نعم. أرسل المدينة أو الميناء والكمية، ونرسل السعر مع الشحن."),
             ("ما هو الحد الأدنى للطلب؟", "يعتمد على الموديل والمخزون. أرسل طلبك ونؤكد لك الحد الأدنى."),
+            ("هل يمكن تعديل المواصفات؟", "نعم. تشتري مباشرة من المصنع في الصين، لذلك يمكن تحديد الجهد وقوة الهواء والحجم واللون حسب طلبك."),
             ("كم مكيفاً في حاوية 40HQ؟", "مذكور في كل صفحة منتج. مثال: ويند سوبريمو، 40 مجمّعة أو 70 SKD."),
             ("هل المكيفات حاصلة على SASO؟", "أولان حاصلة على CE وSASO وBV. اطلب شهادة الموديل الذي تريده."),
             ("ما هو الجهد الكهربائي؟", "المنزلية 220–240 فولت. الصناعية 380–415 فولت ثلاثي الطور، وأحادي الطور حتى 18,000 م³/ساعة."),
