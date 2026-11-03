@@ -210,7 +210,7 @@ ICON = {
 # ---------------------------------------------------------------- layout
 # Mega menu: the hero products shown under each brand (product slug, short label), and a one-line pitch per brand.
 MEGA = {
-    "coolmax": [("cm-18-25-centrifugal", "CM-18 Centrifugal"), ("cm-30-50-axial", "CM-50 Axial"), ("cm-700", "CM-700")],
+    "coolmax": [("cm-18-25-axial", "CM-18 Axial"), ("cm-30-50-axial", "CM-50 Axial"), ("cm-700", "CM-700")],
     "aolan": [("mini-chiller", "Mini Chiller"), ("wind-supremo", "Wind Supremo"), ("azl-300", "AZL-300")],
     "purebreeze": [("pb-bldc-cube", "BLDC Cube"), ("pb-28000", "PB-28000"), ("pb-900-turbo", "PB-900 Turbo")],
 }
@@ -529,10 +529,9 @@ def build_home(lang):
          f'<a class="spot-3d" href="{href(cur, "3d/pb-98c/index.html")}">{t("cta_3d", lang)} {ICON["arrow"]}</a>'),
         (chiller, f'<span class="chip chip-new">{t("new_badge", lang)}</span>', "Mini Chiller", t("new_lead", lang),
          [(t("capacity", lang), "25–35 kW"), ("COP", "5")], ""),
-        (feat, f'<span class="chip">{t("featured_kicker", lang)}</span>', "CM-18 Centrifugal", t("cm_lead", lang),
-         [(t("airflow", lang), "13,000–17,000 m³/h"), (t("coverage", lang), feat["area"])],
-         # no 3D link here: the 3D studio shows the axial CM-18 (CM-18TA), not this centrifugal model
-         ""),
+        (feat, f'<span class="chip">{t("featured_kicker", lang)}</span>', "CM-18 Axial", t("cm_lead", lang),
+         [(t("airflow", lang), "18,000–25,000 m³/h"), (t("coverage", lang), feat["area"])],
+         f'<a class="spot-3d" href="{href(cur, "3d/index.html")}">{t("cta_3d", lang)} {ICON["arrow"]}</a>'),
     ]
     spot_html = ""
     for p, chip, name, lead, kv, extra in spots:

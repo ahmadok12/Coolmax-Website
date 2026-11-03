@@ -133,9 +133,9 @@ PRODUCTS = [
         "cm-18-25-centrifugal", "industrial", "CM-18 / 22 / 25 Centrifugal", "coolmax/18tc", ["coolmax/18sc", "coolmax/18dc", "coolmax/banner-cooler"],
         ("industrial centrifugal air cooler", "مكيف صحراوي صناعي بمروحة طاردة"),
         {
-            "en": "Our best-selling Coolmax industrial cooler. Centrifugal fan with 210–255 Pa air pressure for long duct runs, 670×670 mm outlet, "
+            "en": "Centrifugal-fan industrial cooler with 210–255 Pa air pressure for long duct runs, 670×670 mm outlet, "
                   "and top, side or down discharge. Choose the new external-rotor motor for lower noise, 1-phase or 3-phase power, and a tank from 30 to 490 L.",
-            "ar": "أكثر مكيفات كولماكس الصناعية مبيعاً. مروحة طاردة بضغط هواء 210–255 باسكال تناسب مجاري الهواء الطويلة، ومخرج 670×670 مم، "
+            "ar": "مكيف صناعي بمروحة طاردة بضغط هواء 210–255 باسكال تناسب مجاري الهواء الطويلة، ومخرج 670×670 مم، "
                   "وتصريف علوي أو جانبي أو سفلي. اختر المحرك الجديد ذا الدوار الخارجي لضجيج أقل، وكهرباء أحادية أو ثلاثية الطور، وخزاناً من 30 إلى 490 لتراً.",
         },
         [["CM-18TC/SC/DC", {"en": "New · external rotor", "ar": "جديد · دوار خارجي"}], ["CM-22TC/SC/DC", {"en": "New · external rotor", "ar": "جديد · دوار خارجي"}],
@@ -155,7 +155,7 @@ PRODUCTS = [
             ("outlet", ["670×670 mm"] * 6),
             ("water", ["30/120/260/360"] * 5 + ["45/260/490"]),
         ],
-        "90–180 m²", APPS_IND, featured=True,
+        "90–180 m²", APPS_IND,
     ),
     fam(
         "cm-30-50-centrifugal", "industrial", "CM-30 / 40 / 50 Centrifugal", "coolmax/30tc", ["coolmax/50tc"],
@@ -185,8 +185,8 @@ PRODUCTS = [
         "cm-18-25-axial", "industrial", "CM-18 / 22 / 25 Axial", "coolmax/18ta", ["coolmax/18sa"],
         ("industrial axial air cooler", "مكيف صحراوي صناعي بمروحة محورية"),
         {
-            "en": "Axial-fan industrial coolers that move the most air per watt: 18,000–25,000 m³/h with top, side or down discharge and single-speed or inverter control.",
-            "ar": "مكيفات صناعية بمروحة محورية توفر أعلى تدفق هواء لكل واط: 18,000–25,000 م³/ساعة بتصريف علوي أو جانبي أو سفلي وتحكم سرعة واحدة أو إنفرتر.",
+            "en": "Our best-selling Coolmax industrial cooler. Axial fans move the most air per watt: 18,000–25,000 m³/h with top, side or down discharge and single-speed or inverter control.",
+            "ar": "أكثر مكيفات كولماكس الصناعية مبيعاً. مروحة محورية توفر أعلى تدفق هواء لكل واط: 18,000–25,000 م³/ساعة بتصريف علوي أو جانبي أو سفلي وتحكم سرعة واحدة أو إنفرتر.",
         },
         [["CM-18TA/SA/DA"], ["CM-22TA/SA/DA"], ["CM-25TA/DA"]],
         [
@@ -202,7 +202,7 @@ PRODUCTS = [
             ("outlet", ["670×670 mm", "670×670 mm", "800×800 mm"]),
             ("water", ["35/120/260/360", "35/120/260/360", "45/260/490"]),
         ],
-        "80–150 m²", APPS_IND,
+        "80–150 m²", APPS_IND, featured=True,
     ),
     fam(
         "cm-30-50-axial", "industrial", "CM-30 / 40 / 50 Axial", "coolmax/30ta", ["coolmax/30sa"],
