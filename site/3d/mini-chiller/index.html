@@ -362,15 +362,15 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
   </div>
 
   <section class="card cycles" aria-labelledby="cyc-h">
-    <h2 id="cyc-h">Rendered in Cycles</h2>
+    <h2 id="cyc-h">Rendered in Blender</h2>
     <div class="body">
       <figure class="cyc-video">
-        <video id="cyc-video" src="cooler_cycles.mp4" poster="cycles_hero.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Cycles render of the Aolan Mini Chiller running: indoor and outdoor fans spinning"></video>
-        <figcaption>The Mini Chiller running, path-traced in Blender Cycles: real motion blur on both fans and soft studio light.</figcaption>
+        <video id="cyc-video" src="cooler_cycles.mp4" poster="cycles_hero.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Blender render of the Aolan Mini Chiller running: indoor and outdoor fans spinning"></video>
+        <figcaption>The Mini Chiller running, rendered in Blender Eevee: motion blur on both fans and soft studio light.</figcaption>
       </figure>
       <div class="cyc-stills">
-        <img src="cycles_hero.jpg" alt="Cycles studio render of the Aolan Mini Chiller indoor and outdoor units, three-quarter view" loading="lazy" width="1920" height="1080">
-        <img src="cycles_cut.jpg" alt="Cycles cutaway render of the Mini Chiller showing the compressor, heat exchanger, fan, cooling pads, tank and pump" loading="lazy" width="1920" height="1080">
+        <img src="cycles_hero.jpg" alt="Studio render of the Aolan Mini Chiller indoor and outdoor units, three-quarter view" loading="lazy" width="1920" height="1080">
+        <img src="cycles_cut.jpg" alt="Cutaway render of the Mini Chiller showing the compressor, heat exchanger, fan, cooling pads, tank and pump" loading="lazy" width="1920" height="1080">
       </div>
     </div>
   </section>
@@ -1112,7 +1112,7 @@ function resize() {
   const w = stage.clientWidth, h = stage.clientHeight;
   renderer.setSize(w, h, false); camera.aspect = w / h;
   camera.setViewOffset(w, h, w < 700 ? 0 : -w * 0.04, w < 600 ? h * 0.10 : 0, w, h);
-  camera.fov = w < 600 ? 44 : 32;
+  camera.fov = w < 600 ? 37 : 32;
   camera.updateProjectionMatrix();
   linesEl.setAttribute('viewBox', `0 0 ${w} ${h}`);
 }
