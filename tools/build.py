@@ -530,7 +530,8 @@ def build_home(lang):
          [(t("airflow", lang), "15,000–18,000 m³/h"), (t("power", lang), "450–1,100 W")],
          f'<a class="spot-3d" href="{href(cur, "3d/pb-98c/index.html")}">{t("cta_3d", lang)} {ICON["arrow"]}</a>'),
         (chiller, f'<span class="chip chip-new">{t("new_badge", lang)}</span>', "Mini Chiller", t("new_lead", lang),
-         [(t("capacity", lang), "25–35 kW"), ("COP", "5")], ""),
+         [(t("capacity", lang), "25–35 kW"), ("COP", "5")],
+         f'<a class="spot-3d" href="{href(cur, "3d/mini-chiller/index.html")}">{t("cta_3d", lang)} {ICON["arrow"]}</a>'),
         (feat, f'<span class="chip">{t("featured_kicker", lang)}</span>', "CM-18 Axial", t("cm_lead", lang),
          [(t("airflow", lang), "18,000–25,000 m³/h"), (t("coverage", lang), feat["area"])],
          f'<a class="spot-3d" href="{href(cur, "3d/index.html")}">{t("cta_3d", lang)} {ICON["arrow"]}</a>'),
@@ -787,6 +788,7 @@ VIEWER_3D = {
     ("coolmax", "cm-18-25-axial"): "3d/index.html",
     ("coolmax", "cm-30-50-axial"): "3d/index.html",
     ("purebreeze", "pb-bldc-cube"): "3d/pb-98c/index.html",
+    ("aolan", "mini-chiller"): "3d/mini-chiller/index.html",
 }
 
 

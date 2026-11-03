@@ -17,6 +17,7 @@ Static, SEO-ready website for wholesale evaporative air coolers. No framework an
 The build script does not touch it. The CM-18 and CM-30 axial product pages and the home page best-seller card (CM-18 Axial) link to it ("Explore in 3D"). The model has an axial fan, so the centrifugal pages do not.
 The Blender model and page source live outside this repo in the "Coolmax 3D Viewer" folder; run `make_outputs.py` there
 to refresh `site/3d/`.
+`site/3d/mini-chiller/` (Aolan Mini Chiller, indoor + outdoor unit) was built in the cloud; its source (Blender script `mini_chiller_model.py`, `viewer.js`, `page_template.html`, `make_page.py`) is in the project files folder `mini-chiller-3d-source/` and still needs copying into the Coolmax 3D Viewer folder.
 
 ## Publish
 Currently hosted on GitHub Pages: every push to `main` runs `.github/workflows/pages.yml`, which deploys the `site/` folder

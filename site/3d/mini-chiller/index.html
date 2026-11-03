@@ -1,0 +1,1221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aolan Mini Chiller Studio</title>
+<meta name="description" content="Explore the Aolan Mini Chiller in 3D: switch it on, watch the refrigerant and water circuits work, and look inside the indoor and outdoor units.">
+<link rel="icon" href="../../assets/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: wide 3D stage on the left, a stack of operating cards on the right; one column on phones. */
+:root {
+  --navy: #0b3a6e;
+  --navy-d: #072748;
+  --cyan: #1fb3d6;
+  --gold: #c9973f;
+  --ink: #12202f;
+  --muted: #5a6b7d;
+  --line: #dfe6ee;
+  --bg: #eef3f8;
+  --card: #ffffff;
+  --stage-top: #f7fafd;
+  --stage-bot: #dde7f1;
+  --chip: #f2f6fa;
+  --on: #1fa855;
+  --off: #d63a2f;
+  --lcd-bg: #0d1f17;
+  --lcd-fg: #7cf0a6;
+  --shadow: 0 1px 2px rgba(11, 58, 110, .06), 0 8px 24px rgba(11, 58, 110, .08);
+  --font: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --radius: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #e6eef7; --muted: #93a6ba; --line: #22344a; --bg: #0a1522; --card: #102033;
+    --stage-top: #14283f; --stage-bot: #0b1828; --chip: #17293e; --navy: #6fb2f2; --navy-d: #a9d3fb;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ink: #e6eef7; --muted: #93a6ba; --line: #22344a; --bg: #0a1522; --card: #102033;
+  --stage-top: #14283f; --stage-bot: #0b1828; --chip: #17293e; --navy: #6fb2f2; --navy-d: #a9d3fb;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; margin: 0; }
+.page { max-width: 1480px; margin: 0 auto; padding-block: 18px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+header.top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.mark { width: 46px; height: 46px; border-radius: 12px; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; flex: none; }
+.mark svg { width: 28px; height: 28px; }
+.brand { min-width: 0; flex: 1 1 240px; }
+.brand h1 { font-size: 1.45rem; font-weight: 800; margin: 0; letter-spacing: -.01em; line-height: 1.15; }
+.brand p { margin: 0; color: var(--muted); font-size: .9rem; }
+.back { margin-left: auto; font-weight: 700; font-size: .88rem; color: var(--navy); text-decoration: none; white-space: nowrap; }
+.back:hover { text-decoration: underline; }
+.back + .filechip { margin-left: 0; }
+.filechip { margin-left: auto; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-family: var(--mono); font-size: .78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.filechip b { color: var(--ink); font-weight: 600; }
+
+.grid { display: grid; grid-template-columns: 236px minmax(0, 1fr) 330px; gap: 16px; align-items: start; }
+.plist h2 span { float: right; letter-spacing: 0; text-transform: none; font-weight: 600; }
+.plist ol { list-style: none; margin: 0; padding: 8px; display: grid; gap: 4px; }
+.plist li button { width: 100%; display: grid; grid-template-columns: 26px 1fr; gap: 2px 10px; align-items: center; text-align: left; border: 1px solid transparent; background: transparent; color: var(--ink); border-radius: 10px; padding: 7px 8px; cursor: pointer; font: inherit; }
+.plist li button:hover { background: var(--chip); }
+.plist li button[aria-current="true"] { background: color-mix(in srgb, var(--cyan) 16%, var(--card)); border-color: color-mix(in srgb, var(--cyan) 55%, transparent); }
+.plist .n { grid-row: span 2; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; font: 600 .74rem var(--mono); color: var(--muted); }
+.plist li button[aria-current="true"] .n { background: var(--cyan); border-color: var(--cyan); color: #fff; }
+.plist b { font-size: .9rem; font-weight: 700; line-height: 1.25; }
+.plist small { color: var(--muted); font-size: .76rem; line-height: 1.3; }
+.plist small.in { color: var(--navy); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.card h2 { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; color: var(--muted); margin: 0; padding: 14px 18px 10px; border-bottom: 1px dashed var(--line); }
+.card .body { padding: 14px 18px 16px; }
+
+/* stage */
+.stage { position: relative; height: min(640px, calc(100vh - 230px)); min-height: 460px; border-radius: var(--radius); overflow: hidden; background: radial-gradient(ellipse at 50% 35%, var(--stage-top), var(--stage-bot)); border: 1px solid var(--line); box-shadow: var(--shadow); touch-action: none; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+.stage .title { position: absolute; left: 22px; top: 18px; pointer-events: none; z-index: 3; }
+.stage .title h2 { margin: 0; font-size: 1.7rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; text-wrap: balance; }
+.stage .title p { margin: 2px 0 0; color: var(--muted); font-size: .92rem; }
+.hint { position: absolute; left: 22px; top: 92px; z-index: 3; background: #fff3b8; color: #5b4a12; padding: 10px 14px; border-radius: 4px; font-size: .82rem; line-height: 1.7; transform: rotate(-2deg); box-shadow: 0 6px 16px rgba(0,0,0,.12); pointer-events: none; transition: opacity .6s; }
+.viewmode { position: absolute; right: 16px; top: 16px; z-index: 4; width: 200px; background: color-mix(in srgb, var(--card) 88%, transparent); backdrop-filter: blur(8px); border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: grid; gap: 8px; }
+.viewmode .lab { font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.seg button { border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 10px; padding: 7px 0 5px; cursor: pointer; font: 600 .68rem var(--font); display: grid; justify-items: center; gap: 2px; }
+.seg button svg { width: 18px; height: 18px; }
+.seg button[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
+.tog { display: flex; align-items: center; justify-content: space-between; font-size: .85rem; gap: 8px; }
+.switch { position: relative; width: 36px; height: 20px; flex: none; }
+.switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; z-index: 1; }
+.switch span { position: absolute; inset: 0; background: var(--line); border-radius: 999px; transition: background .2s; }
+.switch span::after { content: ""; position: absolute; left: 3px; top: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+.switch input:checked + span { background: var(--navy); }
+.switch input:checked + span::after { transform: translateX(16px); }
+.switch input:focus-visible + span { outline: 2px solid var(--cyan); outline-offset: 2px; }
+input[type="range"] { width: 100%; accent-color: var(--navy); }
+
+.toolbar { position: absolute; left: 16px; right: 16px; bottom: 14px; z-index: 4; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; pointer-events: none; }
+.tbgroup { display: flex; background: color-mix(in srgb, var(--card) 90%, transparent); backdrop-filter: blur(8px); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; pointer-events: auto; flex-wrap: wrap; }
+.tbgroup button { border: 0; background: transparent; color: var(--ink); font: 600 .8rem var(--font); padding: 9px 12px; display: flex; align-items: center; gap: 6px; cursor: pointer; border-right: 1px solid var(--line); }
+.tbgroup button:last-child { border-right: 0; }
+.tbgroup button svg { width: 15px; height: 15px; }
+.tbgroup button[aria-pressed="true"] { background: color-mix(in srgb, var(--cyan) 18%, transparent); color: var(--navy); }
+button:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+
+/* labels */
+.labels { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.labels svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.labels line { stroke: var(--ink); stroke-opacity: .55; stroke-width: 1.2; }
+.labels circle { fill: #fff; stroke: var(--ink); stroke-width: 1.5; }
+.labels circle.sel { fill: var(--cyan); }
+.lbl { position: absolute; left: 0; top: 0; pointer-events: auto; display: flex; align-items: center; gap: 7px; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px 3px 4px; font: 600 .78rem var(--font); white-space: nowrap; cursor: pointer; box-shadow: 0 2px 8px rgba(11,58,110,.12); transition: background .15s; }
+.lbl .n { width: 19px; height: 19px; border-radius: 50%; background: var(--ink); color: var(--card); display: grid; place-items: center; font-size: .68rem; font-family: var(--mono); }
+.lbl.sel { background: color-mix(in srgb, var(--cyan) 22%, var(--card)); border-color: var(--cyan); }
+.lbl.sel .n { background: var(--cyan); color: #fff; }
+
+.loading { position: absolute; inset: 0; display: grid; place-items: center; z-index: 6; font-weight: 600; color: var(--muted); background: radial-gradient(ellipse at 50% 35%, var(--stage-top), var(--stage-bot)); transition: opacity .5s; }
+.loading.done { opacity: 0; pointer-events: none; }
+
+/* controls */
+.unit { display: grid; gap: 12px; }
+.powerrow { display: flex; align-items: center; gap: 14px; }
+.power { width: 64px; height: 64px; border-radius: 50%; border: 0; cursor: pointer; background: radial-gradient(circle at 35% 30%, #3a4a5c, #0f1924); color: #fff; display: grid; place-items: center; box-shadow: inset 0 -3px 6px rgba(0,0,0,.5), 0 4px 10px rgba(0,0,0,.25); flex: none; transition: transform .1s; }
+.power:active { transform: scale(.95); }
+.power svg { width: 26px; height: 26px; }
+.leds { display: grid; gap: 6px; font-size: .8rem; color: var(--muted); }
+.led { display: flex; align-items: center; gap: 8px; }
+.led i { width: 12px; height: 12px; border-radius: 50%; background: #3b2424; box-shadow: inset 0 1px 2px rgba(0,0,0,.6); }
+.led.red.lit i { background: var(--off); box-shadow: 0 0 8px 2px rgba(214,58,47,.7); }
+.led.green.lit i { background: var(--on); box-shadow: 0 0 8px 2px rgba(31,168,85,.7); }
+.led.green i { background: #1e3626; }
+.lcd { background: var(--lcd-bg); color: var(--lcd-fg); font-family: var(--mono); border-radius: 10px; padding: 10px 12px; display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: .82rem; letter-spacing: .05em; box-shadow: inset 0 2px 6px rgba(0,0,0,.6); min-height: 64px; transition: opacity .3s; }
+.lcd.off { opacity: .35; }
+.lcd .big { font-size: 1.35rem; font-weight: 600; }
+.bars { display: inline-flex; gap: 3px; align-items: end; }
+.bars b { width: 4px; background: currentColor; opacity: .2; border-radius: 1px; }
+.bars b.on { opacity: 1; }
+.keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.key { border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 10px; padding: 9px 4px; font: 700 .78rem var(--font); cursor: pointer; display: grid; justify-items: center; gap: 3px; }
+.key svg { width: 18px; height: 18px; }
+.key[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
+.key:disabled { opacity: .45; cursor: not-allowed; }
+
+/* details */
+.pd-head { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; }
+.badge-n { width: 50px; height: 50px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, var(--cyan), var(--navy)); color: #fff; display: grid; place-items: center; font-family: var(--mono); font-weight: 600; font-size: 1.05rem; flex: none; box-shadow: 0 4px 12px rgba(11,58,110,.25); }
+.pd-head h3 { margin: 0; font-size: 1.2rem; font-weight: 800; line-height: 1.2; }
+.pd-head p { margin: 0; color: var(--muted); font-size: .86rem; }
+dl.specs { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: .86rem; }
+dl.specs dt { color: var(--muted); }
+dl.specs dd { margin: 0; font-weight: 600; }
+.notes p { margin: 0 0 10px; }
+.notes .fun { color: var(--navy); font-weight: 600; border-top: 1px dashed var(--line); padding-top: 10px; margin: 0; font-size: .88rem; }
+.meter { display: grid; grid-template-columns: 96px 1fr 76px; gap: 10px; align-items: center; font-size: .82rem; margin-bottom: 8px; }
+.meter:last-child { margin-bottom: 0; }
+.meter .trk { height: 6px; background: var(--chip); border-radius: 99px; overflow: hidden; border: 1px solid var(--line); }
+.meter .trk i { display: block; height: 100%; width: 0; border-radius: 99px; background: var(--cyan); transition: width .15s linear; }
+.meter .v { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .78rem; }
+.meter.warm .trk i { background: var(--gold); }
+.meter.elec .trk i { background: var(--off); }
+
+.cycles .body { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.cyc-video { margin: 0; display: grid; gap: 8px; min-width: 0; }
+.cyc-video video { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; background: #1b2430; display: block; }
+.cyc-video figcaption { color: var(--muted); font-size: .84rem; }
+.cyc-stills { display: grid; gap: 14px; min-width: 0; }
+.cyc-stills img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; display: block; }
+@media (max-width: 760px) { .cycles .body { grid-template-columns: minmax(0, 1fr); } .cyc-stills { grid-template-columns: 1fr 1fr; } }
+.snaps .body { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.snaps .slot { aspect-ratio: 4 / 3; border: 1.5px dashed var(--line); border-radius: 10px; display: grid; place-items: center; color: var(--muted); font-size: .8rem; overflow: hidden; max-width: 100%; }
+.snaps .slot img { width: 100%; height: 100%; object-fit: cover; }
+.snaps h2 span { float: right; letter-spacing: 0; text-transform: none; font-weight: 600; }
+footer { color: var(--muted); font-size: .8rem; text-align: center; }
+
+/* control panel as a strip above the 3D view */
+.center { display: grid; gap: 16px; min-width: 0; }
+.ctrlbar .unit { grid-template-columns: auto minmax(250px, 1fr) minmax(0, 1.5fr); align-items: center; gap: 16px; }
+.ctrlbar .keys { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.ctrlbar .lcd { min-height: 58px; font-size: .76rem; }
+.ctrlbar #lcd-sub { white-space: nowrap; }
+@media (max-width: 1100px) {
+  .ctrlbar .unit { grid-template-columns: auto minmax(0, 1fr); }
+  .ctrlbar .keys { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  .ctrlbar .unit { grid-template-columns: minmax(0, 1fr); }
+  .ctrlbar .keys { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 1240px) {
+  .grid { grid-template-columns: minmax(0, 1fr) 330px; }
+  .plist { grid-column: 1 / -1; order: 3; }
+  .plist ol { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+}
+@media (max-width: 980px) {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .stage { height: 600px; min-height: 0; }
+  .viewmode { width: auto; left: 10px; right: 10px; top: auto; bottom: 58px; padding: 8px; gap: 6px; grid-template-columns: 1fr 1fr 1fr; font-size: .8rem; }
+  .viewmode .lab { display: none; }
+  .viewmode .seg, .viewmode input[type="range"] { grid-column: 1 / -1; }
+  .viewmode input[type="range"]:disabled { display: none; }
+  .tog { font-size: .74rem; }
+  .filechip { flex: 1 1 100%; }
+  .lbl { font-size: .7rem; padding: 2px 8px 2px 3px; }
+  .hint { display: none; }
+  .stage .title h2 { font-size: 1.3rem; }
+  .tbgroup button span { display: none; }
+  .filechip { margin-left: 0; }
+}
+@media (max-width: 600px) {
+  /* leave room above and below the 3D stage so a thumb can still scroll the page */
+  .stage { height: 64svh; min-height: 400px; max-height: 560px; }
+  .filechip { display: none; }
+  .tbgroup button { min-width: 44px; min-height: 44px; justify-content: center; }
+  .seg button { font-size: .78rem; min-height: 48px; }
+  .tog { font-size: .82rem; min-height: 40px; }
+  .back { display: inline-block; padding: 10px 0; }
+  .plist li button { min-height: 48px; }
+  .key { min-height: 52px; font-size: .82rem; }
+}
+@media (prefers-reduced-motion: reduce) { .hint, .lcd, .meter .trk i { transition: none; } }
+/* --- site integration (2026-10-31): quote buttons, phone layout. kept in the viewer source --- */
+.buy { display: flex; gap: 8px; }
+.buy a { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 16px; border-radius: 999px; font-weight: 700; font-size: .88rem; text-decoration: none; white-space: nowrap; }
+.buy .q { background: #2f5bd3; color: #fff; }
+.buy .w { background: #1fa855; color: #fff; }
+.filechip { display: none; }
+@media (max-width: 760px) {
+  .brand p { display: none; }
+  .center { display: flex; flex-direction: column; }
+  .stage { order: -1; height: 62vh; min-height: 380px; }
+  .snaps, footer { display: none; }
+  .page { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+  .buy { position: fixed; z-index: 50; inset-inline: 0; bottom: 0; padding: 9px 12px calc(9px + env(safe-area-inset-bottom)); background: rgba(22, 22, 22, .96); }
+  .buy a { flex: 1; min-height: 46px; font-size: .95rem; }
+}
+</style>
+
+<div class="page">
+  <header class="top">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32"><rect x="5" y="9" width="22" height="18" rx="3" fill="none" stroke="#0b3a6e" stroke-width="2.2"/><circle cx="16" cy="9" r="5" fill="#1fb3d6"/><path d="M10 15h12M10 19h12M10 23h12" stroke="#1fb3d6" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+    <div class="brand">
+      <h1>Aolan Mini Chiller Studio</h1>
+      <p>Switch it on and watch both units work</p>
+    </div>
+    <a class="back" id="back" href="../../en/brands/aolan/mini-chiller.html">&larr; Aolan Mini Chiller</a>
+    <div class="buy"><a class="q" id="buy-q" href="../../en/wholesale-inquiry.html?model=Mini%20Chiller&amp;brand=aolan">Get Mini Chiller price</a><a class="w" id="buy-w" href="https://wa.me/923000000000?text=Mini%20Chiller%20price" rel="noopener">WhatsApp</a></div>
+    <div class="filechip" id="filechip"><b>mini_chiller.glb</b> · loading…</div>
+  </header>
+
+  <div class="grid">
+    <nav class="card plist" aria-label="Chiller parts">
+      <h2>Chiller parts <span id="ptagged"></span></h2>
+      <ol id="plist"></ol>
+    </nav>
+    <div class="center">
+        <section class="card ctrlbar" aria-label="Control panel">
+          <h2>Control panel</h2>
+          <div class="body unit">
+            <div class="powerrow">
+              <button class="power" id="power" aria-pressed="false" aria-label="Power"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.3a8 8 0 1 0 11.4 0"/></svg></button>
+              <div class="leds">
+                <div class="led red lit" id="led-red"><i></i>Standby</div>
+                <div class="led green" id="led-green"><i></i>Running</div>
+              </div>
+            </div>
+            <div class="lcd off" id="lcd" aria-live="polite">
+              <div><span class="big" id="lcd-mode">OFF</span></div>
+              <div class="bars" id="lcd-bars" aria-hidden="true"></div>
+              <div id="lcd-sub">PRESS POWER</div>
+              <div id="lcd-timer"></div>
+            </div>
+            <div class="keys">
+              <button class="key" id="k-down" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/></svg>Speed</button>
+              <button class="key" id="k-up" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5v14"/></svg>Speed</button>
+              <button class="key" id="k-timer" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>Timer</button>
+              <button class="key" id="k-cool" aria-pressed="true" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>Cool</button>
+              <button class="key" id="k-fan" aria-pressed="false" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M12 10c0-4 1-7 4-7s2 5-2 7M14 12c4 0 7 1 7 4s-5 2-7-2M12 14c0 4-1 7-4 7s-2-5 2-7M10 12c-4 0-7-1-7-4s5-2 7 2"/></svg>Vent only</button>
+              <button class="key" id="k-sound" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>Sound</button>
+            </div>
+          </div>
+        </section>
+    <section class="stage" id="stage" aria-label="3D model of the Aolan Mini Chiller indoor and outdoor units">
+      <div class="title">
+        <h2>Mini Chiller AHK35</h2>
+        <p>Evaporative-condensed chiller · 35 kW · COP 5</p>
+      </div>
+      <div class="hint" id="hint">Drag to orbit<br>Scroll to zoom<br>Right-drag to pan<br>Click a part for details</div>
+
+      <div class="viewmode">
+        <div class="lab">View mode</div>
+        <div class="seg" role="group" aria-label="View mode">
+          <button id="vm-solid" aria-pressed="true" title="Solid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>Solid</button>
+          <button id="vm-xray" aria-pressed="false" title="X-ray"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" stroke-dasharray="3 2.5"/><circle cx="12" cy="12" r="3"/></svg>X-ray</button>
+          <button id="vm-explode" aria-pressed="false" title="Exploded"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="2" width="8" height="4" rx="1"/><rect x="8" y="10" width="8" height="4" rx="1"/><rect x="8" y="18" width="8" height="4" rx="1"/><path d="M3 8l2-2M21 8l-2-2M3 16l2 2M21 16l-2 2"/></svg>Exploded</button>
+        </div>
+        <label class="tog" for="t-labels">Labels <span class="switch"><input type="checkbox" id="t-labels" checked><span></span></span></label>
+        <label class="tog" for="t-all">All labels <span class="switch"><input type="checkbox" id="t-all"><span></span></span></label>
+        <label class="tog" for="t-cut">Cross-section <span class="switch"><input type="checkbox" id="t-cut"><span></span></span></label>
+        <input type="range" id="cut" min="-0.42" max="0.45" step="0.005" value="0.2" aria-label="Cross-section position" disabled>
+      </div>
+
+      <div class="labels" id="labels"><svg id="lines"></svg></div>
+      <div class="loading" id="loading">Unpacking the chiller…</div>
+
+      <div class="toolbar">
+        <div class="tbgroup">
+          <button id="b-orbit" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/></svg><span>Orbit</span></button>
+          <button id="b-focus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/></svg><span>Focus part</span></button>
+          <button id="b-labels" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></svg><span>Labels</span></button>
+          <button id="b-all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg><span>Show all</span></button>
+          <button id="b-reset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 15v5h-5M4 4l6 6M20 20l-6-6"/></svg><span>Reset view</span></button>
+        </div>
+        <div class="tbgroup">
+          <button id="b-snap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l2-3h4l2 3"/></svg><span>Snapshot</span></button>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <aside style="display:grid; gap:16px; min-width:0;">
+      <section class="card">
+        <h2>Part details</h2>
+        <div class="body">
+          <div class="pd-head">
+            <div class="badge-n" id="pd-n">7</div>
+            <div><h3 id="pd-name">Compressor</h3><p id="pd-tag">Heart of the cooling circuit</p></div>
+          </div>
+          <dl class="specs" id="pd-specs"></dl>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>How it works</h2>
+        <div class="body notes">
+          <p id="pd-notes"></p>
+          <p class="fun" id="pd-fun"></p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Live readout</h2>
+        <div class="body">
+          <div class="meter"><span>Fan speed</span><div class="trk"><i id="m-rpm"></i></div><span class="v" id="v-rpm">0 rpm</span></div>
+          <div class="meter"><span>Airflow</span><div class="trk"><i id="m-air"></i></div><span class="v" id="v-air">0 m³/h</span></div>
+          <div class="meter"><span>Cooling</span><div class="trk"><i id="m-cool"></i></div><span class="v" id="v-cool">0.0 kW</span></div>
+          <div class="meter"><span>Water loop</span><div class="trk"><i id="m-water"></i></div><span class="v" id="v-water">0.0 m³/h</span></div>
+          <div class="meter"><span>Air out</span><div class="trk"><i id="m-temp"></i></div><span class="v" id="v-temp">32.0 °C</span></div>
+          <div class="meter warm"><span>Water out</span><div class="trk"><i id="m-wt"></i></div><span class="v" id="v-wt">32.0 °C</span></div>
+          <div class="meter elec"><span>Power draw</span><div class="trk"><i id="m-watt"></i></div><span class="v" id="v-watt">0.00 kW</span></div>
+          <div class="meter elec"><span>Current</span><div class="trk"><i id="m-amp"></i></div><span class="v" id="v-amp">0.0 A</span></div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <section class="card cycles" aria-labelledby="cyc-h">
+    <h2 id="cyc-h">Rendered in Blender</h2>
+    <div class="body">
+      <figure class="cyc-video">
+        <video id="cyc-video" src="cooler_cycles.mp4" poster="cycles_hero.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Blender render of the Aolan Mini Chiller running: indoor and outdoor fans spinning"></video>
+        <figcaption>The Mini Chiller running, rendered in Blender Eevee: motion blur on both fans and soft studio light.</figcaption>
+      </figure>
+      <div class="cyc-stills">
+        <img src="cycles_hero.jpg" alt="Studio render of the Aolan Mini Chiller indoor and outdoor units, three-quarter view" loading="lazy" width="1920" height="1080">
+        <img src="cycles_cut.jpg" alt="Cutaway render of the Mini Chiller showing the compressor, heat exchanger, fan, cooling pads, tank and pump" loading="lazy" width="1920" height="1080">
+      </div>
+    </div>
+  </section>
+
+  <section class="card snaps">
+    <h2>Snapshots <span id="snapcount">0 taken</span></h2>
+    <div class="body" id="snaps">
+      <div class="slot">Use Snapshot to save a view</div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+    </div>
+  </section>
+
+  <footer>Typical AHK35-ZLB-3B figures: 35 kW cooling, 7,000 m³/h, 5.9 kW on 380 V 3-phase, 4.5 m³/h water flow, room air at 32 °C. The inside layout is illustrative.</footer>
+<script>
+// Arabic visitors (saved choice or arriving from an Arabic page): Arabic buttons and links back to the Arabic site.
+(function () {
+  var ar = false;
+  try { ar = localStorage.getItem('cm_lang') === 'ar'; } catch (e) {}
+  if (!ar && /\/ar\//.test(document.referrer)) ar = true;
+  if (!ar) return;
+  var back = document.getElementById('back'), q = document.getElementById('buy-q'), w = document.getElementById('buy-w');
+  back.href = '../../ar/brands/aolan/mini-chiller.html'; back.textContent = 'ميني تشيلر أولان \u2190'; back.dir = 'rtl';
+  q.href = '../../ar/wholesale-inquiry.html?model=Mini%20Chiller&brand=aolan'; q.textContent = 'اطلب سعر ميني تشيلر';
+  w.textContent = 'واتساب'; w.href = 'https://wa.me/923000000000?text=' + encodeURIComponent('سعر ميني تشيلر');
+})();
+</script>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const $ = (id) => document.getElementById(id);
+const stage = $('stage');
+const GLB = 'mini_chiller.glb';
+// pipe centre-lines exported from the Blender model (glTF coordinates, metres), used for the flow animation
+const PATHS = {"r_hot":[[0.42,0.56,-0.05],[0.42,0.7,-0.05],[0.69,0.7,-0.05],[0.69,0.7,0.07],[0.69,0.6,0.07]],"r_liq":[[0.77,0.3,0.07],[0.77,0.22,0.07],[0.86,0.22,0.07],[0.86,0.22,-0.17],[0.86,1.0,-0.17],[0.89,1.1,-0.17]],"r_cold":[[0.23,1.1,-0.17],[0.23,0.75,-0.17],[0.26,0.62,-0.15],[0.26,0.4,-0.15]],"r_cold2":[[0.26,0.16,-0.15],[0.26,0.13,-0.15],[0.42,0.13,-0.15],[0.42,0.2,-0.12]],"w_in":[[0.14,0.26,-0.1],[0.56,0.26,-0.1],[0.56,0.26,0.1],[0.69,0.26,0.1],[0.69,0.3,0.1],[0.69,0.3,0.07]],"w_out":[[0.77,0.6,0.07],[0.77,0.6,0.12],[0.77,0.4,0.12],[0.56,0.4,0.12],[0.56,0.4,-0.1],[0.14,0.4,-0.1]],"ring":[[-0.26,1.21,-0.3],[-0.86,1.21,-0.3],[-0.86,1.21,0.3],[-0.26,1.21,0.3],[-0.26,1.21,-0.3]],"w_tank":[[-0.36,0.38,0.22],[-0.36,0.2,0.22],[-0.45,0.2,0.22],[-0.45,0.2,0.05]],"w_sup":[[-0.49,0.26,0.05],[-0.49,0.31,0.05],[-0.3,0.31,0.05],[-0.3,0.31,-0.1],[-0.3,0.26,-0.1],[-0.14,0.26,-0.1]],"w_rise":[[-0.14,0.4,-0.1],[-0.34,0.4,-0.1],[-0.34,1.14,-0.1],[-0.34,1.14,-0.3],[-0.26,1.14,-0.3],[-0.26,1.21,-0.3]],"w_link_sup":[[-0.115,0.26,-0.1],[0.115,0.26,-0.1]],"w_link_ret":[[0.115,0.4,-0.1],[-0.115,0.4,-0.1]]};
+
+// ---------- parts ----------
+// Indoor unit centre x = +0.56, outdoor unit centre x = -0.56; units face +z.
+const PARTS = [
+  { id: 'front', nodes: ['In_Front_Panel'], name: 'Front panel', tag: 'Gloss black with blue light arc', anchor: [0.27, 1.76, 0.30], key: true, ex: [0, 0, 0.42],
+    specs: [['Unit', 'Indoor'], ['Finish', 'Gloss black, blue LED arc'], ['Size', '800 × 530 × 1,860 mm']],
+    notes: 'The black front carries the air outlet, the display and the blue light arc. It comes off as one piece for cleaning and service.',
+    fun: 'The light arc and the strip below it glow when the unit is running, so you can see from across a workshop that it is on.' },
+  { id: 'louvers', nodes: ['In_Louvers'], name: 'Air outlet louvres', tag: 'Long air throw', anchor: [0.79, 1.62, 0.29], key: true, ex: [0, 0, 0.62],
+    specs: [['Airflow', 'Up to 7,000 m³/h'], ['Blades', 'Two banks, angled down'], ['Throw', 'Long throw for big halls']],
+    notes: 'Cold air leaves through two banks of louvres. They are angled slightly down and spread the air so it reaches the far side of a workshop or warehouse.',
+    fun: 'Cold air is heavier than warm air, so aiming it slightly down and letting it fall spreads it over the floor where people work.' },
+  { id: 'display', nodes: ['In_Display'], name: 'Smart display', tag: 'Panel, remote and app', anchor: [0.56, 1.10, 0.31], key: true, ex: [0, 0, 0.42],
+    specs: [['Control', 'Manual, remote and mobile app'], ['Modes', 'Cool and vent'], ['Alarms', 'Fault codes on screen']],
+    notes: 'The display shows the mode, speed and any fault code. The same functions are on the remote and in the mobile app. Try the control panel on this page.',
+    fun: 'Double-click the display on the model to switch the chiller on or off.' },
+  { id: 'cabinet', nodes: ['In_Cabinet'], name: 'Indoor cabinet', tag: 'Silver metal body', anchor: [0.96, 1.30, 0.05], key: false, ex: [0, 0, 0],
+    specs: [['Size', '800 × 530 × 1,860 mm'], ['Weight', '180 kg (AHK35-ZLB)'], ['Intake', 'Perforated back and sides']],
+    notes: 'The tall cabinet is the indoor unit. Room air is drawn in through the perforated back and sides, cooled on the coil and blown out of the front.',
+    fun: 'The whole refrigeration circuit is sealed inside this cabinet at the factory, so installers never touch refrigerant.' },
+  { id: 'fan', nodes: ['In_Fan'], name: 'Indoor fan', tag: 'Axial fan, 3 speeds', anchor: [0.68, 1.62, 0.12], internal: true, ex: [0, 0, 0.22],
+    specs: [['Type', 'Axial'], ['Speeds', '3'], ['Airflow', '4,800 to 7,000 m³/h']],
+    notes: 'The fan pulls room air through the evaporator coil and pushes it out through the louvres. Change its speed with the + and − keys.',
+    fun: 'Turning the fan down raises the cooling per cubic metre: slower air spends longer on the cold coil and leaves colder.' },
+  { id: 'coil', nodes: ['In_Coil'], name: 'Evaporator coil', tag: 'Cools the room air', anchor: [0.93, 1.62, -0.17], internal: true, ex: [0, 0, -0.32],
+    specs: [['Type', 'Copper tube, aluminium fins'], ['Role', 'Evaporator'], ['Drain', 'Stainless drip tray below']],
+    notes: 'Cold refrigerant boils inside the copper tubes and soaks heat out of the air passing between the fins. This is where the room air is actually cooled.',
+    fun: 'Water from the air condenses on the cold fins and drips into the tray, so the chiller also dries the air like an air conditioner.' },
+  { id: 'comp', nodes: ['In_Compressor'], name: 'Compressor', tag: 'Heart of the cooling circuit', anchor: [0.42, 0.40, 0.06], internal: true, ex: [0, 0, 0.36],
+    specs: [['Type', 'Hermetic scroll'], ['Supply', '380 V, 50 Hz, 3-phase'], ['Start', 'Delayed start protects it']],
+    notes: 'The compressor squeezes the refrigerant gas, making it hot. That heat is then dumped into water instead of outside air, which is why the system is so efficient.',
+    fun: 'When you switch to Cool the compressor waits a few seconds before starting. Real units do this to protect it from rapid on/off cycling.' },
+  { id: 'phe', nodes: ['In_PHE'], name: 'Plate heat exchanger', tag: 'Water-cooled condenser', anchor: [0.73, 0.50, 0.05], internal: true, ex: [0.28, 0, 0.28],
+    specs: [['Type', 'Brazed stainless plates'], ['Role', 'Condenser'], ['Water flow', '4.5 m³/h']],
+    notes: 'Hot refrigerant from the compressor flows on one side of thin steel plates and water flows on the other. The water carries the heat away to the outdoor unit.',
+    fun: 'Water carries heat about 4 times better than air, so this small block does the job of a big air-cooled condenser.' },
+  { id: 'ref', nodes: ['In_Refrigerant'], name: 'Refrigerant lines', tag: 'Sealed copper circuit', anchor: [0.86, 0.85, 0.17], internal: true, ex: [0, 0, 0],
+    specs: [['Pipe', 'Copper'], ['Valve', 'Expansion valve'], ['Circuit', 'Factory sealed']],
+    notes: 'Copper pipes link the compressor, condenser, expansion valve and coil in a closed loop. Red dots show hot gas, amber shows liquid and blue shows cold gas returning to the compressor.',
+    fun: 'Because the refrigerant never leaves the indoor unit, installation needs no copper piping or gas charging on site.' },
+  { id: 'ctrl', nodes: ['In_Control'], name: 'Control board', tag: 'Smart controller', anchor: [0.78, 0.86, -0.165], internal: true, ex: [0.3, 0, 0],
+    specs: [['Functions', 'On/off, cool/vent, speed, timer'], ['Protection', 'Fault alarms'], ['Self-clean', 'Automatic']],
+    notes: 'The controller runs the fan, compressor and pump in the right order and watches the sensors. It raises a fault code if something is wrong.',
+    fun: 'The automatic self-cleaning cycle helps keep the coil and water circuit clean with little maintenance.' },
+  { id: 'inwater', nodes: ['In_Water_Lines'], name: 'Indoor water lines', tag: 'To and from the condenser', anchor: [0.56, 0.26, -0.10], internal: true, ex: [0, 0, 0],
+    specs: [['Pipe', 'PVC'], ['Ports', 'Inlet and outlet on the side']],
+    notes: 'Cool water from the outdoor unit enters the side of the cabinet, picks up heat in the plate heat exchanger and leaves warmer.',
+    fun: 'Watch the dots: blue water goes in, orange water comes out about 8 °C warmer.' },
+  { id: 'ocab', nodes: ['Out_Cabinet'], name: 'Outdoor cabinet', tag: 'White weatherproof body', anchor: [-0.76, 0.30, 0.40], key: false, ex: [0, 0, 0],
+    specs: [['Size', '800 × 800 × 1,400 mm'], ['Weight', '110 kg'], ['Ports', 'Water in and out, drain']],
+    notes: 'The outdoor unit sits outside the building. It cools the water coming back from the indoor unit using evaporation, the same way a cooling tower does.',
+    fun: 'It needs no refrigerant at all: just water, pads, a pump and a fan.' },
+  { id: 'panels', nodes: ['Out_Panels'], name: 'Slotted side panels', tag: 'Outside air enters on 4 sides', anchor: [-0.82, 0.98, 0.40], key: true, ex: 'radial:0.32',
+    specs: [['Sides', '4'], ['Pattern', 'Staggered slots'], ['Finish', 'White']],
+    notes: 'Outside air is pulled in through the slotted panels on all four sides and passes through the wet pads behind them.',
+    fun: 'Four intake sides give a lot of pad area in a small footprint, so the unit can stay compact.' },
+  { id: 'guard', nodes: ['Out_Fan_Guard'], name: 'Top fan guard', tag: 'Hot, humid air leaves here', anchor: [-0.29, 1.40, 0], key: true, ex: [0, 0.38, 0],
+    specs: [['Discharge', 'Vertical, upwards'], ['Guard', 'Steel wire']],
+    notes: 'Warm, moist air is blown straight up out of the top, away from the intake sides, so it is not pulled back in.',
+    fun: 'Blowing the exhaust upward is why the outdoor unit can stand close to a wall.' },
+  { id: 'ofan', nodes: ['Out_Fan'], name: 'Outdoor fan', tag: 'Pulls air through the pads', anchor: [-0.41, 1.33, 0.0], internal: true, ex: [0, 0.58, 0],
+    specs: [['Type', 'Axial, top discharge'], ['Runs', 'With the compressor']],
+    notes: 'The top fan sucks outside air through the wet pads and blows it out of the top. It runs whenever the compressor is cooling.',
+    fun: 'In Fan-only mode the outdoor unit rests completely: no fan, no pump.' },
+  { id: 'pads', nodes: ['Out_Pads'], name: 'Wet cooling pads', tag: 'Evaporation cools the water', anchor: [-0.89, 0.85, 0.10], key: true, ex: 'radial:0.16',
+    specs: [['Type', 'Cross-fluted cellulose'], ['Sides', '4'], ['Thickness', '100 mm']],
+    notes: 'Warm water from the indoor unit runs down the pads while outside air passes through them. Part of the water evaporates, which cools the rest before it falls into the tank.',
+    fun: 'This is why the system reaches COP 5: cooling water by evaporation is far cheaper than cooling a condenser with hot outside air.' },
+  { id: 'dist', nodes: ['Out_Distributor'], name: 'Water distributor', tag: 'Spreads water over the pads', anchor: [-0.86, 1.21, 0.0], internal: true, ex: [0, 0.22, 0],
+    specs: [['Pipe', 'PVC ring'], ['Feed', 'Warm return water']],
+    notes: 'The ring on top of the pads lets the warm return water out evenly along all four sides, so every pad stays wet.',
+    fun: 'Even wetting matters: a dry stripe lets air slip through without cooling the water.' },
+  { id: 'tank', nodes: ['Out_Tank', 'Water'], name: 'Water tank', tag: 'Collects the cooled water', anchor: [-0.71, 0.53, 0.10], internal: true, ex: [0, 0, 0],
+    specs: [['Position', 'Below the pads'], ['Level', 'Float valve keeps it topped up']],
+    notes: 'Cooled water drips off the pads into the tank. A float valve tops it up from the mains to replace what evaporates.',
+    fun: 'Only the evaporated water is used up; everything else goes round and round.' },
+  { id: 'pump', nodes: ['Out_Pump'], name: 'Circulation pump', tag: 'Moves 4.5 m³/h of water', anchor: [-0.61, 0.20, 0.05], internal: true, ex: [0, 0, 0.48],
+    specs: [['Flow', '4.5 m³/h (AHK35)'], ['Type', 'Centrifugal, stainless'], ['Runs', 'In Cool mode']],
+    notes: 'The pump draws cooled water from the tank and sends it through the PVC pipe to the indoor unit, keeping the loop moving.',
+    fun: 'The pump starts before the compressor so there is always water flowing when the compressor begins to make heat.' },
+  { id: 'pipes', nodes: ['Water_Pipes'], name: 'PVC water pipes', tag: 'The only link between units', anchor: [0.0, 0.40, -0.10], key: true, ex: [0, 0, 0],
+    specs: [['Material', 'PVC'], ['Lines', 'Supply and return'], ['Valve', 'Isolation valve']],
+    notes: 'Two ordinary PVC water pipes connect the units: cool water goes to the indoor unit and warm water comes back. No copper, no refrigerant, no gas charging.',
+    fun: 'Using water pipes instead of refrigerant lines lets the outdoor unit sit much further away, and any plumber can install it.' },
+];
+PARTS.forEach((p, i) => p.num = i + 1);
+
+// ---------- renderer ----------
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.AgXToneMapping; // same colour pipeline as the Blender/Cycles renders
+renderer.toneMappingExposure = 1.25;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.localClippingEnabled = true;
+stage.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+
+const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 60);
+const HOME_POS = new THREE.Vector3(2.75, 2.15, 5.9);
+const HOME_TGT = new THREE.Vector3(0.12, 0.86, 0);
+camera.position.copy(HOME_POS);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.copy(HOME_TGT);
+controls.enableDamping = true;
+controls.minDistance = 1.2; controls.maxDistance = 11;
+controls.maxPolarAngle = Math.PI * 0.52;
+controls.autoRotateSpeed = 1.0;
+
+const sun = new THREE.DirectionalLight(0xffffff, 1.6);
+sun.position.set(2.5, 5.0, 3.0);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.left = -2.2; sun.shadow.camera.right = 2.2; sun.shadow.camera.top = 2.2; sun.shadow.camera.bottom = -2.2;
+sun.shadow.radius = 6; sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.02;
+scene.add(sun);
+scene.add(new THREE.HemisphereLight(0xeaf4ff, 0x8a8f95, 0.35));
+
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), new THREE.ShadowMaterial({ opacity: 0.13 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
+scene.add(ground);
+
+function dotTexture() {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const g = c.getContext('2d'); const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,.6)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+}
+const DOT = dotTexture();
+
+// ---------- state ----------
+const S = {
+  power: false, speed: 3, cool: true, timer: 0, timerEnd: 0,
+  omega: 0, omegaOut: 0, comp: 0, compAt: 0, pumpFlow: 0, fill: 0, wet: 0,
+  tAir: 32, tWater: 32, watts: 0, q: 0,
+  view: 'solid', explode: 0, explodeTarget: 0,
+  labels: true, allLabels: false, cut: false, selected: null,
+};
+const SPEEDS = 3;
+const SPEED_NAME = ['', 'LOW', 'MED', 'HIGH'];
+const RPM = [0, 720, 880, 1050];
+const AIRFLOW = [0, 4800, 5900, 7000];                    // m³/h (AHK35)
+const OMEGA = RPM.map((r) => 2 * Math.PI * 3.0 * r / 1050); // on-screen spin, proportional to the real rpm
+const W_MAX = OMEGA[SPEEDS];
+const W_OUT = 2 * Math.PI * 2.4;
+const Q_MAX = 35, P_MAX = 6.3;                            // kW cooling, kW electrical (catalogue)
+const T_ROOM = 32, T_WS = 30;                             // room air, water from the outdoor unit (°C)
+const COMP_DELAY = 3;                                     // s, compressor start delay
+const VOLTS = 380, PF = 0.85;
+
+let model, fanIn, fanOut, padMats = [], ledMats = [], screenMat, meshes = [], nodeByName = {};
+const partOfMesh = new Map();
+const baseMat = new Map();
+const SHELL = ['In_Cabinet', 'In_Front_Panel', 'In_Louvers', 'In_Display', 'Out_Cabinet', 'Out_Panels', 'Out_Fan_Guard'];
+
+// ---------- load ----------
+function onModel(gltf) {
+  model = gltf.scene;
+  let verts = 0; const mats = new Set();
+  model.traverse((o) => {
+    if (o.name) nodeByName[o.name] = o;
+    if (o.isMesh) {
+      o.castShadow = true; o.receiveShadow = true;
+      o.material = o.material.clone();
+      if (o.material.map) o.material.map.anisotropy = 4;
+      if (o.name.startsWith('Water_Surface')) { o.material.transparent = true; o.material.opacity = 0.6; o.material.transmission = 0; o.material.color.set(0x5aa8e0); o.material.roughness = 0.05; o.castShadow = false; }
+      baseMat.set(o, { emissive: o.material.emissive.clone(), ei: o.material.emissiveIntensity, opacity: o.material.opacity, transparent: o.material.transparent });
+      meshes.push(o); mats.add(o.material.name);
+      verts += o.geometry.attributes.position.count;
+    }
+  });
+  scene.add(model);
+  fanIn = nodeByName['Indoor_Fan']; fanOut = nodeByName['Outdoor_Fan'];
+  model.traverse((o) => {
+    if (!o.isMesh) return;
+    if (/^LED_|^In_Logo/.test(o.name) || /^LED_/.test(o.parent?.name || '')) ledMats.push(o.material);
+    if (o.name.startsWith('Display_Screen')) screenMat = o.material;
+  });
+  nodeByName['Out_Pads'].traverse((o) => { if (o.isMesh) padMats.push(o.material); });
+
+  for (const p of PARTS) {
+    p.objs = p.nodes.map((n) => nodeByName[n]).filter(Boolean);
+    p.objs.forEach((o) => o.traverse((m) => { if (m.isMesh) partOfMesh.set(m, p); }));
+    p.anchorV = new THREE.Vector3(...p.anchor);
+    p.moving = [];
+    if (typeof p.ex === 'string') {
+      // radial: push each child away from the part's own centre (the outdoor unit is not at the origin)
+      const d = parseFloat(p.ex.split(':')[1]);
+      const pc = new THREE.Box3().setFromObject(p.objs[0]).getCenter(new THREE.Vector3());
+      p.objs.forEach((g) => g.children.forEach((c) => {
+        const ctr = new THREE.Box3().setFromObject(c).getCenter(new THREE.Vector3());
+        const dir = new THREE.Vector3(ctr.x - pc.x, 0, ctr.z - pc.z).normalize();
+        p.moving.push({ o: c, base: c.position.clone(), off: dir.multiplyScalar(d) });
+      }));
+      const a = new THREE.Vector3(p.anchor[0] - pc.x, 0, p.anchor[2] - pc.z);
+      const ax = Math.abs(a.x) > Math.abs(a.z) ? new THREE.Vector3(Math.sign(a.x), 0, 0) : new THREE.Vector3(0, 0, Math.sign(a.z));
+      p.anchorOff = ax.multiplyScalar(d);
+    } else {
+      const off = new THREE.Vector3(...p.ex);
+      p.objs.forEach((o) => p.moving.push({ o, base: o.position.clone(), off }));
+      p.anchorOff = off.clone();
+    }
+  }
+  $('filechip').innerHTML = `<b>${GLB}</b> · ${verts.toLocaleString()} vertices · ${mats.size} PBR materials`;
+  buildLabels();
+  select(PARTS.find((p) => p.id === 'comp'));
+  refreshUI();
+  $('loading').classList.add('done');
+}
+const onModelError = (e) => { $('loading').textContent = `The 3D model could not load. Check that ${GLB} sits next to this page.`; console.error(e); };
+new GLTFLoader().load(GLB, onModel, undefined, onModelError);
+
+// ---------- particles ----------
+const FX = [];
+function streaks(n, color, size) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 6), 3));
+  g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n * 8), 4));
+  const lm = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false });
+  const l = new THREE.LineSegments(g, lm); l.frustumCulled = false; l.renderOrder = 5; scene.add(l); FX.push(l);
+  const pm = new THREE.PointsMaterial({ size, map: DOT, vertexColors: true, transparent: true, depthWrite: false, sizeAttenuation: true });
+  const p = new THREE.Points(g, pm); p.frustumCulled = false; p.renderOrder = 6; scene.add(p); FX.push(p);
+  return { g, n, color: new THREE.Color(color) };
+}
+function points(n, color, size) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+  g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n * 4), 4));
+  const m = new THREE.PointsMaterial({ size, map: DOT, vertexColors: true, transparent: true, depthWrite: false, sizeAttenuation: true });
+  const pts = new THREE.Points(g, m); pts.frustumCulled = false; pts.renderOrder = 6; scene.add(pts); FX.push(pts);
+  return { g, n, color: new THREE.Color(color), m };
+}
+const kill = (arr, i, w) => arr.fill(0, i * w, i * w + w);
+
+// 1. indoor exhaust: cold air thrown forward and slightly down out of the louvres
+const EX = streaks(700, 0x2f8fea, 0.055);
+const ex = Array.from({ length: EX.n }, () => ({ x: 0, y: 0, z: 0, dx: 0, dy: 0, dz: 0, d: 0, alive: false, k: Math.random() }));
+// 2. intake streams: room air into the back/right of the indoor unit, outside air into the 4 outdoor sides
+const XI = 0.56, XO = -0.56;
+const INTAKES = [
+  { c: [XI, 0], n: [0, -1], face: 0.265, half: 0.30, y0: 1.06, y1: 1.78, unit: 'in' },
+  { c: [XI, 0], n: [1, 0], face: 0.40, half: 0.19, y0: 1.04, y1: 1.76, unit: 'in' },
+  { c: [XO, 0], n: [0, 1], face: 0.40, half: 0.33, y0: 0.62, y1: 1.14, unit: 'out' },
+  { c: [XO, 0], n: [0, -1], face: 0.40, half: 0.33, y0: 0.62, y1: 1.14, unit: 'out' },
+  { c: [XO, 0], n: [-1, 0], face: 0.40, half: 0.33, y0: 0.62, y1: 1.14, unit: 'out' },
+  { c: [XO, 0], n: [1, 0], face: 0.40, half: 0.33, y0: 0.62, y1: 1.14, unit: 'out' },
+];
+const IN = streaks(720, 0xf07a2a, 0.04);
+const inn = Array.from({ length: IN.n }, (_, i) => ({ s: INTAKES[i % INTAKES.length], u: 0, y: 0, d: 0, alive: false }));
+// 3. outdoor exhaust: warm, humid air blown straight up out of the top fan
+const UP = streaks(380, 0xe8603c, 0.05);
+const up = Array.from({ length: UP.n }, () => ({ x: 0, y: 0, z: 0, vx: 0, vz: 0, d: 0, alive: false }));
+// 4. water running down the four pads
+const PADS = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+const WA = points(900, 0x1a74d8, 0.026);
+const wa = Array.from({ length: WA.n }, (_, i) => ({ s: PADS[i % 4], u: 0, y: 0, v: 0, ph: 0, off: 0.37, alive: false }));
+
+// 5. flow inside pipes: dots that follow the exported centre-lines
+function mkPath(lists) {
+  const pts = []; lists.forEach((k) => (PATHS[k] || []).forEach((p) => pts.push(new THREE.Vector3(...p))));
+  const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + pts[i].distanceTo(pts[i - 1]));
+  return { pts, cum, len: cum[cum.length - 1] || 1 };
+}
+function pathAt(P, u, out) {
+  const s = u * P.len; let i = 1;
+  while (i < P.cum.length - 1 && P.cum[i] < s) i++;
+  const a = P.pts[i - 1], b = P.pts[i], seg = (P.cum[i] - P.cum[i - 1]) || 1;
+  return out.copy(a).lerp(b, Math.min(1, Math.max(0, (s - P.cum[i - 1]) / seg)));
+}
+const FLOWS = [
+  { key: 'water', path: mkPath(['w_tank', 'w_sup', 'w_link_sup', 'w_in']), color: 0x1f7fe0, speed: 0.38, size: 0.085 },
+  { key: 'water', path: mkPath(['w_out', 'w_link_ret', 'w_rise']), color: 0xf08a2a, speed: 0.38, size: 0.085 },
+  { key: 'ring', path: mkPath(['ring']), color: 0xf08a2a, speed: 0.30, size: 0.08 },
+  { key: 'ref', path: mkPath(['r_hot']), color: 0xe0352b, speed: 0.45, size: 0.065 },
+  { key: 'ref', path: mkPath(['r_liq']), color: 0xf2a541, speed: 0.30, size: 0.06 },
+  { key: 'ref', path: mkPath(['r_cold', 'r_cold2']), color: 0x2ec5ff, speed: 0.50, size: 0.065 },
+];
+FLOWS.forEach((f) => {
+  f.n = Math.max(4, Math.round(f.path.len / 0.055));
+  f.sys = points(f.n, f.color, f.size);
+  f.sys.m.depthTest = true;
+  f.phase = 0;
+});
+
+const tmp3 = new THREE.Vector3(), tmp4 = new THREE.Vector3();
+function updateParticles(dt) {
+  const s = S.omega / W_MAX;        // indoor airflow fraction
+  const so = S.omegaOut / W_OUT;    // outdoor fan fraction
+  // indoor exhaust
+  {
+    const pos = EX.g.attributes.position.array, col = EX.g.attributes.color.array, c = EX.color;
+    const spawn = s * 700 * dt; let made = 0;
+    const cold = 0.35 + 0.65 * Math.min(1, S.comp);
+    for (let i = 0; i < EX.n; i++) {
+      const q = ex[i];
+      if (!q.alive) {
+        if (made < spawn) {
+          q.alive = true; made++;
+          q.x = XI + (Math.random() - 0.5) * 0.54; q.y = 1.28 + Math.random() * 0.44; q.z = 0.30; q.d = 0;
+          const yaw = (Math.random() + Math.random() - 1) * Math.PI / 5;
+          const pitch = -0.18 + (Math.random() - 0.5) * 0.22;
+          q.dx = Math.sin(yaw) * Math.cos(pitch); q.dy = Math.sin(pitch); q.dz = Math.cos(yaw) * Math.cos(pitch);
+        } else { kill(col, i, 8); continue; }
+      }
+      const v = (0.8 + 3.0 * s) * (0.8 + 0.4 * q.k) * Math.max(0.35, 1 - q.d / 3.2);
+      q.x += q.dx * v * dt; q.y += q.dy * v * dt; q.z += q.dz * v * dt; q.d += v * dt;
+      if (q.d > 2.6 || s < 0.02 || q.y < 0.05) { q.alive = false; kill(col, i, 8); continue; }
+      const tl = 0.05 + 0.12 * s;
+      pos.set([q.x, q.y, q.z, q.x - q.dx * tl, q.y - q.dy * tl, q.z - q.dz * tl], i * 6);
+      const fade = Math.min(1, q.d / 0.12) * Math.max(0, 1 - q.d / 2.6) * (0.4 + 0.6 * s) * cold;
+      col.set([c.r, c.g, c.b, 0.7 * fade, c.r, c.g, c.b, 0.05 * fade], i * 8);
+    }
+    EX.g.attributes.position.needsUpdate = true; EX.g.attributes.color.needsUpdate = true;
+  }
+  // intakes
+  {
+    const pos = IN.g.attributes.position.array, col = IN.g.attributes.color.array, c = IN.color;
+    let made = 0; const spawn = (s * 260 + so * 420) * dt;
+    for (let i = 0; i < IN.n; i++) {
+      const q = inn[i], sd = q.s, f = sd.unit === 'in' ? s : so;
+      if (!q.alive) {
+        if (made < spawn && f > 0.02) { q.alive = true; made++; q.d = 0.55 + Math.random() * 0.5; q.u = (Math.random() - 0.5) * sd.half * 3.2; q.y = sd.y0 - 0.25 + Math.random() * (sd.y1 - sd.y0 + 0.5); }
+        else { kill(col, i, 8); continue; }
+      }
+      const v = 0.3 + 1.3 * f;
+      const k = Math.max(0, q.d) / 1.0;
+      q.d -= v * dt;
+      q.u += (Math.max(-sd.half, Math.min(sd.half, q.u)) - q.u) * Math.min(1, 2.4 * dt * (1 - k));
+      q.y += (Math.max(sd.y0, Math.min(sd.y1, q.y)) - q.y) * Math.min(1, 2.4 * dt * (1 - k));
+      if (q.d <= 0.005 || f < 0.02) { q.alive = false; kill(col, i, 8); continue; }
+      const [nx, nz] = sd.n, tx = -nz, tz = nx;
+      const r1 = sd.face + q.d, r2 = sd.face + q.d + 0.06 + 0.08 * f;
+      pos.set([sd.c[0] + nx * r1 + tx * q.u, q.y, sd.c[1] + nz * r1 + tz * q.u, sd.c[0] + nx * r2 + tx * q.u, q.y, sd.c[1] + nz * r2 + tz * q.u], i * 6);
+      const fade = Math.min(1, (1.05 - q.d) / 0.3) * Math.min(1, q.d / 0.1) * (0.35 + 0.65 * f);
+      col.set([c.r, c.g, c.b, 0.7 * fade, c.r, c.g, c.b, 0.06 * fade], i * 8);
+    }
+    IN.g.attributes.position.needsUpdate = true; IN.g.attributes.color.needsUpdate = true;
+  }
+  // outdoor exhaust (up)
+  {
+    const pos = UP.g.attributes.position.array, col = UP.g.attributes.color.array, c = UP.color;
+    const spawn = so * 300 * dt; let made = 0;
+    for (let i = 0; i < UP.n; i++) {
+      const q = up[i];
+      if (!q.alive) {
+        if (made < spawn) {
+          q.alive = true; made++;
+          const a = Math.random() * 6.283, r = 0.04 + Math.sqrt(Math.random()) * 0.2;
+          q.x = XO + Math.cos(a) * r; q.z = Math.sin(a) * r; q.y = 1.42; q.d = 0;
+          q.vx = Math.cos(a) * r * 0.5; q.vz = Math.sin(a) * r * 0.5;
+        } else { kill(col, i, 8); continue; }
+      }
+      const v = (0.7 + 1.8 * so) * Math.max(0.3, 1 - q.d / 2);
+      q.y += v * dt; q.x += q.vx * v * dt; q.z += q.vz * v * dt; q.d += v * dt;
+      if (q.d > 1.4 || so < 0.02) { q.alive = false; kill(col, i, 8); continue; }
+      const tl = 0.06 + 0.1 * so;
+      pos.set([q.x, q.y, q.z, q.x - q.vx * tl, q.y - tl, q.z - q.vz * tl], i * 6);
+      const fade = Math.min(1, q.d / 0.1) * Math.max(0, 1 - q.d / 1.4) * (0.4 + 0.6 * so);
+      col.set([c.r, c.g, c.b, 0.5 * fade, c.r, c.g, c.b, 0.03 * fade], i * 8);
+    }
+    UP.g.attributes.position.needsUpdate = true; UP.g.attributes.color.needsUpdate = true;
+  }
+  // water trickling down the pads
+  {
+    const pos = WA.g.attributes.position.array, col = WA.g.attributes.color.array, c = WA.color;
+    const flow = S.pumpFlow * S.fill;
+    const spawn = flow * 650 * dt; let made = 0;
+    for (let i = 0; i < WA.n; i++) {
+      const q = wa[i];
+      if (!q.alive) {
+        if (made < spawn) { q.alive = true; q.u = (Math.random() - 0.5) * 0.66; q.y = 1.18; q.v = 0.10 + Math.random() * 0.12; q.ph = Math.random() * 6.28; q.off = Math.random() < 0.65 ? 0.372 : 0.28; made++; }
+        else { kill(col, i, 4); continue; }
+      }
+      q.v = Math.min(q.v + 0.25 * dt, 0.42); q.y -= q.v * dt;
+      if (q.y < 0.58) { q.alive = false; kill(col, i, 4); continue; }
+      const wob = Math.sin(q.ph + q.y * 38) * 0.004, [nx, nz] = q.s;
+      pos.set([XO + nx * q.off - nz * (q.u + wob), q.y, nz * q.off + nx * (q.u + wob)], i * 3);
+      // warm (orange) at the top, cooled (blue) by the time it reaches the tank
+      const k = Math.min(1, (1.18 - q.y) / 0.5);
+      col.set([0.94 + (c.r - 0.94) * k, 0.54 + (c.g - 0.54) * k, 0.16 + (c.b - 0.16) * k, 0.85 * Math.min(1, (1.18 - q.y) / 0.04 + 0.3)], i * 4);
+    }
+    WA.g.attributes.position.needsUpdate = true; WA.g.attributes.color.needsUpdate = true;
+  }
+  // pipe flows
+  for (const f of FLOWS) {
+    const lvl = f.key === 'ref' ? S.comp : (f.key === 'ring' ? S.pumpFlow * S.fill : S.pumpFlow);
+    f.phase = (f.phase + f.speed * lvl * dt / f.path.len) % 1;
+    const pos = f.sys.g.attributes.position.array, col = f.sys.g.attributes.color.array, c = f.sys.color;
+    const a = Math.min(1, lvl * 1.4) * 0.95;
+    for (let i = 0; i < f.n; i++) {
+      pathAt(f.path, (i / f.n + f.phase) % 1, tmp3);
+      // lift each dot onto the side of the pipe facing the camera so the pipe itself does not hide it
+      tmp4.copy(camera.position).sub(tmp3).normalize(); tmp3.addScaledVector(tmp4, f.key === 'ref' ? 0.016 : 0.028);
+      pos.set([tmp3.x, tmp3.y, tmp3.z], i * 3);
+      col.set([c.r, c.g, c.b, a], i * 4);
+    }
+    f.sys.g.attributes.position.needsUpdate = true; f.sys.g.attributes.color.needsUpdate = true;
+  }
+}
+
+// ---------- audio (synthesised, no files) ----------
+const A = { ctx: null, muted: false };
+function noiseBuffer(ctx, secs, pink) {
+  const b = ctx.createBuffer(1, ctx.sampleRate * secs, ctx.sampleRate); const d = b.getChannelData(0);
+  let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+  for (let i = 0; i < d.length; i++) {
+    const w = Math.random() * 2 - 1;
+    if (!pink) { d[i] = w; continue; }
+    b0 = 0.99886 * b0 + w * 0.0555179; b1 = 0.99332 * b1 + w * 0.0750759; b2 = 0.969 * b2 + w * 0.153852;
+    b3 = 0.8665 * b3 + w * 0.3104856; b4 = 0.55 * b4 + w * 0.5329522; b5 = -0.7616 * b5 - w * 0.016898;
+    d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11; b6 = w * 0.115926;
+  }
+  return b;
+}
+function initAudio() {
+  if (A.ctx) { if (A.ctx.state === 'suspended') A.ctx.resume(); return; }
+  const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+  const ctx = A.ctx = new AC();
+  A.master = ctx.createGain(); A.master.gain.value = A.muted ? 0 : 0.7; A.master.connect(ctx.destination);
+  const pink = noiseBuffer(ctx, 3, true), white = noiseBuffer(ctx, 2, false);
+  const n1 = ctx.createBufferSource(); n1.buffer = pink; n1.loop = true;
+  A.airBP = ctx.createBiquadFilter(); A.airBP.type = 'bandpass'; A.airBP.Q.value = 0.6; A.airBP.frequency.value = 400;
+  A.airLP = ctx.createBiquadFilter(); A.airLP.type = 'lowpass'; A.airLP.frequency.value = 2500;
+  A.air = ctx.createGain(); A.air.gain.value = 0;
+  n1.connect(A.airBP).connect(A.airLP).connect(A.air).connect(A.master); n1.start();
+  A.lfo = ctx.createOscillator(); A.lfo.frequency.value = 10; A.lfoG = ctx.createGain(); A.lfoG.gain.value = 0;
+  A.lfo.connect(A.lfoG).connect(A.air.gain); A.lfo.start();
+  // compressor hum: 50 Hz mains harmonics, follows compressor load
+  A.hum = ctx.createGain(); A.hum.gain.value = 0;
+  const hLP = ctx.createBiquadFilter(); hLP.type = 'lowpass'; hLP.frequency.value = 420;
+  [100, 150, 200, 300].forEach((f, i) => { const o = ctx.createOscillator(); o.type = i ? 'sine' : 'triangle'; o.frequency.value = f; const g = ctx.createGain(); g.gain.value = [1, 0.5, 0.35, 0.15][i]; o.connect(g).connect(hLP); o.start(); });
+  hLP.connect(A.hum).connect(A.master);
+  A.whine = ctx.createOscillator(); A.whine.type = 'sine'; A.whine.frequency.value = 200;
+  A.whineG = ctx.createGain(); A.whineG.gain.value = 0; A.whine.connect(A.whineG).connect(A.master); A.whine.start();
+  const n2 = ctx.createBufferSource(); n2.buffer = white; n2.loop = true;
+  const wHP = ctx.createBiquadFilter(); wHP.type = 'bandpass'; wHP.frequency.value = 3200; wHP.Q.value = 0.9;
+  A.water = ctx.createGain(); A.water.gain.value = 0; n2.connect(wHP).connect(A.water).connect(A.master); n2.start();
+  const po = ctx.createOscillator(); po.type = 'sawtooth'; po.frequency.value = 100;
+  const pLP = ctx.createBiquadFilter(); pLP.type = 'lowpass'; pLP.frequency.value = 260;
+  A.pump = ctx.createGain(); A.pump.gain.value = 0; po.connect(pLP).connect(A.pump).connect(A.master); po.start();
+}
+function beep(seq) {
+  if (!A.ctx || A.muted) return;
+  const ctx = A.ctx; let t = ctx.currentTime + 0.01;
+  for (const [f, d] of seq) {
+    const o = ctx.createOscillator(); o.type = 'square'; o.frequency.value = f;
+    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 5000;
+    const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.09, t + 0.005); g.gain.setValueAtTime(0.09, t + d - 0.02); g.gain.linearRampToValueAtTime(0, t + d);
+    o.connect(lp).connect(g).connect(ctx.destination); o.start(t); o.stop(t + d + 0.02); t += d + 0.05;
+  }
+}
+const BEEP = { on: [[2400, 0.09], [3200, 0.16]], off: [[3200, 0.09], [2000, 0.2]], key: [[2800, 0.08]], max: [[2800, 0.06], [2800, 0.06]] };
+function updateAudio() {
+  if (!A.ctx) return;
+  const t = A.ctx.currentTime, s = S.omega / W_MAX, so = S.omegaOut / W_OUT;
+  const st = (p, v) => p.setTargetAtTime(v, t, 0.08);
+  st(A.air.gain, 0.28 * Math.pow(s, 1.4) + 0.08 * so);
+  st(A.lfoG.gain, 0.05 * s);
+  A.lfo.frequency.setTargetAtTime(Math.max(1, (S.omega / 6.283) * 5), t, 0.1);
+  st(A.airBP.frequency, 260 + 900 * s);
+  st(A.hum.gain, 0.035 * S.comp + (S.power ? 0.004 : 0));
+  A.whine.frequency.setTargetAtTime(120 + 260 * s, t, 0.1);
+  st(A.whineG.gain, 0.01 * s);
+  st(A.water.gain, 0.03 * S.pumpFlow * S.fill * (0.6 + 0.4 * Math.random()));
+  st(A.pump.gain, 0.02 * S.pumpFlow);
+}
+
+// ---------- controls UI ----------
+$('lcd-bars').innerHTML = Array.from({ length: SPEEDS }, (_, i) => `<b style="height:${7 + i * 5}px; width:7px"></b>`).join('');
+function compState() {
+  if (!S.power || !S.cool) return 'COMP OFF';
+  const wait = Math.ceil(S.compAt - performance.now() / 1000);
+  return wait > 0 ? `COMP START ${wait}` : 'COMP ON';
+}
+function refreshUI() {
+  const on = S.power;
+  $('power').setAttribute('aria-pressed', on);
+  $('led-red').classList.toggle('lit', !on);
+  $('led-green').classList.toggle('lit', on);
+  ['k-down', 'k-up', 'k-timer', 'k-cool', 'k-fan'].forEach((k) => $(k).disabled = !on);
+  $('k-cool').setAttribute('aria-pressed', S.cool); $('k-fan').setAttribute('aria-pressed', !S.cool);
+  $('lcd').classList.toggle('off', !on);
+  $('lcd-mode').textContent = on ? (S.cool ? 'COOL' : 'VENT') : 'OFF';
+  [...$('lcd-bars').children].forEach((b, i) => b.classList.toggle('on', on && i < S.speed));
+  $('lcd-sub').textContent = on ? `${SPEED_NAME[S.speed]} · ${compState()}` : 'STANDBY';
+}
+function startComp() { S.compAt = performance.now() / 1000 + COMP_DELAY; }
+function setPower(v) {
+  initAudio();
+  S.power = v;
+  if (!v) S.timer = 0; else startComp();
+  beep(v ? BEEP.on : BEEP.off);
+  refreshUI(); updateTimerText();
+}
+$('power').addEventListener('click', () => setPower(!S.power));
+$('k-up').addEventListener('click', () => { if (S.speed < SPEEDS) { S.speed++; beep(BEEP.key); } else beep(BEEP.max); refreshUI(); });
+$('k-down').addEventListener('click', () => { if (S.speed > 1) { S.speed--; beep(BEEP.key); } else beep(BEEP.max); refreshUI(); });
+$('k-cool').addEventListener('click', () => { if (!S.cool) startComp(); S.cool = true; beep(BEEP.key); refreshUI(); });
+$('k-fan').addEventListener('click', () => { S.cool = false; beep(BEEP.key); refreshUI(); });
+const TIMERS = [0, 1, 2, 4, 8];
+$('k-timer').addEventListener('click', () => {
+  S.timer = TIMERS[(TIMERS.indexOf(S.timer) + 1) % TIMERS.length];
+  S.timerEnd = performance.now() + S.timer * 3600e3;
+  beep(BEEP.key); updateTimerText();
+});
+$('k-sound').addEventListener('click', () => {
+  A.muted = !A.muted; $('k-sound').setAttribute('aria-pressed', !A.muted);
+  if (A.master) A.master.gain.setTargetAtTime(A.muted ? 0 : 0.7, A.ctx.currentTime, 0.05);
+  if (!A.muted) { initAudio(); beep(BEEP.key); }
+});
+function updateTimerText() {
+  if (!S.power || !S.timer) { $('lcd-timer').textContent = S.power ? 'TIMER OFF' : ''; return; }
+  const ms = Math.max(0, S.timerEnd - performance.now());
+  const h = Math.floor(ms / 3600e3), m = Math.floor(ms / 60e3) % 60, s = Math.floor(ms / 1e3) % 60;
+  $('lcd-timer').textContent = `OFF IN ${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  if (ms <= 0) setPower(false);
+}
+setInterval(() => { updateTimerText(); if (S.power) $('lcd-sub').textContent = `${SPEED_NAME[S.speed]} · ${compState()}`; }, 500);
+document.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); setPower(!S.power); } });
+
+// ---------- view modes ----------
+function setView(v) {
+  const was = S.view;
+  S.view = v;
+  if ((v === 'explode') !== (was === 'explode')) {
+    const k = v === 'explode' ? 1.3 : 1 / 1.3;
+    const tgt = v === 'explode' ? new THREE.Vector3(0, 0.95, 0.1) : HOME_TGT.clone();
+    const dir = camera.position.clone().sub(controls.target);
+    flyTo(tgt.clone().add(dir.multiplyScalar(k)), tgt);
+  }
+  ['solid', 'xray', 'explode'].forEach((k) => $('vm-' + k).setAttribute('aria-pressed', k === v));
+  S.explodeTarget = v === 'explode' ? 1 : 0;
+  applyMaterials();
+}
+['solid', 'xray', 'explode'].forEach((k) => $('vm-' + k).addEventListener('click', () => setView(k)));
+
+const clipPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), parseFloat($('cut').value));
+function isShell(m) { let o = m; while (o) { if (SHELL.includes(o.name)) return true; o = o.parent; } return false; }
+function applyMaterials() {
+  for (const m of meshes) {
+    const b = baseMat.get(m), mat = m.material;
+    const xr = S.view === 'xray';
+    const shell = isShell(m);
+    const pad = padMats.includes(mat);
+    if (xr && shell) { mat.transparent = true; mat.opacity = 0.12; mat.depthWrite = false; }
+    else if (xr && pad) { mat.transparent = true; mat.opacity = 0.5; mat.depthWrite = false; }
+    else { mat.transparent = b.transparent; mat.opacity = b.opacity; mat.depthWrite = !b.transparent; }
+    mat.clippingPlanes = S.cut ? [clipPlane] : null;
+    mat.side = S.cut ? THREE.DoubleSide : THREE.FrontSide;
+    if (!ledMats.includes(mat) && mat !== screenMat) {
+      const sel = S.selected && partOfMesh.get(m) === S.selected;
+      if (sel) { mat.emissive.set(0x2f5bd3); mat.emissiveIntensity = 0.3; }
+      else { mat.emissive.copy(b.emissive); mat.emissiveIntensity = b.ei; }
+    }
+    mat.needsUpdate = true;
+  }
+  FLOWS.forEach((f) => { f.sys.m.clippingPlanes = S.cut ? [clipPlane] : null; });
+}
+$('t-cut').addEventListener('change', (e) => { S.cut = e.target.checked; $('cut').disabled = !S.cut; applyMaterials(); });
+$('cut').addEventListener('input', (e) => { clipPlane.constant = parseFloat(e.target.value); });
+
+// ---------- labels ----------
+const labelsEl = $('labels'), linesEl = $('lines');
+function buildLabels() {
+  $('ptagged').textContent = `${PARTS.length} tagged`;
+  $('plist').innerHTML = PARTS.map((p) => `<li><button data-id="${p.id}"><span class="n">${p.num}</span><b>${p.name}</b><small${p.internal ? ' class="in"' : ''}>${p.internal ? 'Inside · ' : ''}${p.tag}</small></button></li>`).join('');
+  $('plist').querySelectorAll('button').forEach((b) => b.addEventListener('click', () => select(PARTS.find((p) => p.id === b.dataset.id))));
+  for (const p of PARTS) {
+    const b = document.createElement('button');
+    b.className = 'lbl'; b.innerHTML = `<span class="n">${p.num}</span>${p.name}`;
+    b.addEventListener('click', () => select(p));
+    labelsEl.appendChild(b); p.el = b;
+    const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line'); linesEl.appendChild(ln); p.ln = ln;
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('r', 3.5); linesEl.appendChild(c); p.dot = c;
+  }
+}
+function syncLabelButtons() {
+  $('t-labels').checked = S.labels; $('t-all').checked = S.allLabels;
+  $('b-labels').setAttribute('aria-pressed', S.labels);
+  $('b-all').setAttribute('aria-pressed', S.allLabels);
+}
+$('t-labels').addEventListener('change', (e) => { S.labels = e.target.checked; syncLabelButtons(); });
+$('t-all').addEventListener('change', (e) => { S.allLabels = e.target.checked; if (S.allLabels) S.labels = true; syncLabelButtons(); });
+$('b-labels').addEventListener('click', () => { S.labels = !S.labels; syncLabelButtons(); });
+$('b-all').addEventListener('click', () => { S.allLabels = !S.allLabels; if (S.allLabels) S.labels = true; syncLabelButtons(); });
+
+const tmpV = new THREE.Vector3();
+function layoutLabels() {
+  if (!PARTS[0].el) return;
+  const w = stage.clientWidth, h = stage.clientHeight;
+  const insideVisible = S.view !== 'solid' || S.cut;
+  const left = [], right = [];
+  const cx = (() => { tmpV.copy(controls.target).project(camera); return (tmpV.x * 0.5 + 0.5) * w; })();
+  for (const p of PARTS) {
+    const show = S.labels && (S.allLabels || p === S.selected || (p.key && !p.internal) || (p.internal && insideVisible));
+    p.vis = show;
+    if (!show) { p.el.hidden = true; p.ln.style.display = 'none'; p.dot.style.display = 'none'; continue; }
+    tmpV.copy(p.anchorV).addScaledVector(p.anchorOff, S.explode).project(camera);
+    if (tmpV.z > 1) { p.vis = false; p.el.hidden = true; p.ln.style.display = 'none'; p.dot.style.display = 'none'; continue; }
+    p.sx = (tmpV.x * 0.5 + 0.5) * w; p.sy = (-tmpV.y * 0.5 + 0.5) * h;
+    (p.sx < cx ? left : right).push(p);
+  }
+  const place = (arr, isLeft) => {
+    arr.sort((a, b) => a.sy - b.sy);
+    let last = -1e9;
+    const H = 28;
+    for (const p of arr) {
+      p.el.hidden = false;
+      const lw = p.el.offsetWidth;
+      let y = Math.max(p.sy - H / 2, last + H + 4);
+      y = Math.min(Math.max(y, 70), h - 70);
+      last = y;
+      let x = isLeft ? p.sx - 70 - lw : p.sx + 70;
+      x = Math.max(8, Math.min(x, w - lw - 8));
+      p.el.style.transform = `translate(${x}px, ${y}px)`;
+      p.el.classList.toggle('sel', p === S.selected);
+      const ex = isLeft ? x + lw : x, ey = y + H / 2 - 2;
+      p.ln.setAttribute('x1', ex); p.ln.setAttribute('y1', ey); p.ln.setAttribute('x2', p.sx); p.ln.setAttribute('y2', p.sy);
+      p.dot.setAttribute('cx', p.sx); p.dot.setAttribute('cy', p.sy);
+      p.dot.classList.toggle('sel', p === S.selected);
+      p.ln.style.display = ''; p.dot.style.display = '';
+    }
+  };
+  place(left, true); place(right, false);
+}
+
+// ---------- selection + details ----------
+function select(p) {
+  S.selected = p;
+  $('pd-n').textContent = p.num; $('pd-name').textContent = p.name; $('pd-tag').textContent = p.tag;
+  $('pd-specs').innerHTML = p.specs.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+  $('pd-notes').textContent = p.notes; $('pd-fun').textContent = p.fun;
+  $('plist').querySelectorAll('button').forEach((b) => b.setAttribute('aria-current', b.dataset.id === p.id));
+  applyMaterials();
+}
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+let down = null;
+function pick(e) {
+  const r = renderer.domElement.getBoundingClientRect();
+  ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ptr, camera);
+  const hits = ray.intersectObjects(meshes, false).filter((hh) => {
+    if (S.cut && clipPlane.distanceToPoint(hh.point) < 0) return false;
+    if (S.view === 'xray' && isShell(hh.object)) return false;
+    return partOfMesh.has(hh.object);
+  });
+  return hits.length ? partOfMesh.get(hits[0].object) : null;
+}
+renderer.domElement.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY]; hideHint(); });
+renderer.domElement.addEventListener('pointerup', (e) => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
+  const p = pick(e); if (p) select(p);
+});
+renderer.domElement.addEventListener('dblclick', (e) => { const p = pick(e); if (p && p.id === 'display') setPower(!S.power); });
+function hideHint() { $('hint').style.opacity = 0; }
+controls.addEventListener('start', hideHint);
+
+// ---------- camera moves ----------
+let tween = null;
+function flyTo(pos, tgt, ms = 900) {
+  tween = { p0: camera.position.clone(), t0: controls.target.clone(), p1: pos, t1: tgt, s: performance.now(), ms };
+}
+$('b-reset').addEventListener('click', () => { flyTo(HOME_POS.clone(), HOME_TGT.clone()); });
+$('b-focus').addEventListener('click', () => {
+  const p = S.selected; if (!p) return;
+  const tgt = p.anchorV.clone().addScaledVector(p.anchorOff, S.explode);
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  flyTo(tgt.clone().addScaledVector(dir, 1.6), tgt);
+});
+$('b-orbit').addEventListener('click', () => { controls.autoRotate = !controls.autoRotate; $('b-orbit').setAttribute('aria-pressed', controls.autoRotate); });
+
+// ---------- snapshots ----------
+let snapN = 0;
+$('b-snap').addEventListener('click', () => {
+  renderer.render(scene, camera);
+  const url = renderer.domElement.toDataURL('image/png');
+  const slots = $('snaps');
+  const slot = document.createElement('div'); slot.className = 'slot';
+  const img = new Image(); img.src = url; img.alt = `Snapshot ${snapN + 1} of the Mini Chiller`; slot.appendChild(img);
+  slots.prepend(slot);
+  const empty = [...slots.children].filter((c) => !c.querySelector('img'));
+  if (empty.length) empty[empty.length - 1].remove();
+  while (slots.children.length > 8) slots.lastElementChild.remove();
+  snapN++; $('snapcount').textContent = `${snapN} taken · right-click to save`;
+  beep(BEEP.key);
+});
+
+// ---------- resize ----------
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h;
+  camera.setViewOffset(w, h, w < 700 ? 0 : -w * 0.04, w < 600 ? h * 0.10 : 0, w, h);
+  camera.fov = w < 600 ? 37 : 32;
+  camera.updateProjectionMatrix();
+  linesEl.setAttribute('viewBox', `0 0 ${w} ${h}`);
+}
+new ResizeObserver(resize).observe(stage); resize();
+
+// ---------- simulation loop ----------
+const clock = new THREE.Clock();
+const ease = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const padDry = new THREE.Color(1, 1, 1), padWet = new THREE.Color(0.55, 0.45, 0.38), tmpC = new THREE.Color();
+const LED_ON = new THREE.Color(0x2f6bff);
+const lag = (x, target, tau, dt) => x + (target - x) * (1 - Math.exp(-dt / tau));
+
+function step(dt) {
+  const now = performance.now() / 1000;
+  // indoor fan: spin-up under motor torque, slower coast-down
+  const target = S.power ? OMEGA[S.speed] : 0;
+  const tau = target > S.omega ? 1.4 : 3.2;
+  S.omega = lag(S.omega, target, tau, dt);
+  if (S.omega < 0.01 && !S.power) S.omega = 0;
+  if (fanIn) fanIn.rotateY(-S.omega * dt);
+
+  // cool mode: pump starts at once, compressor after the start delay, outdoor fan follows the compressor
+  const coolOn = S.power && S.cool;
+  S.pumpFlow = lag(S.pumpFlow, coolOn ? 1 : 0, 0.5, dt);
+  S.fill = Math.min(1, Math.max(0, S.fill + (coolOn ? dt / 2 : -dt / 3)));
+  const compOn = coolOn && now >= S.compAt;
+  S.comp = lag(S.comp, compOn ? 1 : 0, compOn ? 2.5 : 0.8, dt);
+  if (S.comp < 0.002 && !compOn) S.comp = 0;
+  const outT = S.comp > 0.05 ? W_OUT : 0;
+  S.omegaOut = lag(S.omegaOut, outT, outT > S.omegaOut ? 1.6 : 3.5, dt);
+  if (fanOut) fanOut.rotateY(S.omegaOut * dt);
+  const s = S.omega / W_MAX, so = S.omegaOut / W_OUT;
+  S.wet += S.pumpFlow * S.fill > 0.05 ? (1 - S.wet) * (1 - Math.exp(-dt / 5)) : -S.wet * (1 - Math.exp(-dt * (0.02 + 0.05 * so)));
+
+  // cooling output and temperatures (AHK35: 35 kW at 7,000 m³/h)
+  const airflow = s * AIRFLOW[SPEEDS];                       // m³/h
+  const qTarget = Q_MAX * S.comp * (0.86 + 0.14 * s) * (0.75 + 0.25 * S.wet);
+  S.q = lag(S.q, qTarget, 1.5, dt);
+  const tAirT = airflow > 300 ? Math.max(12, T_ROOM - S.q / (1.2 * airflow / 3600)) : T_ROOM;
+  S.tAir = lag(S.tAir, tAirT, 3, dt);
+  const pComp = 4.6 * S.comp * (0.92 + 0.08 * s);
+  const flowKg = 1.25 * S.pumpFlow;                          // 4.5 m³/h of water
+  const tWT = flowKg > 0.1 ? T_WS + 2 * (1 - S.wet) + (S.q + pComp) / (flowKg * 4.18) : T_ROOM;
+  S.tWater = lag(S.tWater, Math.min(48, tWT), 4, dt);
+
+  // electricity: compressor + indoor fan + outdoor fan + pump, 5.9 kW at full load
+  const pW = (pComp + 0.55 * s * s * s + 0.37 * so * so * so + 0.37 * S.pumpFlow + (S.power ? 0.012 : 0)) * 1000;
+  S.watts = lag(S.watts, pW, 0.3, dt);
+
+  // compressor vibration (added after the explode positions below)
+  if (padMats.length) {
+    tmpC.copy(padDry).lerp(padWet, S.wet);
+    padMats.forEach((m) => { m.color.copy(tmpC); m.roughness = 0.85 - 0.4 * S.wet; });
+  }
+  ledMats.forEach((m) => { m.emissive.copy(LED_ON); m.emissiveIntensity = S.power ? 5 : 0.25; });
+  if (screenMat) screenMat.emissiveIntensity = S.power ? 1.8 : 0.08;
+
+  // exploded view
+  S.explode = lag(S.explode, S.explodeTarget, 0.25, dt);
+  const e = ease(Math.min(1, Math.max(0, S.explode)));
+  for (const p of PARTS) if (p.moving) for (const m of p.moving) m.o.position.copy(m.base).addScaledVector(m.off, e);
+  const comp = nodeByName['In_Compressor'];
+  if (comp) { comp.position.x += Math.sin(now * 310) * 0.0007 * S.comp; comp.position.z += Math.cos(now * 270) * 0.0005 * S.comp; }
+  const water = nodeByName['Water'];
+  if (water) water.position.y = Math.sin(now * 3.8) * 0.002 * S.pumpFlow;
+
+  const showFx = S.explode < 0.08;
+  FX.forEach((o) => o.visible = showFx);
+  if (!reduce) updateParticles(dt);
+  updateAudio();
+
+  // readouts
+  const rpm = Math.round(s * RPM[SPEEDS]);
+  $('m-rpm').style.width = `${s * 100}%`; $('v-rpm').textContent = `${rpm} rpm`;
+  $('m-air').style.width = `${s * 100}%`; $('v-air').textContent = `${(Math.round(airflow / 50) * 50).toLocaleString()} m³/h`;
+  $('m-cool').style.width = `${(S.q / Q_MAX) * 100}%`; $('v-cool').textContent = `${S.q.toFixed(1)} kW`;
+  $('m-water').style.width = `${S.pumpFlow * 100}%`; $('v-water').textContent = `${(S.pumpFlow * 4.5).toFixed(1)} m³/h`;
+  $('m-temp').style.width = `${((S.tAir - 10) / 25) * 100}%`; $('v-temp').textContent = `${S.tAir.toFixed(1)} °C`;
+  $('m-wt').style.width = `${((S.tWater - 25) / 20) * 100}%`; $('v-wt').textContent = `${S.tWater.toFixed(1)} °C`;
+  const amps = S.watts / (Math.sqrt(3) * VOLTS * PF);
+  $('m-watt').style.width = `${Math.min(100, (S.watts / (P_MAX * 1000)) * 100)}%`; $('v-watt').textContent = `${(S.watts / 1000).toFixed(2)} kW`;
+  $('m-amp').style.width = `${Math.min(100, (amps / 12) * 100)}%`; $('v-amp').textContent = `${amps.toFixed(1)} A`;
+}
+
+function frame() {
+  requestAnimationFrame(frame);
+  const dt = Math.min(clock.getDelta(), 0.05);
+  if (tween) {
+    const k = Math.min(1, (performance.now() - tween.s) / tween.ms), q = ease(k);
+    camera.position.lerpVectors(tween.p0, tween.p1, q); controls.target.lerpVectors(tween.t0, tween.t1, q);
+    if (k >= 1) tween = null;
+  }
+  controls.update();
+  step(dt);
+  renderer.render(scene, camera);
+  layoutLabels();
+}
+refreshUI(); syncLabelButtons();
+frame();
+// test hook for automated screenshots
+window.__chiller = { S, setPower, setView, select: (id) => select(PARTS.find((p) => p.id === id)), camera, controls, flyTo };
+
+</script>
+
+</html>
