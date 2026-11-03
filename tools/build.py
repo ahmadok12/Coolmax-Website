@@ -767,7 +767,20 @@ def specs_table(lang, p):
             "<tr>" + "".join(f'<{"th scope=row" if i == 0 else "td"}>{esc(tr_value(v, lang))}</{"th" if i == 0 else "td"}>' for i, v in enumerate(r)) + "</tr>"
             for r in tb["rows"]
         )
-        return f'<div class="tscroll"><table class="tbl tbl-center"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>'
+        # Phones and tablets get one card per model instead of a 13-column table that scrolls sideways.
+        tk = [c for c in ("airflow", "pressure", "inputw") if c in tb["cols"]]
+        cards = ""
+        for r in tb["rows"]:
+            d = dict(zip(tb["cols"], r))
+            tiles = "".join(
+                f'<div class="stile">{num_html(d[c], (re.search(r"\((.*?)\)", SPEC_LABELS[c]["en"]) or [None, ""])[1])}'
+                f'<small>{esc(re.sub(r"\s*\(.*?\)", "", SPEC_LABELS[c][lang]))}</small></div>' for c in tk)
+            lst = "".join(f'<dt>{esc(SPEC_LABELS[c][lang])}</dt><dd><bdi>{esc(tr_value(d[c], lang))}</bdi></dd>'
+                          for c in tb["cols"][1:] if c not in tk)
+            cards += (f'<article class="scard"><header><h3 class="mname" dir="ltr">{esc(r[0])}</h3></header>'
+                      f'<div class="stiles">{tiles}</div><dl class="slist">{lst}</dl></article>')
+        return (f'<div class="spec-desk"><div class="tscroll"><table class="tbl tbl-center tbl-wide"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div></div>'
+                f'<div class="spec-phone"><div class="scards scards-many">{cards}</div></div>')
     return spec_block(lang, p)
 
 
@@ -916,8 +929,14 @@ def build_product(lang, p):
         cmp_ = p["comparison"]
         head = "".join(f"<th>{esc(c)}</th>" for c in cmp_["cols"][lang])
         rows = "".join("<tr>" + "".join(f'<{"th scope=row" if i == 0 else "td"}{" class=hl" if i == 3 else ""}>{esc(v)}</{"th" if i == 0 else "td"}>' for i, v in enumerate(r)) + "</tr>" for r in cmp_["rows"][lang])
+        # Phones: one card per topic, the three options listed under it, the Mini Chiller (last column) highlighted.
+        cols_ = cmp_["cols"][lang]
+        cmp_cards = '<div class="cmp-phone">' + "".join(
+            f'<div class="cmp-card"><h3>{esc(r[0])}</h3><dl>' + "".join(
+                f'<div{" class=hl" if k == len(r) - 1 else ""}><dt>{esc(cols_[k])}</dt><dd><bdi>{esc(r[k])}</bdi></dd></div>' for k in range(1, len(r)))
+            + '</dl></div>' for r in cmp_["rows"][lang]) + '</div>'
         extra += f"""<section class="sec"><div class="wrap"><h2 class="h2">{t('compare_title', lang)}</h2>
-<div class="tscroll"><table class="tbl compare"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>
+<div class="tscroll cmp-desk"><table class="tbl compare"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>{cmp_cards}
 <h2 class="h2 mt">{t('projects_short', lang)}</h2>{img(cur, 'mini-chiller-cases', 'Aolan Mini Chiller installations in factories and warehouses', small=True, cls='rounded')}</div></section>"""
     related = [r for r in b["products"] if r["category"] == p["category"] and r is not p][:4]
     rel_html = "".join(product_card(cur, lang, r) for r in related)
