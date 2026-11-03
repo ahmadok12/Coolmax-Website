@@ -768,19 +768,89 @@ def specs_table(lang, p):
             for r in tb["rows"]
         )
         return f'<div class="tscroll"><table class="tbl tbl-center"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>'
-    cols = ""
-    for m in p["models"]:
-        codes = [x for x in m if isinstance(x, str)]
-        extra = "".join(f'<small>{esc(L(x, lang))}</small>' for x in m if isinstance(x, dict))
-        cols += f'<th scope="col"><span dir="ltr">{"<br>".join(esc(c) for c in codes)}</span>{extra}</th>'
+    return spec_block(lang, p)
+
+
+# Headline tiles: the numbers a buyer compares first. The first three keys a product has (with short values) are used.
+TILE_KEYS = ("capacity", "airflow", "area", "qty40hq", "qty40", "qtyskd")
+TILE_UNIT = {"capacity": "kW", "airflow": "m³/h"}
+
+
+def tile_label(key, lang):
+    if key in ("qty40hq", "qty40", "qtyskd"):
+        return t("per_40hq", lang)
+    return re.sub(r"\s*\(.*?\)", "", SPEC_LABELS[key][lang])
+
+
+def tile_keys(p):
+    keys = []
+    for key in TILE_KEYS:
+        vals = spec(p, key)
+        if not vals or any(len(str(v)) > 16 for v in vals):
+            continue
+        if key.startswith("qty") and any(k.startswith("qty") for k in keys):
+            continue
+        keys.append(key)
+    return keys[:3]
+
+
+def num_html(v, unit=""):
+    m = re.match(r"^(.*?\d)\s*(m²|kW|W|mm|\(SKD\))$", v)
+    if m and not unit:
+        v, unit = m.group(1), m.group(2)
+    u = f' <span class="u">{esc(unit)}</span>' if unit else ""
+    n = esc(v).replace("–", "–<wbr>").replace(" / ", " /<wbr> ")
+    return f'<span class="num" dir="ltr"><span class="n">{n}</span>{u}</span>'
+
+
+def tiles_html(lang, p, keys, i):
+    return '<div class="stiles">' + "".join(
+        f'<div class="stile">{num_html(tr_value(spec(p, k)[i], lang), TILE_UNIT.get(k, ""))}<small>{esc(tile_label(k, lang))}</small></div>'
+        for k in keys) + "</div>"
+
+
+def model_head(lang, m, tag="div"):
+    codes = [x for x in m if isinstance(x, str)]
+    sub = " · ".join(L(x, lang) for x in m if isinstance(x, dict))
+    also = f'<span class="malso" dir="ltr">{esc(" / ".join(codes[1:]))}</span>' if len(codes) > 1 else ""
+    return (f'<{tag} class="mname" dir="ltr">{esc(codes[0])}</{tag}>{also}'
+            + (f'<span class="msub">{esc(sub)}</span>' if sub else ""))
+
+
+def spec_block(lang, p):
+    """Product spec block. 1-3 models: one glass card per model with headline tiles, shared specs listed once above.
+    4+ models: one table, each model column headed by its tiles; values shared by all models are repeated in grey."""
+    models = p["models"]
+    n = len(models)
+    keys = tile_keys(p)
+    rest = [(k, v) for k, v in p["specs"] if k not in keys]
+    shared = [(k, v) for k, v in rest if n > 1 and len(set(map(str, v))) == 1]
+    if n <= 3:
+        own = [(k, v) for k, v in rest if (k, v) not in shared]
+        out = ""
+        if shared:
+            items = "".join(f'<div><dt>{esc(SPEC_LABELS[k][lang])}</dt><dd><bdi>{esc(tr_value(v[0], lang))}</bdi></dd></div>' for k, v in shared)
+            out += f'<div class="sshared"><p class="sshared-h">{t("all_models", lang) if n > 2 else t("both_models", lang)}</p><dl>{items}</dl></div>'
+        cards = ""
+        for i, m in enumerate(models):
+            codes = [x for x in m if isinstance(x, str)]
+            rows = "".join(f'<dt>{esc(SPEC_LABELS[k][lang])}</dt><dd><bdi>{esc(tr_value(v[i], lang))}</bdi></dd>' for k, v in own)
+            from urllib.parse import quote
+            link = f'../../wholesale-inquiry.html?model={quote(codes[0])}&amp;brand={p["brand"]["slug"]}'
+            cards += (f'<article class="scard"><header>{model_head(lang, m, "h3")}</header>'
+                      + (tiles_html(lang, p, keys, i) if keys else "")
+                      + (f'<dl class="slist">{rows}</dl>' if rows else "")
+                      + f'<a class="btn btn-ghost" href="{link}">{t("price_for", lang)} <span dir="ltr">{esc(codes[0])}</span></a></article>')
+        return out + f'<div class="scards scards-{n}">{cards}</div>'
+    head = "".join(f'<th scope="col">{model_head(lang, m, "span")}{tiles_html(lang, p, keys, i) if keys else ""}</th>' for i, m in enumerate(models))
     rows = ""
-    for key, vals in p["specs"]:
-        if len(set(map(str, vals))) == 1 and len(vals) > 1:
-            cells = f'<td colspan="{len(vals)}">{esc(tr_value(vals[0], lang))}</td>'
-        else:
-            cells = "".join(f"<td>{esc(tr_value(v, lang))}</td>" for v in vals)
-        rows += f'<tr><th scope="row">{esc(SPEC_LABELS[key][lang])}</th>{cells}</tr>'
-    return f'<div class="tscroll"><table class="tbl spec"><thead><tr><th scope="col">{t("model_col", lang)}</th>{cols}</tr></thead><tbody>{rows}</tbody></table></div>'
+    for key, vals in rest:
+        same = (key, vals) in shared
+        cells = "".join(f'<td><bdi>{esc(tr_value(v, lang))}</bdi></td>' for v in vals)
+        rows += f'<tr{" class=same" if same else ""}><th scope="row">{esc(SPEC_LABELS[key][lang])}</th>{cells}</tr>'
+    note = f'<p class="same-note"><i></i>{t("same_note", lang)}</p>' if shared else ""
+    return (f'<div class="tscroll"><table class="tbl spec spec-x"><thead><tr><th scope="col"><span class="sr">{t("model_col", lang)}</span></th>{head}</tr></thead>'
+            f'<tbody>{rows}</tbody></table></div>{note}')
 
 
 # Products that link to an interactive 3D cooler under site/3d/ (hand-made pages the build leaves alone).
