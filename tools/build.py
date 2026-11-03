@@ -767,20 +767,110 @@ def specs_table(lang, p):
             "<tr>" + "".join(f'<{"th scope=row" if i == 0 else "td"}>{esc(tr_value(v, lang))}</{"th" if i == 0 else "td"}>' for i, v in enumerate(r)) + "</tr>"
             for r in tb["rows"]
         )
-        return f'<div class="tscroll"><table class="tbl tbl-center"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>'
-    cols = ""
-    for m in p["models"]:
+        # Phones and tablets get one card per model instead of a 13-column table that scrolls sideways.
+        tk = [c for c in ("airflow", "pressure", "inputw") if c in tb["cols"]]
+        cards = ""
+        for r in tb["rows"]:
+            d = dict(zip(tb["cols"], r))
+            tiles = "".join(
+                f'<div class="stile">{num_html(d[c], (re.search(r"\((.*?)\)", SPEC_LABELS[c]["en"]) or [None, ""])[1])}'
+                f'<small>{esc(re.sub(r"\s*\(.*?\)", "", SPEC_LABELS[c][lang]))}</small></div>' for c in tk)
+            lst = "".join(f'<dt>{esc(SPEC_LABELS[c][lang])}</dt><dd><bdi>{esc(tr_value(d[c], lang))}</bdi></dd>'
+                          for c in tb["cols"][1:] if c not in tk)
+            cards += (f'<article class="scard"><header><h3 class="mname" dir="ltr">{esc(r[0])}</h3></header>'
+                      f'<div class="stiles">{tiles}</div><dl class="slist">{lst}</dl></article>')
+        return (f'<div class="spec-desk"><div class="tscroll"><table class="tbl tbl-center tbl-wide"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div></div>'
+                f'<div class="spec-phone"><div class="scards scards-many">{cards}</div></div>')
+    return spec_block(lang, p)
+
+
+# Headline tiles: the numbers a buyer compares first. The first three keys a product has (with short values) are used.
+TILE_KEYS = ("capacity", "airflow", "area", "qty40hq", "qty40", "qtyskd")
+TILE_UNIT = {"capacity": "kW", "airflow": "m³/h"}
+
+
+def tile_label(key, lang):
+    if key in ("qty40hq", "qty40", "qtyskd"):
+        return t("per_40hq", lang)
+    return re.sub(r"\s*\(.*?\)", "", SPEC_LABELS[key][lang])
+
+
+def tile_keys(p):
+    keys = []
+    for key in TILE_KEYS:
+        vals = spec(p, key)
+        if not vals or any(len(str(v)) > 16 for v in vals):
+            continue
+        if key.startswith("qty") and any(k.startswith("qty") for k in keys):
+            continue
+        keys.append(key)
+    return keys[:3]
+
+
+def num_html(v, unit=""):
+    m = re.match(r"^(.*?\d)\s*(m²|kW|W|mm|\(SKD\))$", v)
+    if m and not unit:
+        v, unit = m.group(1), m.group(2)
+    u = f' <span class="u">{esc(unit)}</span>' if unit else ""
+    n = esc(v).replace("–", "–<wbr>").replace(" / ", " /<wbr> ")
+    return f'<span class="num" dir="ltr"><span class="n">{n}</span>{u}</span>'
+
+
+def tiles_html(lang, p, keys, i):
+    return '<div class="stiles">' + "".join(
+        f'<div class="stile">{num_html(tr_value(spec(p, k)[i], lang), TILE_UNIT.get(k, ""))}<small>{esc(tile_label(k, lang))}</small></div>'
+        for k in keys) + "</div>"
+
+
+def model_head(lang, m, tag="div"):
+    codes = [x for x in m if isinstance(x, str)]
+    sub = " · ".join(L(x, lang) for x in m if isinstance(x, dict))
+    also = f'<span class="malso" dir="ltr">{esc(" / ".join(codes[1:]))}</span>' if len(codes) > 1 else ""
+    return (f'<{tag} class="mname" dir="ltr">{esc(codes[0])}</{tag}>{also}'
+            + (f'<span class="msub">{esc(sub)}</span>' if sub else ""))
+
+
+def spec_cards(lang, p, keys, rest, shared, n):
+    models = p["models"]
+    own = [(k, v) for k, v in rest if (k, v) not in shared]
+    out = ""
+    if shared:
+        items = "".join(f'<div><dt>{esc(SPEC_LABELS[k][lang])}</dt><dd><bdi>{esc(tr_value(v[0], lang))}</bdi></dd></div>' for k, v in shared)
+        out += f'<div class="sshared"><p class="sshared-h">{t("all_models", lang) if n > 2 else t("both_models", lang)}</p><dl>{items}</dl></div>'
+    cards = ""
+    for i, m in enumerate(models):
         codes = [x for x in m if isinstance(x, str)]
-        extra = "".join(f'<small>{esc(L(x, lang))}</small>' for x in m if isinstance(x, dict))
-        cols += f'<th scope="col"><span dir="ltr">{"<br>".join(esc(c) for c in codes)}</span>{extra}</th>'
+        rows = "".join(f'<dt>{esc(SPEC_LABELS[k][lang])}</dt><dd><bdi>{esc(tr_value(v[i], lang))}</bdi></dd>' for k, v in own)
+        from urllib.parse import quote
+        link = f'../../wholesale-inquiry.html?model={quote(codes[0])}&amp;brand={p["brand"]["slug"]}'
+        cards += (f'<article class="scard"><header>{model_head(lang, m, "h3")}</header>'
+                  + (tiles_html(lang, p, keys, i) if keys else "")
+                  + (f'<dl class="slist">{rows}</dl>' if rows else "")
+                  + f'<a class="btn btn-ghost" href="{link}">{t("price_for", lang)} <span dir="ltr">{esc(codes[0])}</span></a></article>')
+    return out + f'<div class="scards scards-{n}">{cards}</div>'
+
+
+def spec_block(lang, p):
+    """Product spec block. 1-3 models: one glass card per model with headline tiles, shared specs listed once above.
+    4+ models: one table, each model column headed by its tiles; values shared by all models are repeated in grey."""
+    models = p["models"]
+    n = len(models)
+    keys = tile_keys(p)
+    rest = [(k, v) for k, v in p["specs"] if k not in keys]
+    shared = [(k, v) for k, v in rest if n > 1 and len(set(map(str, v))) == 1]
+    if n <= 3:
+        return spec_cards(lang, p, keys, rest, shared, n)
+    head = "".join(f'<th scope="col">{model_head(lang, m, "span")}{tiles_html(lang, p, keys, i) if keys else ""}</th>' for i, m in enumerate(models))
     rows = ""
-    for key, vals in p["specs"]:
-        if len(set(map(str, vals))) == 1 and len(vals) > 1:
-            cells = f'<td colspan="{len(vals)}">{esc(tr_value(vals[0], lang))}</td>'
-        else:
-            cells = "".join(f"<td>{esc(tr_value(v, lang))}</td>" for v in vals)
-        rows += f'<tr><th scope="row">{esc(SPEC_LABELS[key][lang])}</th>{cells}</tr>'
-    return f'<div class="tscroll"><table class="tbl spec"><thead><tr><th scope="col">{t("model_col", lang)}</th>{cols}</tr></thead><tbody>{rows}</tbody></table></div>'
+    for key, vals in rest:
+        same = (key, vals) in shared
+        cells = "".join(f'<td><bdi>{esc(tr_value(v, lang))}</bdi></td>' for v in vals)
+        rows += f'<tr{" class=same" if same else ""}><th scope="row">{esc(SPEC_LABELS[key][lang])}</th>{cells}</tr>'
+    note = f'<p class="same-note"><i></i>{t("same_note", lang)}</p>' if shared else ""
+    # Phones get the cards instead: a 4-6 column table would have to scroll sideways.
+    return (f'<div class="spec-desk"><div class="tscroll"><table class="tbl spec spec-x"><thead><tr><th scope="col"><span class="sr">{t("model_col", lang)}</span></th>{head}</tr></thead>'
+            f'<tbody>{rows}</tbody></table></div>{note}</div>'
+            f'<div class="spec-phone">{spec_cards(lang, p, keys, rest, shared, n)}</div>')
 
 
 # Products that link to an interactive 3D cooler under site/3d/ (hand-made pages the build leaves alone).
@@ -839,8 +929,14 @@ def build_product(lang, p):
         cmp_ = p["comparison"]
         head = "".join(f"<th>{esc(c)}</th>" for c in cmp_["cols"][lang])
         rows = "".join("<tr>" + "".join(f'<{"th scope=row" if i == 0 else "td"}{" class=hl" if i == 3 else ""}>{esc(v)}</{"th" if i == 0 else "td"}>' for i, v in enumerate(r)) + "</tr>" for r in cmp_["rows"][lang])
+        # Phones: one card per topic, the three options listed under it, the Mini Chiller (last column) highlighted.
+        cols_ = cmp_["cols"][lang]
+        cmp_cards = '<div class="cmp-phone">' + "".join(
+            f'<div class="cmp-card"><h3>{esc(r[0])}</h3><dl>' + "".join(
+                f'<div{" class=hl" if k == len(r) - 1 else ""}><dt>{esc(cols_[k])}</dt><dd><bdi>{esc(r[k])}</bdi></dd></div>' for k in range(1, len(r)))
+            + '</dl></div>' for r in cmp_["rows"][lang]) + '</div>'
         extra += f"""<section class="sec"><div class="wrap"><h2 class="h2">{t('compare_title', lang)}</h2>
-<div class="tscroll"><table class="tbl compare"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>
+<div class="tscroll cmp-desk"><table class="tbl compare"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>{cmp_cards}
 <h2 class="h2 mt">{t('projects_short', lang)}</h2>{img(cur, 'mini-chiller-cases', 'Aolan Mini Chiller installations in factories and warehouses', small=True, cls='rounded')}</div></section>"""
     related = [r for r in b["products"] if r["category"] == p["category"] and r is not p][:4]
     rel_html = "".join(product_card(cur, lang, r) for r in related)
