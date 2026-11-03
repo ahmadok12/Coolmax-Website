@@ -820,3 +820,65 @@ html { -webkit-tap-highlight-color: transparent; }
   .thumbs::-webkit-scrollbar { display: none; }
   .mm-foot .btn { width: 100%; }
 }
+
+/* ---------------------------------------------------------------- glass everywhere
+   The navbar's frosted glass carried across the site: translucent white panels with a bright edge and a soft
+   shadow over a page that has faint blue light behind it, dark smoked glass over the photo bands. */
+:root {
+  --glass-card: rgba(255, 255, 255, .58);
+  --glass-card-2: rgba(255, 255, 255, .78);
+  --glass-card-edge: rgba(255, 255, 255, .85);
+  --glass-line: rgba(195, 204, 217, .55);
+  --glass-shadow: 0 1px 0 rgba(255, 255, 255, .8) inset, 0 12px 32px -18px rgba(15, 23, 38, .22);
+  --glass-dark: rgba(238, 242, 248, .07);
+  --glass-dark-2: rgba(12, 19, 32, .55);
+  --glass-dark-edge: rgba(238, 242, 248, .18);
+  --blur: saturate(1.5) blur(16px);
+}
+/* faint blue light behind the page, so the glass has something to frost */
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(42rem 32rem at 8% 12%, rgba(47, 91, 211, .10), transparent 70%),
+    radial-gradient(38rem 30rem at 95% 45%, rgba(110, 160, 255, .16), transparent 70%),
+    radial-gradient(40rem 30rem at 30% 95%, rgba(47, 91, 211, .08), transparent 70%); }
+.sec-tint, .sec-grey, .new-spot { background: rgba(226, 232, 242, .55); }
+
+/* light glass panels */
+.card, .bcard, .pcard, .ccard, .spot, .pstep, .tscroll, .feature-media, .svc-media, .pmain, .mm-tile, .calc, .thumbs button, .duo .card {
+  background: var(--glass-card); border: 1px solid var(--glass-card-edge); box-shadow: var(--glass-shadow); }
+.calc { border: 1px solid var(--glass-card-edge); }
+.bcard-img, .pcard-img, .spot-img, .ccard img { background: linear-gradient(180deg, rgba(255, 255, 255, .7), rgba(232, 238, 247, .55)); border-color: var(--glass-line); }
+.pmain, .feature-media, .svc-media, .dband-media, .hero-thumb, .mm-tile { background: linear-gradient(180deg, rgba(255, 255, 255, .78), rgba(232, 238, 247, .6)); }
+.bcard:hover, .pcard:hover, .ccard:hover, .spot:hover, .mm-tile:hover { border-color: #fff; box-shadow: 0 1px 0 #fff inset, 0 18px 40px -20px rgba(31, 68, 168, .35); }
+.chip, .pills a, .svc-a, .brand-logo, .bcard-img .bcard-logo { background: var(--glass-card-2); border-color: var(--glass-card-edge); }
+.chip-new { background: var(--ink); border-color: var(--ink); }
+.btn-ghost, .btn-wa, .btn-line { background: var(--glass-card); border-color: var(--glass-line); }
+input, select, textarea { background: var(--glass-card-2); border-color: var(--glass-line); }
+.tbl tbody th { background: rgba(234, 238, 244, .7); }
+.tbl tbody tr:hover td { background: rgba(255, 255, 255, .5); }
+.tbl.spec tbody th[scope="row"] { background: var(--card); }
+.demo-note { background: var(--blue-soft); }
+.svc-list a:hover .svc-a, .svc-list a.on .svc-a { background: var(--ink); border-color: var(--ink); }
+
+/* dark smoked glass over the photo bands */
+.hero-side, .contact-card, .calc-teaser { background: var(--glass-dark-2); border: 1px solid var(--glass-dark-edge); box-shadow: 0 1px 0 rgba(255, 255, 255, .08) inset, 0 20px 50px -24px rgba(0, 0, 0, .6); }
+.sec .contact-card, .sec .calc-teaser { background: var(--night); }
+.hero .btn-line, .hero .btn-wa, .page-hero .btn-wa, .page-hero .btn-ghost, .cta-band .btn-wa, .contact-card .btn-wa, .calc-teaser .btn-wa,
+.page-hero .pills a, .page-hero .chip { background: var(--glass-dark); border-color: var(--glass-dark-edge); }
+.page-hero .chip-new { background: var(--blue); border-color: var(--blue); }
+.mbar { background: rgba(12, 19, 32, .78); border-top-color: var(--glass-dark-edge); }
+
+/* menus: the same glass as the scrolled navbar */
+.dd > .mm, .mnav-panel { background: rgba(248, 250, 253, .82); border-color: var(--glass-card-edge); }
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .card, .bcard, .ccard, .spot, .pstep, .feature-media, .svc-media, .calc, .chip, .pills a, .btn-ghost, .btn-wa, .btn-line,
+  .hero-side, .contact-card, .calc-teaser, .mbar, .geo-banner { -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
+  .dd > .mm, .mnav-panel { -webkit-backdrop-filter: saturate(1.6) blur(24px); backdrop-filter: saturate(1.6) blur(24px); }
+  /* product grids can hold 25+ cards: keep the frosting on wide screens only, phones get the translucent look without the blur cost */
+  @media (min-width: 701px) { .pcard { -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); } }
+}
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  :root { --glass-card: rgba(255, 255, 255, .9); --glass-card-2: rgba(255, 255, 255, .95); --glass-dark-2: rgba(12, 19, 32, .9); }
+  .dd > .mm, .mnav-panel { background: var(--paper); }
+}
