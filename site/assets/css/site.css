@@ -197,17 +197,18 @@ html[lang="en"] .lang-switch { font-family: var(--font-ar); }
 html[lang="ar"] .hero h1 { max-width: 14ch; }
 .hero .lead { color: var(--on-night-2); max-width: 46ch; }
 .lead { font-size: clamp(1.08rem, .4vw + 1rem, 1.25rem); color: var(--body); line-height: 1.55; }
-.hero-side { display: grid; gap: 0; justify-items: stretch; width: min(100%, 400px); justify-self: end; border: 1px solid var(--rule-night-2); border-radius: var(--radius); overflow: hidden; background: var(--night-2); color: var(--on-night); }
+.hero-side { display: grid; gap: 0; justify-items: stretch; width: min(100%, 500px); justify-self: end; border: 1px solid var(--rule-night-2); border-radius: var(--radius); overflow: hidden; background: var(--night-2); color: var(--on-night); }
 .glass { order: 2; padding: 1.1rem 1.25rem 1.2rem; display: grid; grid-template-columns: auto 1fr; gap: .2rem 1rem; align-items: center; border-top: 1px solid var(--rule-night); }
 .glass b { font-family: var(--font-display); font-weight: 400; font-size: 2.6rem; line-height: 1; color: var(--blue-hi); font-variant-numeric: tabular-nums; }
 .glass > span { font-weight: 500; color: var(--on-night-2); font-size: .92rem; line-height: 1.4; }
 .glass ul { display: none; }
-.hero-thumb { position: relative; aspect-ratio: 4 / 3.4; overflow: hidden; background: var(--stage); display: block; color: var(--ink); text-decoration: none; }
-.hero-thumb img { position: absolute; inset: 1.5rem 1.5rem 3.5rem; width: calc(100% - 3rem); height: calc(100% - 5rem); object-fit: contain; transition: transform .5s var(--ease); }
+.hero-picks { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1px; background: var(--rule-night); }
+.hero-thumb { position: relative; aspect-ratio: 4 / 4.6; overflow: hidden; background: var(--stage); display: block; color: var(--ink); text-decoration: none; }
+.hero-thumb img { position: absolute; inset: 3rem 1rem 3.4rem; width: calc(100% - 2rem); height: calc(100% - 6.4rem); object-fit: contain; transition: transform .5s var(--ease); }
 .hero-thumb:hover img { transform: translateY(-4px); }
 .hero-thumb .chip { position: absolute; top: 1rem; inset-inline-start: 1rem; margin: 0; }
-.hero-cap { position: absolute; inset-inline: 1rem; bottom: .9rem; display: flex; align-items: baseline; gap: .5rem; font-size: .9rem; color: var(--body); }
-.hero-cap b { font-family: var(--font-display); font-weight: 400; font-size: 1.35rem; color: var(--ink); }
+.hero-cap { position: absolute; inset-inline: 1rem; bottom: .8rem; display: flex; flex-direction: column; align-items: flex-start; gap: .1rem; font-size: .82rem; line-height: 1.2; color: var(--body); }
+.hero-cap b { font-family: var(--font-display); font-weight: 400; font-size: 1.2rem; color: var(--ink); }
 .scroll-dot { display: none; }
 .ticks { list-style: none; padding: 0; margin: 1.2rem 0 0; display: grid; gap: .55rem; }
 .ticks li { display: flex; gap: .6rem; align-items: flex-start; font-weight: 600; color: var(--ink); }
@@ -725,7 +726,14 @@ input:user-invalid, select:user-invalid, textarea:user-invalid { border-color: v
   .hero-bg { padding-top: calc(var(--hdr-space) + 2.25rem); padding-bottom: 2.5rem; }
   .hero h1 { font-size: 2.75rem; }
   .hero .lead { font-size: 1.02rem; }
-  .hero-side { display: none; }
+  /* phones: just the two new products as a compact pair, no count card */
+  .hero-side { margin-top: 1.75rem; width: 100%; }
+  .hero-side .glass { display: none; }
+  .hero-thumb { aspect-ratio: 1 / 1; }
+  .hero-thumb img { inset: 2.4rem .6rem 2.9rem; width: calc(100% - 1.2rem); height: calc(100% - 5.3rem); }
+  .hero-thumb .chip { top: .6rem; inset-inline-start: .6rem; }
+  .hero-cap { inset-inline: .7rem; bottom: .6rem; font-size: .75rem; }
+  .hero-cap b { font-size: 1.05rem; }
   .hero .btns { margin-top: 1.5rem; }
   .hero .btns .btn { flex: 1; }
   /* brand cards as compact rows: picture, name, one line */

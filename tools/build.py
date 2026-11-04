@@ -585,7 +585,10 @@ def build_home(lang):
     </div>
     <div class="hero-side">
       <div class="glass"><b dir="ltr">{len(PRODUCTS)}+</b><span>{t('hero_card', lang)}</span></div>
+      <div class="hero-picks">
       <a class="hero-thumb" href="{href(cur, product_path(lang, newp))}">{img(cur, newp['image'], 'PureBreeze BLDC cube air cooler', small=True, eager=True)}<span class="chip chip-new">{t('new_badge', lang)}</span><span class="hero-cap"><span>PureBreeze</span> <b dir="ltr">BLDC Cube</b></span></a>
+      <a class="hero-thumb" href="{href(cur, product_path(lang, chiller))}">{img(cur, chiller['image'], 'Aolan Mini Chiller', small=True, eager=True)}<span class="chip chip-new">{t('new_badge', lang)}</span><span class="hero-cap"><span>Aolan</span> <b dir="ltr">Mini Chiller</b></span></a>
+      </div>
     </div>
   </div>
 </section>
