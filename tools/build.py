@@ -203,6 +203,7 @@ ICON = {
     "c2": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 16c8-6 14 6 22 0s14-6 14-6M6 26c8-6 14 6 22 0s14-6 14-6M6 36c8-6 14 6 22 0s14-6 14-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     "c3": '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M24 4v6M24 38v6M4 24h6M38 24h6M10 10l4 4M34 34l4 4M10 38l4-4M34 14l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     "c4": '<svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="20" cy="14" rx="12" ry="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 14v10c0 3 5 5 12 5s12-2 12-5V14M8 24v10c0 3 5 5 12 5 3 0 6-.5 8-1.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="36" cy="34" r="7" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+    "globe": '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>',
     "factory": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M4 42V22l11 7v-7l11 7v-7l11 7V8h7v34Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 35h4M22 35h4M32 35h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     "tune": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 12h20M36 12h4M8 24h6M22 24h18M8 36h22M38 36h2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="32" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="24" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="34" cy="36" r="4" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
     "logo": '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="#2f5bd3"/><g stroke="#161616" stroke-width="2.6" stroke-linecap="round" fill="none"><path d="M20 8v24M9.6 14l20.8 12M9.6 26l20.8-12"/><path d="M16.5 9.5 20 13l3.5-3.5M16.5 30.5 20 27l3.5 3.5"/></g></svg>',
@@ -304,7 +305,7 @@ def footer(cur, lang):
         f'<li><a href="{href(cur, brand_path(lang, b))}#{c["slug"]}"><span class="f-brand">{esc(b["name"])}</span> {esc(c[lang])}</a></li>'
         for b in BRANDS for c in b["categories"][:2]
     )
-    markets = ("، " if lang == "ar" else ", ").join(L(n, lang) for _, n in MARKETS)
+    markets = ("، " if lang == "ar" else ", ").join([L(n, lang) for _, n in MARKETS] + [t("markets_world", lang)])
     return f"""<footer class="site-footer">
   <div class="wrap footer-grid">
     <div class="f-about"><a class="logo logo-light" href="{href(cur, f'{lang}/index.html')}">{logo_img(cur)}<span>{esc(L(SITE['name'], lang))}</span></a>
@@ -567,6 +568,7 @@ def build_home(lang):
     steps = "".join(f'<li><span class="step-n">{i}</span><div><h3>{esc(h)}</h3><p>{esc(d)}</p></div></li>'
                     for i, (h, d) in enumerate(T["process"][lang], 1))
     markets = "".join(f'<li><span class="flag">{code}</span>{esc(L(n, lang))}</li>' for code, n in MARKETS)
+    markets += f'<li class="world"><span class="flag">{ICON["globe"]}</span>{t("markets_world", lang)}</li>'
     faq = "".join(f"<details><summary>{esc(q)}</summary><p>{esc(a)}</p></details>" for q, a in T["faq"][lang])
     pts = "".join(f"<li>{esc(x)}</li>" for x in T["hero_points"][lang])
     direct_cards = "".join(

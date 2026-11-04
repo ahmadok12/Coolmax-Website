@@ -26,7 +26,6 @@ MARKETS = [
     ("KW", {"en": "Kuwait", "ar": "الكويت"}),
     ("OM", {"en": "Oman", "ar": "عُمان"}),
     ("BH", {"en": "Bahrain", "ar": "البحرين"}),
-    ("IQ", {"en": "Iraq", "ar": "العراق"}),
 ]
 
 SPEC_LABELS = {
@@ -209,6 +208,7 @@ T = {
     "rh": {"en": "Humidity", "ar": "الرطوبة"},
     "markets_title": {"en": 'We deliver to', "ar": 'نوّرد إلى'},
     "markets_lead": {"en": '', "ar": ''},
+    "markets_world": {"en": 'All over the world', "ar": 'جميع أنحاء العالم'},
     "process_title": {"en": 'Order in [[3 steps]]', "ar": 'اطلب في [[3 خطوات]]'},
     "process": {
         "en": [
