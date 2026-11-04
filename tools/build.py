@@ -942,6 +942,11 @@ def build_product(lang, p):
     if p.get("vs_floor_ac"):
         extra += f"""<section class="sec"><div class="wrap"><h2 class="h2">{t('vs_floor_title', lang)}</h2>
 <p class="lead-sm">{t('vs_floor_lead', lang)}</p>
+<div class="vs-pics">
+  <figure>{img(cur, 'floor-standing-ac', t('vs_floor_pic_ac', lang), small=True)}<figcaption>{t('vs_floor_pic_ac', lang)}</figcaption></figure>
+  <span class="vs-badge" aria-hidden="true">VS</span>
+  <figure class="hl">{img(cur, 'mini-chiller', t('vs_floor_pic_mc', lang), small=True)}<figcaption>{t('vs_floor_pic_mc', lang)}</figcaption></figure>
+</div>
 {compare_html(p['vs_floor_ac'])}
 <p class="small muted cmp-note">{t('vs_floor_note', lang)}</p></div></section>"""
     if p.get("comparison"):

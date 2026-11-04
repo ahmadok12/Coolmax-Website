@@ -187,7 +187,9 @@ PRODUCTS = [
             "rows": {
                 "en": [
                     ("Cooling per unit", "7–14 kW (2–4 ton)", "25–35 kW (about 7–10 ton)"),
-                    ("Power for 35 kW of cooling", "About 11–12 kW (COP about 3)", "5.9–6.3 kW (COP 5)"),
+                    ("Electricity per hour, 35 kW of cooling", "About 11.7 kWh (COP about 3)", "5.9–6.3 kWh (COP 5)"),
+                    ("Electricity per 10-hour day", "About 117 kWh", "59–63 kWh"),
+                    ("Possible saving", "Baseline", "About 54–58 kWh a day, or 1,600–1,750 kWh a month: up to about half the bill"),
                     ("Airflow", "About 1,000–2,000 m³/h", "6,000–7,000 m³/h, long air throw"),
                     ("How the heat leaves", "Hot air from an air-cooled outdoor unit", "Water to an outdoor unit with wet cooling pads"),
                     ("Installation", "Copper refrigerant pipes, brazed and gas-charged by a technician", "PVC water pipes only"),
@@ -197,7 +199,9 @@ PRODUCTS = [
                 ],
                 "ar": [
                     ("التبريد لكل وحدة", "7–14 كيلوواط (2–4 طن)", "25–35 كيلوواط (نحو 7–10 طن)"),
-                    ("الكهرباء لتبريد 35 كيلوواط", "نحو 11–12 كيلوواط (COP نحو 3)", "5.9–6.3 كيلوواط (COP 5)"),
+                    ("الكهرباء في الساعة لتبريد 35 كيلوواط", "نحو 11.7 كيلوواط ساعة (COP نحو 3)", "5.9–6.3 كيلوواط ساعة (COP 5)"),
+                    ("الكهرباء في يوم تشغيل 10 ساعات", "نحو 117 كيلوواط ساعة", "59–63 كيلوواط ساعة"),
+                    ("التوفير المتوقع", "أساس المقارنة", "نحو 54–58 كيلوواط ساعة يومياً، أي 1,600–1,750 كيلوواط ساعة شهرياً: حتى نحو نصف الفاتورة"),
                     ("تدفق الهواء", "نحو 1,000–2,000 م³/س", "6,000–7,000 م³/س، ومسافة دفع طويلة"),
                     ("طريقة طرد الحرارة", "هواء حار من وحدة خارجية مبردة بالهواء", "بالماء إلى وحدة خارجية بخلايا تبريد مبللة"),
                     ("التركيب", "أنابيب نحاس للفريون، لحام وتعبئة غاز بواسطة فني", "أنابيب مياه PVC فقط"),

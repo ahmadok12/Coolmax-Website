@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1400" width="600" height="1400">
+  <!-- Generic floor-standing (cabinet) AC indoor unit: an unbranded illustration, not a specific model -->
+  <defs>
+    <linearGradient id="body" x1="0" x2="1">
+      <stop offset="0" stop-color="#dfe4ec"/><stop offset=".18" stop-color="#ffffff"/>
+      <stop offset=".75" stop-color="#f6f8fb"/><stop offset="1" stop-color="#c9d0db"/>
+    </linearGradient>
+    <linearGradient id="side" x1="0" x2="1">
+      <stop offset="0" stop-color="#c4ccd8"/><stop offset="1" stop-color="#9ea8b8"/>
+    </linearGradient>
+    <linearGradient id="vent" y1="0" y2="1">
+      <stop offset="0" stop-color="#3a4252"/><stop offset="1" stop-color="#1d222c"/>
+    </linearGradient>
+    <linearGradient id="slat" y1="0" y2="1">
+      <stop offset="0" stop-color="#f4f6f9"/><stop offset="1" stop-color="#b9c1cd"/>
+    </linearGradient>
+    <linearGradient id="panel" y1="0" y2="1">
+      <stop offset="0" stop-color="#1b2433"/><stop offset="1" stop-color="#0e141e"/>
+    </linearGradient>
+    <radialGradient id="shadow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#0b1730" stop-opacity=".35"/><stop offset="1" stop-color="#0b1730" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="300" cy="1352" rx="250" ry="30" fill="url(#shadow)"/>
+  <!-- side depth -->
+  <path d="M470 70 h22 a28 28 0 0 1 28 28 v1212 a20 20 0 0 1 -20 20 h-30 z" fill="url(#side)"/>
+  <!-- cabinet -->
+  <rect x="80" y="60" width="420" height="1280" rx="46" fill="url(#body)" stroke="#b7c0cd" stroke-width="2"/>
+  <!-- air outlet with louvres -->
+  <rect x="130" y="130" width="320" height="330" rx="26" fill="url(#vent)"/>
+  <g fill="url(#slat)">
+    <rect x="142" y="150" width="296" height="22" rx="11"/>
+    <rect x="142" y="196" width="296" height="22" rx="11"/>
+    <rect x="142" y="242" width="296" height="22" rx="11"/>
+    <rect x="142" y="288" width="296" height="22" rx="11"/>
+    <rect x="142" y="334" width="296" height="22" rx="11"/>
+    <rect x="142" y="380" width="296" height="22" rx="11"/>
+    <rect x="142" y="426" width="296" height="22" rx="11"/>
+  </g>
+  <!-- display panel -->
+  <rect x="200" y="530" width="180" height="96" rx="20" fill="url(#panel)"/>
+  <text x="290" y="595" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="50" font-weight="700" fill="#7fb0ff">24°</text>
+  <circle cx="230" cy="660" r="9" fill="#9aa5b6"/><circle cx="270" cy="660" r="9" fill="#9aa5b6"/>
+  <circle cx="310" cy="660" r="9" fill="#9aa5b6"/><circle cx="350" cy="660" r="9" fill="#9aa5b6"/>
+  <!-- seam -->
+  <line x1="100" y1="730" x2="480" y2="730" stroke="#c3cad6" stroke-width="3"/>
+  <!-- intake grille -->
+  <rect x="130" y="800" width="320" height="440" rx="26" fill="#e9edf3" stroke="#c3cad6" stroke-width="2"/>
+  <g stroke="#b3bccb" stroke-width="7" stroke-linecap="round">
+    <line x1="160" y1="840" x2="420" y2="840"/><line x1="160" y1="875" x2="420" y2="875"/>
+    <line x1="160" y1="910" x2="420" y2="910"/><line x1="160" y1="945" x2="420" y2="945"/>
+    <line x1="160" y1="980" x2="420" y2="980"/><line x1="160" y1="1015" x2="420" y2="1015"/>
+    <line x1="160" y1="1050" x2="420" y2="1050"/><line x1="160" y1="1085" x2="420" y2="1085"/>
+    <line x1="160" y1="1120" x2="420" y2="1120"/><line x1="160" y1="1155" x2="420" y2="1155"/>
+    <line x1="160" y1="1190" x2="420" y2="1190"/>
+  </g>
+  <!-- plinth -->
+  <rect x="96" y="1290" width="388" height="36" rx="16" fill="#aab3c2"/>
+  <!-- highlight -->
+  <rect x="104" y="90" width="16" height="1180" rx="8" fill="#ffffff" opacity=".7"/>
+</svg>
