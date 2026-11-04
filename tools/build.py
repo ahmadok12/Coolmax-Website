@@ -925,18 +925,28 @@ def build_product(lang, p):
   <div><h2 class="h2">{t('how_it_works', lang)}</h2><p>{esc(L(p['principle'], lang))}</p></div>
   <div>{img(cur, 'mini-chiller-principle', 'Mini chiller working principle: indoor unit and evaporative outdoor unit', small=True, cls='rounded white-bg')}</div>
 </div></section>"""
-    if p.get("comparison"):
-        cmp_ = p["comparison"]
-        head = "".join(f"<th>{esc(c)}</th>" for c in cmp_["cols"][lang])
-        rows = "".join("<tr>" + "".join(f'<{"th scope=row" if i == 0 else "td"}{" class=hl" if i == 3 else ""}>{esc(v)}</{"th" if i == 0 else "td"}>' for i, v in enumerate(r)) + "</tr>" for r in cmp_["rows"][lang])
-        # Phones: one card per topic, the three options listed under it, the Mini Chiller (last column) highlighted.
+    def compare_html(cmp_):
+        """Desktop table plus phone cards; the last column (the Mini Chiller) is highlighted."""
         cols_ = cmp_["cols"][lang]
-        cmp_cards = '<div class="cmp-phone">' + "".join(
+        last = len(cols_) - 1
+        head = "".join(f"<th>{esc(c)}</th>" for c in cols_)
+        rows = "".join("<tr>" + "".join(f'<{"th scope=row" if i == 0 else "td"}{" class=hl" if i == last else ""}>{esc(v)}</{"th" if i == 0 else "td"}>' for i, v in enumerate(r)) + "</tr>" for r in cmp_["rows"][lang])
+        # Phones: one card per topic, the options listed under it.
+        cards = f'<div class="cmp-phone{" two-up" if last == 2 else ""}">' + "".join(
             f'<div class="cmp-card"><h3>{esc(r[0])}</h3><dl>' + "".join(
                 f'<div{" class=hl" if k == len(r) - 1 else ""}><dt>{esc(cols_[k])}</dt><dd><bdi>{esc(r[k])}</bdi></dd></div>' for k in range(1, len(r)))
             + '</dl></div>' for r in cmp_["rows"][lang]) + '</div>'
-        extra += f"""<section class="sec"><div class="wrap"><h2 class="h2">{t('compare_title', lang)}</h2>
-<div class="tscroll cmp-desk"><table class="tbl compare"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>{cmp_cards}
+        cls = " compare-2" if last == 2 else ""
+        return f'<div class="tscroll cmp-desk"><table class="tbl compare{cls}"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>{cards}'
+
+    if p.get("vs_floor_ac"):
+        extra += f"""<section class="sec"><div class="wrap"><h2 class="h2">{t('vs_floor_title', lang)}</h2>
+<p class="lead-sm">{t('vs_floor_lead', lang)}</p>
+{compare_html(p['vs_floor_ac'])}
+<p class="small muted cmp-note">{t('vs_floor_note', lang)}</p></div></section>"""
+    if p.get("comparison"):
+        extra += f"""<section class="sec{' pt0' if p.get('vs_floor_ac') else ''}"><div class="wrap"><h2 class="h2">{t('compare_title', lang)}</h2>
+{compare_html(p['comparison'])}
 <h2 class="h2 mt">{t('projects_short', lang)}</h2>{img(cur, 'mini-chiller-cases', 'Aolan Mini Chiller installations in factories and warehouses', small=True, cls='rounded')}</div></section>"""
     related = [r for r in b["products"] if r["category"] == p["category"] and r is not p][:4]
     rel_html = "".join(product_card(cur, lang, r) for r in related)

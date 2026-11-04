@@ -990,3 +990,9 @@ html[lang="ar"] .spec-x thead .mname { font-size: 1.05rem; }
 .cmp-card dt { font-size: .78rem; font-weight: 700; color: var(--body); }
 .cmp-card .hl dt { color: var(--blue-d); }
 .cmp-card dd { margin: 0; color: var(--ink); font-size: .93rem; }
+/* Mini Chiller vs floor-standing AC: two options, so phone cards show them side by side */
+.lead-sm { color: var(--body); max-width: 62ch; margin: -.25rem 0 1.1rem; }
+.compare-2 th[scope=row] { width: 24%; }
+.compare-2 td { width: 38%; }
+.cmp-note { margin-top: .8rem; }
+.cmp-phone.two-up .cmp-card dl { grid-template-columns: 1fr 1fr; }
