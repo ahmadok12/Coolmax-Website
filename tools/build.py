@@ -576,6 +576,18 @@ def build_home(lang):
         for ico, (h, d) in zip(("factory", "tune"), T["direct_points"][lang])
     )
 
+    hero_tiles = ""
+    for p, brand, name, alt, extra in (
+        (newp, "PureBreeze", "BLDC Cube", "PureBreeze BLDC cube air cooler", ""),
+        (chiller, "Aolan", "Mini Chiller", "Aolan Mini Chiller",
+         f'<a class="hero-3d" href="{href(cur, "3d/mini-chiller/index.html")}" aria-label="{t("hero_3d", lang)}: Mini Chiller"><span class="hero-3d-l">{t("hero_3d", lang)}</span><span class="hero-3d-s" aria-hidden="true">3D</span></a>'),
+    ):
+        hero_tiles += (
+            f'<div class="hero-pick"><a class="hero-thumb" href="{href(cur, product_path(lang, p))}">'
+            f'{img(cur, p["image"], alt, small=True, eager=True)}<span class="chip chip-new">{t("new_badge", lang)}</span>'
+            f'<span class="hero-cap"><span>{brand}</span> <b dir="ltr">{name}</b><em dir="ltr">{esc(key_stat(p))}</em></span></a>{extra}</div>'
+        )
+
     body = f"""
 <section class="hero hero-bg">
   <div class="wrap hero-in">
@@ -587,10 +599,7 @@ def build_home(lang):
     </div>
     <div class="hero-side">
       <div class="glass"><b dir="ltr">{len(PRODUCTS)}+</b><span>{t('hero_card', lang)}</span></div>
-      <div class="hero-picks">
-      <a class="hero-thumb" href="{href(cur, product_path(lang, newp))}">{img(cur, newp['image'], 'PureBreeze BLDC cube air cooler', small=True, eager=True)}<span class="chip chip-new">{t('new_badge', lang)}</span><span class="hero-cap"><span>PureBreeze</span> <b dir="ltr">BLDC Cube</b></span></a>
-      <a class="hero-thumb" href="{href(cur, product_path(lang, chiller))}">{img(cur, chiller['image'], 'Aolan Mini Chiller', small=True, eager=True)}<span class="chip chip-new">{t('new_badge', lang)}</span><span class="hero-cap"><span>Aolan</span> <b dir="ltr">Mini Chiller</b></span></a>
-      </div>
+      <div class="hero-picks">{hero_tiles}</div>
     </div>
   </div>
 </section>

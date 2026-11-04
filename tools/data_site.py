@@ -157,7 +157,8 @@ T = {
     "cta_whatsapp": {"en": "WhatsApp us", "ar": "راسلنا واتساب"},
     "cta_models": {"en": "Browse models", "ar": "تصفح الموديلات"},
     "menu": {"en": "Menu", "ar": "القائمة"},
-    "hero_kicker": {"en": "Wholesale to Pakistan and the Middle East", "ar": "بالجملة إلى باكستان والشرق الأوسط"},
+    "hero_kicker": {"en": "Wholesale to Pakistan, the Gulf and worldwide", "ar": "بالجملة إلى باكستان والخليج وجميع أنحاء العالم"},
+    "hero_3d": {"en": "View in 3D", "ar": "عرض ثلاثي الأبعاد"},
     "hero_title": {"en": 'Evaporative air coolers, [[wholesale]]', "ar": 'مكيفات صحراوية [[بالجملة]]'},
     "hero_lead": {"en": 'Coolmax, Aolan and PureBreeze. 1,000–80,000 m³/h. Wholesale prices on WhatsApp within one business day.', "ar": 'كولماكس وأولان وبيور بريز. من 1,000 إلى 80,000 م³/ساعة. أسعار الجملة عبر واتساب خلال يوم عمل واحد.'},
     "hero_points": {
