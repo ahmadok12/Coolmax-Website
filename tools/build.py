@@ -585,7 +585,7 @@ def build_home(lang):
         hero_tiles += (
             f'<div class="hero-pick"><a class="hero-thumb" href="{href(cur, product_path(lang, p))}">'
             f'{img(cur, p["image"], alt, small=True, eager=True)}<span class="chip chip-new">{t("new_badge", lang)}</span>'
-            f'<span class="hero-cap"><span>{brand}</span> <b dir="ltr">{name}</b><em dir="ltr">{esc(key_stat(p))}</em></span></a>{extra}</div>'
+            f'<span class="hero-cap"><span>{brand}</span> <b dir="ltr">{name}</b></span></a>{extra}</div>'
         )
 
     body = f"""
