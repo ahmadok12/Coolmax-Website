@@ -177,6 +177,40 @@ PRODUCTS = [
                 ],
             },
         },
+        # Mini Chiller vs one typical floor-standing (cabinet) AC. AC figures are typical market values for
+        # 2-4 ton units, labelled as such on the page; Mini Chiller figures come from the specs above.
+        "vs_floor_ac": {
+            "cols": {
+                "en": ["", "Floor-standing AC (typical)", "Mini Chiller"],
+                "ar": ["", "مكيف دولابي قائم (قيم نموذجية)", "ميني تشيلر"],
+            },
+            "rows": {
+                "en": [
+                    ("Cooling per unit", "7–14 kW (2–4 ton)", "25–35 kW (about 7–10 ton)"),
+                    ("Electricity per hour, 35 kW of cooling", "About 11.7 kWh (COP about 3)", "5.9–6.3 kWh (COP 5)"),
+                    ("Electricity per 10-hour day", "About 117 kWh", "59–63 kWh"),
+                    ("Possible saving", "Baseline", "About 54–58 kWh a day, or 1,600–1,750 kWh a month: up to about half the bill"),
+                    ("Airflow", "About 1,000–2,000 m³/h", "6,000–7,000 m³/h, long air throw"),
+                    ("How the heat leaves", "Hot air from an air-cooled outdoor unit", "Water to an outdoor unit with wet cooling pads"),
+                    ("Installation", "Copper refrigerant pipes, brazed and gas-charged by a technician", "PVC water pipes only"),
+                    ("Utilities", "Electricity only", "380 V three-phase power and a water supply"),
+                    ("Initial cost", "Low per unit", "Close to air-cooled AC for the same cooling"),
+                    ("Best for", "Shops, offices and halls", "Factory workshops, warehouses and large showrooms"),
+                ],
+                "ar": [
+                    ("التبريد لكل وحدة", "7–14 كيلوواط (2–4 طن)", "25–35 كيلوواط (نحو 7–10 طن)"),
+                    ("الكهرباء في الساعة لتبريد 35 كيلوواط", "نحو 11.7 كيلوواط ساعة (COP نحو 3)", "5.9–6.3 كيلوواط ساعة (COP 5)"),
+                    ("الكهرباء في يوم تشغيل 10 ساعات", "نحو 117 كيلوواط ساعة", "59–63 كيلوواط ساعة"),
+                    ("التوفير المتوقع", "أساس المقارنة", "نحو 54–58 كيلوواط ساعة يومياً، أي 1,600–1,750 كيلوواط ساعة شهرياً: حتى نحو نصف الفاتورة"),
+                    ("تدفق الهواء", "نحو 1,000–2,000 م³/س", "6,000–7,000 م³/س، ومسافة دفع طويلة"),
+                    ("طريقة طرد الحرارة", "هواء حار من وحدة خارجية مبردة بالهواء", "بالماء إلى وحدة خارجية بخلايا تبريد مبللة"),
+                    ("التركيب", "أنابيب نحاس للفريون، لحام وتعبئة غاز بواسطة فني", "أنابيب مياه PVC فقط"),
+                    ("المرافق المطلوبة", "كهرباء فقط", "كهرباء 380 فولت ثلاثية الطور ومصدر مياه"),
+                    ("التكلفة الأولية", "منخفضة للوحدة الواحدة", "قريبة من المكيف المبرد بالهواء لنفس قدرة التبريد"),
+                    ("الأنسب لـ", "المحلات والمكاتب والقاعات", "ورش المصانع والمستودعات وصالات العرض الكبيرة"),
+                ],
+            },
+        },
         "source": {"en": "Aolan Mini Chiller brochure (2026)", "ar": "كتيب أولان ميني تشيلر (2026)"},
     },
     # ------------------------------------------------------------------ industrial
