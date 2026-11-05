@@ -651,7 +651,18 @@ input:user-invalid, select:user-invalid, textarea:user-invalid { border-color: v
 .mm-img { height: 104px; display: block; margin-bottom: .35rem; }
 .mm-img img { width: 100%; height: 100%; object-fit: contain; }
 .mm-tile b { font-size: .84rem; font-weight: 600; line-height: 1.2; }
-.mm-tile small { font-size: .75rem; color: var(--body); font-weight: 500; font-variant-numeric: tabular-nums; }
+.mm-tile small { font-size: .75rem; line-height: 1.35; color: var(--body); font-weight: 500; font-variant-numeric: tabular-nums; }
+/* Equal cards: brand rows share one grid (header / tiles / "All models" line up across brands), and each tile's
+   image, name and spec sit on shared rows, so a spec that wraps to two lines grows every card in the row together. */
+@supports (grid-template-rows: subgrid) {
+  .mm-cols { grid-template-rows: auto auto auto; }
+  .mm-col { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: .9rem; align-content: start; }
+  .mm-tiles { grid-template-rows: auto auto 1fr; align-self: stretch; }
+  .mm-tile { grid-row: span 3; grid-template-rows: subgrid; row-gap: .1rem; align-content: start; }
+  .mm-tile b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -.01em; }
+  .mm-tile small { align-self: start; min-height: 2.7em; }
+  .mm-all { margin-top: 0; align-self: start; justify-self: start; }
+}
 .mm-all { margin-top: auto; font-weight: 700; color: var(--ink); display: inline-flex; gap: .4rem; align-items: center; font-size: .92rem; text-decoration: underline; text-decoration-color: var(--blue); text-underline-offset: .3em; }
 .mm-all svg { display: none; }
 .mm-all:hover { color: var(--blue-d); }
@@ -671,10 +682,17 @@ input:user-invalid, select:user-invalid, textarea:user-invalid { border-color: v
   .mnav-panel .mm-foot { flex-direction: column; align-items: stretch; text-align: center; font-size: .9rem; }
   .mnav-panel .mm-all { padding: .2rem 0; }
   .mnav-panel .mm-img { height: 84px; }
+  .mnav-panel .mm-col { row-gap: .6rem; }
+  .mnav-panel .mm-tile { padding-inline: .35rem; }
+  .mnav-panel .mm-tile b { font-size: .8rem; }
   .mnav-links { display: grid; margin-top: .75rem; border-top: 1px solid var(--line); }
   .mnav-links a { padding: .95rem .25rem; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); font-weight: 600; font-size: 1.05rem; }
   html.menu-open, html.menu-open body { overflow: clip; }
   html.menu-open .mbar { display: none; }
+}
+@media (max-width: 380px) {
+  /* small phones: names may take two lines, but every name keeps two lines so the spec lines still line up */
+  .mnav-panel .mm-tile b { white-space: normal; overflow: visible; min-height: 2.4em; }
 }
 .mnav[open] summary span:nth-child(2) { opacity: 0; }
 .mnav[open] summary span:first-child { transform: translateY(5.5px) rotate(45deg); }
