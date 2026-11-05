@@ -151,6 +151,23 @@ def wa_link(text=""):
     return f"https://wa.me/{SITE['whatsapp']}" + (f"?text={quote(text)}" if text else "")
 
 
+def tel_link():
+    return f"tel:{SITE['phone_tel']}"
+
+
+def contact_list(lang, cls="c-list"):
+    """Call, email, website and shop address as icon rows (contact card)."""
+    rows = [
+        (ICON["phone"], t("c_call", lang), f'<a href="{tel_link()}" dir="ltr">{esc(SITE["phone_display"])}</a>'),
+        (ICON["mail"], t("c_email", lang), f'<a href="mailto:{SITE["email"]}" dir="ltr">{esc(SITE["email"])}</a>'),
+        (ICON["globe"], t("c_web", lang), f'<span dir="ltr">{esc(SITE["domain"])}</span>'),
+        (ICON["pin"], t("c_shop", lang), f'<address>{esc(L(SITE["address"], lang))}</address>'
+         f'<a class="c-map" href="{esc(SITE["map_url"])}" rel="noopener" target="_blank">{t("c_map", lang)}</a>'),
+    ]
+    return f'<ul class="{cls}">' + "".join(
+        f'<li><span class="c-ico">{i}</span><span class="c-txt"><small>{esc(k)}</small>{v}</span></li>' for i, k, v in rows) + "</ul>"
+
+
 def first_num(s):
     m = re.search(r"\d[\d,]*\.?\d*", s)
     return float(m.group().replace(",", "")) if m else None
@@ -203,6 +220,8 @@ ICON = {
     "c2": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 16c8-6 14 6 22 0s14-6 14-6M6 26c8-6 14 6 22 0s14-6 14-6M6 36c8-6 14 6 22 0s14-6 14-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     "c3": '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M24 4v6M24 38v6M4 24h6M38 24h6M10 10l4 4M34 34l4 4M10 38l4-4M34 14l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     "c4": '<svg viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="20" cy="14" rx="12" ry="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 14v10c0 3 5 5 12 5s12-2 12-5V14M8 24v10c0 3 5 5 12 5 3 0 6-.5 8-1.3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="36" cy="34" r="7" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+    "mail": '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+    "pin": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.1-7-11.5a7 7 0 0 1 14 0C19 14.9 12 21 12 21Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>',
     "globe": '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>',
     "factory": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M4 42V22l11 7v-7l11 7v-7l11 7V8h7v34Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 35h4M22 35h4M32 35h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     "tune": '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 12h20M36 12h4M8 24h6M22 24h18M8 36h22M38 36h2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="32" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="24" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="34" cy="36" r="4" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
@@ -313,9 +332,11 @@ def footer(cur, lang):
     <div><h2>{t('nav_brands', lang)}</h2><ul>{brands}</ul></div>
     <div class="f-cats"><h2>{t('cats_title', lang)}</h2><ul>{cats}</ul></div>
     <div><h2>{t('nav_contact', lang)}</h2><ul>
-      <li><a href="{wa_link()}" rel="noopener">WhatsApp <span dir="ltr">{esc(SITE['phone_display'])}</span></a></li>
-      <li><a href="mailto:{SITE['email']}">{esc(SITE['email'])}</a></li>
-      <li>{esc(L(SITE['address'], lang))}</li>
+      <li><a href="{tel_link()}">{t('c_call', lang)} <span dir="ltr">{esc(SITE['phone_display'])}</span></a></li>
+      <li><a href="{wa_link()}" rel="noopener">WhatsApp</a></li>
+      <li><a href="mailto:{SITE['email']}" dir="ltr">{esc(SITE['email'])}</a></li>
+      <li><span dir="ltr">{esc(SITE['domain'])}</span></li>
+      <li><a href="{esc(SITE['map_url'])}" rel="noopener" target="_blank"><address class="f-addr">{esc(L(SITE['address'], lang))}</address></a></li>
       <li><a href="{href(cur, f'{lang}/cooler-sizing-calculator.html')}">{t('nav_calc', lang)}</a></li></ul></div>
   </div>
   <div class="wrap footer-bottom">© 2026 {esc(L(SITE['name'], lang))}. {t('footer_rights', lang)}</div>
@@ -658,9 +679,10 @@ def build_home(lang):
         "url": abs_url(cur),
         "logo": f"{SITE['url']}/assets/img/brands/coolmax-logo.png",
         "email": SITE["email"],
-        "telephone": SITE["phone_display"],
+        "telephone": SITE["phone_tel"],
+        "address": {"@type": "PostalAddress", **SITE["address_ld"]},
         "areaServed": [L(n, "en") for _, n in MARKETS],
-        "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "telephone": SITE["phone_display"],
+        "contactPoint": {"@type": "ContactPoint", "contactType": "sales", "telephone": SITE["phone_tel"], "email": SITE["email"],
                          "availableLanguage": ["English", "Arabic", "Urdu"]},
     }
     website = {"@context": "https://schema.org", "@type": "WebSite", "name": L(SITE["name"], lang), "url": abs_url(cur), "inLanguage": lang}
@@ -1089,7 +1111,7 @@ def build_contact(lang):
   {inquiry_form(cur, lang)}
   <aside class="card contact-card"><h2>{t('f_direct', lang)}</h2>
     <a class="btn btn-wa btn-lg wide" href="{wa_link()}" rel="noopener">{ICON['wa']}<span dir="ltr">{esc(SITE['phone_display'])}</span></a>
-    <p><a href="mailto:{SITE['email']}">{esc(SITE['email'])}</a></p><p>{esc(L(SITE['address'], lang))}</p>
+    {contact_list(lang)}
     <ul class="ticks">{''.join(f"<li>{ICON['check']}{esc(x)}</li>" for x in T['hero_points'][lang])}</ul></aside>
 </div></section>
 """

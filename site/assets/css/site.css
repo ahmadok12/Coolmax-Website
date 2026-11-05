@@ -517,6 +517,20 @@ input:user-invalid, select:user-invalid, textarea:user-invalid { border-color: v
 .contact-card a { color: var(--blue-hi); }
 .contact-card .ticks li { color: var(--on-night); }
 .contact-card .ticks svg { color: var(--blue-hi); }
+/* contact rows: call, WhatsApp, email, website, shop */
+.c-list { list-style: none; padding: 0; margin: 1.25rem 0; display: grid; gap: .85rem; }
+.c-list li { display: flex; gap: .8rem; align-items: flex-start; }
+.c-ico { flex: none; width: 2.4rem; height: 2.4rem; border-radius: var(--radius-sm); display: grid; place-items: center; background: var(--tint-night); border: 1px solid var(--rule-night-2); color: var(--blue-hi); }
+.c-ico svg { width: 1.15rem; height: 1.15rem; }
+.c-txt { min-width: 0; line-height: 1.4; overflow-wrap: anywhere; }
+.c-txt small { display: block; font-size: .78rem; color: var(--on-night-3); }
+.c-txt a, .c-txt span { color: var(--on-night); text-decoration: none; font-weight: 600; }
+.c-txt a:hover { color: var(--blue-hi); text-decoration: underline; }
+.c-txt address { font-style: normal; color: var(--on-night); }
+.contact-card .c-txt .c-map { display: inline-block; margin-top: .25rem; font-size: .88rem; font-weight: 500; color: var(--blue-hi); }
+.f-addr { font-style: normal; display: inline; }
+.site-footer li { min-width: 0; overflow-wrap: anywhere; }
+.site-footer li a { max-width: 100%; }
 @media (max-width: 900px) { .contact-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 640px) { .inq .grid2 { grid-template-columns: minmax(0, 1fr); } }
 
