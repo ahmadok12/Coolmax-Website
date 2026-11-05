@@ -6,10 +6,17 @@ Edit SITE first: business name, domain, phone/WhatsApp and email appear on every
 SITE = {
     "name": {"en": "Coolmax Wholesale", "ar": "كولماكس للجملة"},
     "url": "https://ahmadok12.github.io/Coolmax-Website",  # site address, no trailing slash (canonical, hreflang, sitemap). Change when you get your own domain.
-    "whatsapp": "923000000000",  # international format, digits only (placeholder)
-    "phone_display": "+92 300 0000000",
-    "email": "sales@example.com",
-    "address": {"en": "Main store, Pakistan (address to be added)", "ar": "المعرض الرئيسي، باكستان (سيضاف العنوان)"},
+    "whatsapp": "923039447337",  # international format, digits only
+    "phone_display": "+92 303 9447337",
+    "phone_tel": "+923039447337",  # used for tel: links and structured data
+    "email": "wholesale@coolmaxaircooler.com",
+    # Shown as text only. When the domain is live, also change "url" above (canonical, sitemap) and add a CNAME.
+    "domain": "coolmaxaircooler.com",
+    "address": {"en": "Shop # 46-47, Power House Road, Ghalla Mandi, Okara, Pakistan",
+                "ar": "محل رقم 46-47، طريق باور هاوس، غلة مندي، أوكارا، باكستان"},
+    "address_ld": {"streetAddress": "Shop # 46-47, Power House Road, Ghalla Mandi", "addressLocality": "Okara",
+                   "addressRegion": "Punjab", "addressCountry": "PK"},
+    "map_url": "https://www.google.com/maps/search/?api=1&query=Power+House+Road+Ghalla+Mandi+Okara+Pakistan",
     "country_code": "PK",
     # Optional: a form backend such as Formspree (https://formspree.io/f/xxxx). Empty = form opens WhatsApp with the inquiry.
     "form_endpoint": "",
@@ -341,6 +348,11 @@ T = {
     "cta_title": {"en": 'Get the [[2026 price list]]', "ar": 'احصل على [[أسعار الجملة 2026]]'},
     "cta_lead": {"en": 'Send your city and quantity. We reply within one business day.', "ar": 'أرسل المدينة والكمية، ونرد خلال يوم عمل واحد.'},
     "call_us": {"en": "WhatsApp / call", "ar": "واتساب / اتصال"},
+    "c_call": {"en": "Call", "ar": "اتصال"},
+    "c_email": {"en": "Email", "ar": "البريد"},
+    "c_web": {"en": "Website", "ar": "الموقع"},
+    "c_shop": {"en": "Shop", "ar": "المحل"},
+    "c_map": {"en": "Open in Maps", "ar": "افتح في الخرائط"},
     "hero_card": {"en": "Model families across Coolmax, Aolan and PureBreeze", "ar": "فئة موديلات من كولماكس وأولان وبيور بريز"},
     "scroll": {"en": "Scroll down", "ar": "مرر للأسفل"},
     "soon_card": {"en": "Model details coming soon", "ar": "تفاصيل الموديل قريباً"},
