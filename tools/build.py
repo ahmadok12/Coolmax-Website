@@ -591,40 +591,37 @@ def build_home(lang):
     markets = "".join(f'<li><span class="flag">{code}</span>{esc(L(n, lang))}</li>' for code, n in MARKETS)
     markets += f'<li class="world"><span class="flag">{ICON["globe"]}</span>{t("markets_world", lang)}</li>'
     faq = "".join(f"<details><summary>{esc(q)}</summary><p>{esc(a)}</p></details>" for q, a in T["faq"][lang])
-    pts = "".join(f"<li>{esc(x)}</li>" for x in T["hero_points"][lang])
     direct_cards = "".join(
         f'<div class="card dcard"><span class="dcard-ico">{ICON[ico]}</span><div><h3>{esc(h)}</h3><p>{esc(d)}</p></div></div>'
         for ico, (h, d) in zip(("factory", "tune"), T["direct_points"][lang])
     )
 
-    hero_tiles = ""
-    for p, brand, name, alt, extra in (
-        (newp, "PureBreeze", "BLDC Cube", "PureBreeze BLDC cube air cooler", ""),
-        (chiller, "Aolan", "Mini Chiller", "Aolan Mini Chiller",
-         f'<a class="hero-3d" href="{href(cur, "3d/mini-chiller/index.html")}" aria-label="{t("hero_3d", lang)}: Mini Chiller"><span class="hero-3d-l">{t("hero_3d", lang)}</span><span class="hero-3d-s" aria-hidden="true">3D</span></a>'),
-    ):
-        hero_tiles += (
-            f'<div class="hero-pick"><a class="hero-thumb" href="{href(cur, product_path(lang, p))}">'
-            f'{img(cur, p["image"], alt, small=True, eager=True)}<span class="chip chip-new">{t("new_badge", lang)}</span>'
-            f'<span class="hero-cap"><span>{brand}</span> <b dir="ltr">{name}</b></span></a>{extra}</div>'
-        )
-
+    hero_stats = "".join(
+        f'<li><b dir="ltr">{esc(v)}</b><span>{esc(k)}</span></li>'
+        for v, k in [(f"{len(PRODUCTS)}+", t("hs_models", lang))] + T["hero_stats"][lang]
+    )
+    chiller_page = href(cur, product_path(lang, chiller))
     body = f"""
-<section class="hero hero-bg">
-  <div class="wrap hero-in">
-    <div class="hero-copy">
-      <h1>{hx('hero_title', lang)}</h1>
-      <p class="lead">{t('hero_lead', lang)}</p>
-      <div class="btns"><a class="btn btn-primary btn-lg" href="{contact}">{t('cta_quote', lang)}</a>
-      <a class="btn btn-line btn-lg" href="{wa_link()}" rel="noopener">{ICON['wa']}{t('cta_whatsapp', lang)}</a></div>
+<section class="hero hero-cine" aria-labelledby="hero-h">
+  <div class="hc-frame">
+    <div class="hc-in">
+      <div class="hc-copy">
+        <p class="hc-kicker">{t('hero_kicker', lang)}</p>
+        <h1 id="hero-h">{t('hero_h1', lang)}</h1>
+        <p class="hc-lead">{t('hero_sub', lang)}</p>
+        <div class="hc-cta"><a class="btn btn-primary btn-lg" href="{contact}">{t('cta_quote', lang)} {ICON['arrow']}</a>
+        <a class="hc-wa" href="{wa_link()}" rel="noopener">{ICON['wa']}<span>{t('hero_wa', lang)} <b dir="ltr">{esc(SITE['phone_display'])}</b></span></a></div>
+      </div>
+      <figure class="hc-art">
+        <img class="hc-img" src="{href(cur, 'assets/img/hero/mini-chiller-lit.webp')}" srcset="{href(cur, 'assets/img/hero/mini-chiller-lit-sm.webp')} 900w, {href(cur, 'assets/img/hero/mini-chiller-lit.webp')} 2205w" sizes="(max-width: 820px) 100vw, 46vw" width="2205" height="2025" alt="{esc(t('hero_img_alt', lang))}" fetchpriority="high">
+        <figcaption class="hc-tag"><span class="hc-new">{t('new_badge', lang)}</span>
+          <a href="{chiller_page}"><small>Aolan</small> <b dir="ltr">Mini Chiller</b></a>
+          <a class="hc-3d" href="{href(cur, '3d/mini-chiller/index.html')}">{t('hero_3d', lang)} {ICON['ne']}</a></figcaption>
+      </figure>
     </div>
-    <div class="hero-side">
-      <div class="glass"><b dir="ltr">{len(PRODUCTS)}+</b><span>{t('hero_card', lang)}</span></div>
-      <div class="hero-picks">{hero_tiles}</div>
-    </div>
+    <ul class="hc-stats">{hero_stats}</ul>
   </div>
 </section>
-<section class="proof" aria-label="{esc(t('hero_kicker', lang))}"><ul class="wrap proof-in"><li>{t('hero_kicker', lang)}</li>{pts}</ul></section>
 
 <section class="sec sec-tint direct" id="factory-direct"><div class="wrap">
   {sec_head(t('direct_title', lang), hx('direct_title', lang), t('direct_lead', lang))}
