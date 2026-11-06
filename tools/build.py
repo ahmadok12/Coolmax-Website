@@ -614,6 +614,15 @@ def build_home(lang):
       </div>
       <figure class="hc-art">
         <img class="hc-img" src="{href(cur, 'assets/img/hero/mini-chiller-lit.webp')}" srcset="{href(cur, 'assets/img/hero/mini-chiller-lit-sm.webp')} 900w, {href(cur, 'assets/img/hero/mini-chiller-lit.webp')} 2205w" sizes="(max-width: 820px) 100vw, 46vw" width="2205" height="2025" alt="{esc(t('hero_img_alt', lang))}" fetchpriority="high">
+        <svg class="hc-air" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <defs><linearGradient id="hc-air-g" gradientUnits="userSpaceOnUse" x1="57" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#e8f0ff" stop-opacity=".9"/><stop offset=".55" stop-color="#93b4ff" stop-opacity=".45"/><stop offset="1" stop-color="#93b4ff" stop-opacity="0"/></linearGradient></defs>
+          <path pathLength="100" d="M57 21 C46 18, 38 25, 27 21 S10 15, 0 19"/>
+          <path pathLength="100" d="M57 25.5 C45 24, 37 30, 25 26.5 S8 22, -2 26"/>
+          <path pathLength="100" d="M57 30 C46 30, 39 35, 27 32 S10 29, 0 33"/>
+          <path pathLength="100" d="M57 34 C47 35, 40 39, 29 37 S13 35, 3 39"/>
+        </svg>
+        <span class="hc-puffs" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="hc-led" aria-hidden="true"></span>
         <figcaption class="hc-tag"><span class="hc-new">{t('new_badge', lang)}</span>
           <a href="{chiller_page}"><small>Aolan</small> <b dir="ltr">Mini Chiller</b></a>
           <a class="hc-3d" href="{href(cur, '3d/mini-chiller/index.html')}">{t('hero_3d', lang)} {ICON['ne']}</a></figcaption>
