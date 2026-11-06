@@ -10,6 +10,7 @@ BRAND = {
     "name": "Aolan",
     "legal": "Aolan (Fujian) Industry Co., Ltd",
     "logo_text": "AOLAN",
+    "svg_logo": "aolan-wordmark",  # assets/img/brands/*.svg, made by tools/make_aolan_logo.py
     "status": "live",
     "origin": {"en": "Fuzhou, China", "ar": "فوتشو، الصين"},
     "tagline": {

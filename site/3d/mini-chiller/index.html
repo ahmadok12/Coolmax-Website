@@ -52,6 +52,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--font); font-
 header.top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .mark { width: 46px; height: 46px; border-radius: 12px; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; flex: none; }
 .mark svg { width: 28px; height: 28px; }
+.mark { width: auto; padding: 0 14px; } .mark img { display: block; width: auto; height: 20px; }
 .brand { min-width: 0; flex: 1 1 240px; }
 .brand h1 { font-size: 1.45rem; font-weight: 800; margin: 0; letter-spacing: -.01em; line-height: 1.15; }
 .brand p { margin: 0; color: var(--muted); font-size: .9rem; }
@@ -243,9 +244,7 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
 
 <div class="page">
   <header class="top">
-    <div class="mark" aria-hidden="true">
-      <svg viewBox="0 0 32 32"><rect x="5" y="9" width="22" height="18" rx="3" fill="none" stroke="#0b3a6e" stroke-width="2.2"/><circle cx="16" cy="9" r="5" fill="#1fb3d6"/><path d="M10 15h12M10 19h12M10 23h12" stroke="#1fb3d6" stroke-width="1.8" stroke-linecap="round"/></svg>
-    </div>
+    <a class="mark" href="../../en/brands/aolan/index.html" id="mark"><img src="../../assets/img/brands/aolan-wordmark.svg" alt="Aolan" width="274" height="57"></a>
     <div class="brand">
       <h1>Aolan Mini Chiller Studio</h1>
       <p>Switch it on and watch both units work</p>
@@ -391,7 +390,7 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
   if (!ar && /\/ar\//.test(document.referrer)) ar = true;
   if (!ar) return;
   var back = document.getElementById('back'), q = document.getElementById('buy-q'), w = document.getElementById('buy-w');
-  back.href = '../../ar/brands/aolan/mini-chiller.html'; back.textContent = 'ميني تشيلر أولان \u2190'; back.dir = 'rtl';
+  document.getElementById('mark').href = '../../ar/brands/aolan/index.html'; back.href = '../../ar/brands/aolan/mini-chiller.html'; back.textContent = 'ميني تشيلر أولان \u2190'; back.dir = 'rtl';
   q.href = '../../ar/wholesale-inquiry.html?model=Mini%20Chiller&brand=aolan'; q.textContent = 'اطلب سعر ميني تشيلر';
   w.textContent = 'واتساب'; w.href = 'https://wa.me/923039447337?text=' + encodeURIComponent('سعر ميني تشيلر');
 })();

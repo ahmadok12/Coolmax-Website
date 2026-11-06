@@ -199,6 +199,15 @@ def brand_path(lang, b):
     return f"{lang}/brands/{b['slug']}/index.html"
 
 
+def svg_logo(cur, name, alt, cls, lazy=True):
+    """Brand logos kept as SVG (assets/img/brands/<name>.svg); width/height come from the viewBox."""
+    rel = f"{IMG}/brands/{name}.svg"
+    with open(os.path.join(OUT, rel)) as fh:
+        w, h = re.search(r'viewBox="[-\d.]+ [-\d.]+ ([\d.]+) ([\d.]+)"', fh.read()).groups()
+    lz = ' loading="lazy" decoding="async"' if lazy else ""
+    return f'<img class="{cls}" src="{href(cur, rel)}" alt="{esc(alt)}" width="{round(float(w))}" height="{round(float(h))}"{lz}>'
+
+
 def logo_img(cur, cls="logo-mark"):
     rel = "assets/img/brands/coolmax-mark.webp"
     w, h, _ = img_info(rel)
@@ -269,7 +278,7 @@ def mega_menu(cur, lang):
         )
         bp = href(cur, brand_path(lang, b))
         cols += (
-            f'<div class="mm-col"><a class="mm-brand" href="{bp}"><span class="mm-name">{esc(b["name"])}{brand_chip(lang, b)}</span>'
+            f'<div class="mm-col"><a class="mm-brand" href="{bp}"><span class="mm-name">{svg_logo(cur, b["svg_logo"], b["name"], "mm-logo") if b.get("svg_logo") else esc(b["name"])}{brand_chip(lang, b)}</span>'
             f'<span class="mm-line">{esc(L(BRAND_LINE[b["slug"]], lang))}</span></a>'
             f'<div class="mm-tiles">{tiles}</div>'
             f'<a class="mm-all" href="{bp}">{t("mm_all", lang, n=len(b["products"]))} {ICON["arrow"]}</a></div>'
@@ -543,8 +552,9 @@ def build_home(lang):
     cards = ""
     for b in BRANDS:
         pic = {"aolan": "wind-supremo"}.get(b["slug"], b.get("card_image"))
+        blogo = svg_logo(cur, b["svg_logo"], f"{b['name']} logo", "bcard-logo") if b.get("svg_logo") else ""
         cards += f"""<a class="bcard bcard-{b['slug']}" href="{href(cur, brand_path(lang, b))}">
-  <div class="bcard-img">{img(cur, pic, f"{b['name']} evaporative air coolers", small=True)}</div>
+  <div class="bcard-img">{img(cur, pic, f"{b['name']} evaporative air coolers", small=True)}{blogo}</div>
   <div class="bcard-body">{brand_chip(lang, b)}<h3>{esc(b['name'])}</h3>
   <p>{esc(L(BRAND_LINE[b['slug']], lang))}</p><span class="link">{t('view_range', lang)} {ICON['arrow']}</span></div></a>"""
 
@@ -567,7 +577,7 @@ def build_home(lang):
         pp = href(cur, product_path(lang, p))
         spot_html += f"""<article class="spot">
   <a class="spot-img" href="{pp}" tabindex="-1">{img(cur, p['image'], f"{p['brand']['name']} {name}", small=True)}</a>
-  <div class="spot-body">{chip}<h3><small>{esc(p['brand']['name'])}</small> <span dir="ltr">{esc(name)}</span></h3><p>{esc(lead)}</p>
+  <div class="spot-body">{chip}<h3>{svg_logo(cur, p['brand']['svg_logo'], p['brand']['name'], 'inline-logo') if p['brand'].get('svg_logo') else f"<small>{esc(p['brand']['name'])}</small>"} <span dir="ltr">{esc(name)}</span></h3><p>{esc(lead)}</p>
   <div class="kv kv-sm">{kv_html}</div>
   <div class="spot-btns"><a class="btn btn-primary" href="{contact}?model={quote(name)}&amp;brand={p['brand']['slug']}">{t('cta_quote', lang)}</a>
   <a class="btn btn-ghost" href="{pp}">{t('specs_short', lang)}</a></div>{extra}</div></article>"""
@@ -624,7 +634,7 @@ def build_home(lang):
           <svg class="hc-air" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="{gid}" gradientUnits="userSpaceOnUse" x1="{air[0]}" y1="0" x2="{air[0] - 57}" y2="0"><stop offset="0" stop-color="#e8f0ff" stop-opacity=".9"/><stop offset=".55" stop-color="#93b4ff" stop-opacity=".45"/><stop offset="1" stop-color="#93b4ff" stop-opacity="0"/></linearGradient></defs><g stroke="url(#{gid})">{paths}</g></svg>
           <span class="hc-led{led[4]}" style="left:{led[0]};top:{led[1]};width:{led[2]};height:{led[3]}" aria-hidden="true"></span>
           <figcaption class="hc-tag"><span class="hc-new">{t('new_badge', lang)}</span>
-            <a href="{href(cur, product_path(lang, p))}"><small>{brand}</small> <b dir="ltr">{name}</b></a>
+            <a href="{href(cur, product_path(lang, p))}">{svg_logo(cur, "aolan-wordmark-light", "Aolan", "hc-logo", lazy=False) if brand == "Aolan" else f"<small>{brand}</small>"} <b dir="ltr">{name}</b></a>
             <a class="hc-3d" href="{href(cur, viewer)}">{t('hero_3d', lang)} {ICON['ne']}</a></figcaption>
         </figure>
 """
@@ -734,7 +744,7 @@ def build_aolan_brand(lang):
 <section class="page-hero"><div class="wrap">
   {crumbs}
   <div class="brand-hero">
-    <div><p class="kicker">{esc(L(AOLAN['origin'], lang))}{', since 1998' if lang == 'en' else '، منذ 1998'}</p>
+    <div>{svg_logo(cur, "aolan-logo", "Aolan Evaporative Cooling Systems", "brand-logo brand-logo-solid", lazy=False)}<p class="kicker">{esc(L(AOLAN['origin'], lang))}{', since 1998' if lang == 'en' else '، منذ 1998'}</p>
     <h1>{'Aolan evaporative air coolers' if lang == 'en' else 'مكيفات أولان الصحراوية (Aolan)'}</h1>
     <p class="lead">{esc(L(BRAND_LINE['aolan'], lang))}</p>
     <nav class="pills">{''.join(f'<a href="#{c["slug"]}">{esc(c[lang])}</a>' for c in CATEGORIES)}</nav></div>
@@ -1022,6 +1032,9 @@ def build_product(lang, p):
     h1 = f"{bn} {p['name']}"
     if p.get("new"):
         solar = f'<span class="chip chip-new">{t("new_kicker", lang)}</span> ' + solar
+    pd_logo = ""
+    if b.get("svg_logo"):
+        pd_logo = f'<a class="pd-logo" href="{href(cur, brand_path(lang, b))}">{svg_logo(cur, b["svg_logo"], bn, "", lazy=False)}</a>'
     viewer_btn = ""
     viewer = VIEWER_3D.get((b["slug"], p["slug"]))
     if viewer:
@@ -1031,7 +1044,7 @@ def build_product(lang, p):
 <section class="sec pt0"><div class="wrap product">
   <div class="pgallery"><div class="pmain">{img(cur, p['image'], f"{bn} {p['name']} {L(p['headline'], 'en')}", eager=True)}</div>{thumbs}</div>
   <div class="pinfo">
-    <p class="kicker"><a href="{href(cur, brand_path(lang, b))}#{cat['slug']}">{esc(cat[lang])}</a></p>
+    {pd_logo}<p class="kicker"><a href="{href(cur, brand_path(lang, b))}#{cat['slug']}">{esc(cat[lang])}</a></p>
     <h1><span dir="ltr">{esc(h1)}</span></h1>
     <p class="subtitle">{solar}{esc(L(p['headline'], lang))}</p>
     <div class="kv">{kv_html}</div>
