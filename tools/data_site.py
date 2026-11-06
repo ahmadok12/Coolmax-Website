@@ -164,10 +164,20 @@ T = {
     "cta_whatsapp": {"en": "WhatsApp us", "ar": "راسلنا واتساب"},
     "cta_models": {"en": "Browse models", "ar": "تصفح الموديلات"},
     "menu": {"en": "Menu", "ar": "القائمة"},
-    "hero_kicker": {"en": "Wholesale to Pakistan, the Gulf and worldwide", "ar": "بالجملة إلى باكستان والخليج وجميع أنحاء العالم"},
+    "hero_kicker": {"en": "Evaporative air coolers for Pakistan, the Gulf and worldwide", "ar": "مكيفات تبريد بالتبخير لباكستان والخليج وجميع أنحاء العالم"},
     "hero_3d": {"en": "View in 3D", "ar": "عرض ثلاثي الأبعاد"},
     "hero_title": {"en": 'Evaporative air coolers, [[wholesale]]', "ar": 'مكيفات صحراوية [[بالجملة]]'},
     "hero_lead": {"en": 'Coolmax, Aolan and PureBreeze. 1,000–80,000 m³/h. Wholesale prices on WhatsApp within one business day.', "ar": 'كولماكس وأولان وبيور بريز. من 1,000 إلى 80,000 م³/ساعة. أسعار الجملة عبر واتساب خلال يوم عمل واحد.'},
+    # cinematic home hero (2026-11-06): one action, Mini Chiller on a night stage, four facts along the bottom
+    "hero_h1": {"en": 'Wholesale air coolers,<br> straight from the factory', "ar": 'مكيفات صحراوية بالجملة،<br> مباشرة من المصنع'},
+    "hero_sub": {"en": 'Up to 90% cheaper to run than AC. Order full or mixed containers, factory direct from China.', "ar": 'تشغيل أوفر حتى 90% من المكيف العادي. اطلب حاويات كاملة أو مختلطة مباشرة من المصنع في الصين.'},
+    "hero_wa": {"en": "or WhatsApp", "ar": "أو واتساب"},
+    "hero_img_alt": {"en": "Aolan Mini Chiller outdoor and indoor units on a dark blue stage", "ar": "وحدتا ميني تشيلر من أولان الخارجية والداخلية على خلفية زرقاء داكنة"},
+    "hs_models": {"en": "Model families across 3 brands", "ar": "فئة موديلات من 3 علامات تجارية"},
+    "hero_stats": {
+        "en": [("80,000", "m³/h top airflow"), ("SASO CE BV", "Approved models"), ("1", "Business day for a price reply")],
+        "ar": [("80,000", "م³/ساعة أقصى تدفق هواء"), ("SASO CE BV", "موديلات معتمدة"), ("1", "يوم عمل للرد بالأسعار")],
+    },
     "hero_points": {
         "en": ["Up to 90% cheaper to run than AC", "SASO, CE & BV approved", "Full or mixed containers"],
         "ar": ["تشغيل أوفر حتى 90% من المكيف العادي", "شهادات SASO وCE وBV", "حاويات كاملة أو موديلات مختلطة"],
