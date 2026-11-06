@@ -51,8 +51,8 @@ CATEGORIES = [
         "ar": "مكيفات مكعبة بمحرك BLDC",
         "image": "purebreeze/bldc-hero",
         "desc": {
-            "en": "New for 2026: energy-saving brushless DC coolers with 120° air supply for halls, shops and large rooms.",
-            "ar": "جديد 2026: مكيفات موفرة للطاقة بمحرك تيار مستمر بدون فرش وتوزيع هواء بزاوية 120 درجة للقاعات والمحلات والغرف الكبيرة.",
+            "en": "New at Canton Fair 2026: energy-saving brushless DC coolers with 120° air supply for halls, shops and large rooms.",
+            "ar": "جديد في معرض كانتون 2026: مكيفات موفرة للطاقة بمحرك تيار مستمر بدون فرش وتوزيع هواء بزاوية 120 درجة للقاعات والمحلات والغرف الكبيرة.",
         },
     },
     {
@@ -97,7 +97,7 @@ PRODUCTS = [
         "featured": True,
         "image": "purebreeze/bldc-hero",
         "gallery": ["purebreeze/bldc-88c", "purebreeze/bldc-98c"],
-        "headline": {"en": "15,000–18,000 m³/h BLDC evaporative cooler, new for 2026", "ar": "مكيف صحراوي بمحرك BLDC بتدفق 15,000–18,000 م³/ساعة، جديد 2026"},
+        "headline": {"en": "15,000–18,000 m³/h BLDC evaporative cooler", "ar": "مكيف صحراوي بمحرك BLDC بتدفق 15,000–18,000 م³/ساعة"},
         "summary": {
             "en": "PureBreeze's new hero product, launched at the 2026 Canton Fair. A brushless DC motor gives industrial-size airflow from 450–1,100 W, "
                   "with a booster air vent, 120° wide-angle supply, a high-density cooling pad and a water filter. Two sizes ship SKD for efficient containers.",

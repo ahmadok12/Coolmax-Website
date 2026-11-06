@@ -48,8 +48,8 @@ CATEGORIES = [
         "en": "Mini chillers (evaporative AC)",
         "ar": "ميني تشيلر (تكييف تبخيري)",
         "desc": {
-            "en": "New for 2026: compressor cooling with an evaporative-cooled outdoor unit, 25–35 kW, connected with PVC water pipes only.",
-            "ar": "جديد 2026: تبريد بالكمبروسر مع وحدة خارجية مبردة تبخيرياً، بقدرة 25–35 كيلوواط، وتوصيل بأنابيب مياه PVC فقط.",
+            "en": "New at Canton Fair 2026: compressor cooling with an evaporative-cooled outdoor unit, 25–35 kW, connected with PVC water pipes only.",
+            "ar": "جديد في معرض كانتون 2026: تبريد بالكمبروسر مع وحدة خارجية مبردة تبخيرياً، بقدرة 25–35 كيلوواط، وتوصيل بأنابيب مياه PVC فقط.",
         },
     },
     {

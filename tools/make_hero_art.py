@@ -4,7 +4,7 @@ Usage:  python3 tools/make_hero_art.py
 
 Writes to site/assets/img/hero/:
   scene.webp / scene-rtl.webp / scene-m.webp   night-blue backdrop with cool haze (no product)
-  mini-chiller-lit.webp / -sm.webp             the Mini Chiller pair with a blue glow, cold mist and a floor reflection,
+  mini-chiller-lit / bldc-cube-lit (+ -sm)      the Mini Chiller pair / the BLDC Cube with a blue glow, cold mist and a floor reflection,
                                                on a transparent canvas so it sits on the backdrop at any screen size
 """
 import os
@@ -53,11 +53,12 @@ def scene(w, h, cx, cy):
     return Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8))
 
 
-def lit_product():
-    src = Image.open(os.path.join(IMG, "aolan", "mini-chiller.webp")).convert("RGBA")
+def lit_product(name, mist_at, mist_reach=(-0.25, 0.05), pad=1.0):
+    """`mist_at`: where the cold air leaves the unit, as fractions of the cutout; `mist_reach`: where the plume centres, relative to that."""
+    src = Image.open(os.path.join(IMG, name + ".webp")).convert("RGBA")
     pw, ph = src.size
-    W, H = int(pw * 1.7), int(ph * 1.75)
-    ox, oy = (W - pw) // 2, int(H * 0.12)
+    W, H = int(pw * 1.7 * pad), int(ph * 1.75 * pad)
+    ox, oy = (W - pw) // 2, int(H * 0.12 + ph * (pad - 1) * 0.6)
     bottom = np.nonzero(np.asarray(src)[..., 3].max(1) > 40)[0].max()  # last opaque row of the cutout
 
     # product, graded into the night: slightly cooler, darker towards the floor
@@ -104,10 +105,10 @@ def lit_product():
     layer[oy:oy + ph, ox:ox + pw] = np.asarray(prod, float)
     canvas = over(canvas, layer)
 
-    # cold mist drifting from the indoor unit's grille (the tall unit on the right of the photo)
-    mx, my = ox + pw * 0.71, oy + ph * 0.16
+    # cold mist drifting from where the air leaves the unit
+    mx, my = ox + pw * mist_at[0], oy + ph * mist_at[1]
     n = noise(W, H, W / 5, 5)
-    plume = radial(W, H, mx - pw * 0.25, my + ph * 0.05, pw * 0.75, ph * 0.32)
+    plume = radial(W, H, mx + pw * mist_reach[0], my + ph * mist_reach[1], pw * 0.75, ph * 0.32)
     mist = np.clip((n - 0.42) * 2.4, 0, 1) * plume
     m = np.zeros_like(canvas)
     m[..., :3] = ICE
@@ -115,6 +116,10 @@ def lit_product():
     m_img = Image.fromarray(m.astype(np.uint8)).filter(ImageFilter.GaussianBlur(14))
     canvas = over(canvas, np.asarray(m_img, float))
 
+    # fade everything to nothing towards the canvas edges, so the glow never shows a hard border on the backdrop
+    ex = np.clip(np.minimum(np.arange(W), W - 1 - np.arange(W)) / (W * 0.12), 0, 1)
+    ey = np.clip(np.minimum(np.arange(H), H - 1 - np.arange(H)) / (H * 0.12), 0, 1)
+    canvas[..., 3] *= (ey[:, None] * ex[None, :]) ** 1.5
     out = Image.fromarray(np.clip(canvas, 0, 255).astype(np.uint8))
     return out.crop(out.getbbox())
 
@@ -126,11 +131,15 @@ def main():
     s.transpose(Image.FLIP_LEFT_RIGHT).save(os.path.join(OUT, "scene-rtl.webp"), quality=80)
     scene(900, 1800, 0.5, 0.72).save(os.path.join(OUT, "scene-m.webp"), quality=80)
 
-    lp = lit_product()
-    lp.save(os.path.join(OUT, "mini-chiller-lit.webp"), quality=86)
-    sm = lp.resize((lp.width * 900 // lp.width, lp.height * 900 // lp.width), Image.LANCZOS)
-    sm.save(os.path.join(OUT, "mini-chiller-lit-sm.webp"), quality=84)
-    print("hero art:", lp.size, sm.size)
+    # the indoor unit's grille (tall unit, right of the photo); the BLDC Cube's fan face (left of the photo)
+    # pad: the Cube is one compact unit, so it gets more room around it to match the pair's size on screen
+    for out, name, mist_at, reach, pad in (("mini-chiller-lit", "aolan/mini-chiller", (0.71, 0.16), (-0.25, 0.05), 1.0),
+                                           ("bldc-cube-lit", "purebreeze/bldc-hero", (0.25, 0.42), (-0.35, -0.05), 1.3)):
+        lp = lit_product(name, mist_at, reach, pad)
+        lp.save(os.path.join(OUT, out + ".webp"), quality=86)
+        sm = lp.resize((900, lp.height * 900 // lp.width), Image.LANCZOS)
+        sm.save(os.path.join(OUT, out + "-sm.webp"), quality=84)
+        print("hero art:", out, lp.size, sm.size)
 
 
 if __name__ == "__main__":
