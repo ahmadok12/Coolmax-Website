@@ -251,17 +251,19 @@ def key_stat(p):
 
 def brand_chip(lang, b):
     if b.get("badge"):
-        return f'<span class="chip chip-new">{t("new_badge", lang)}</span>'
+        return f'<span class="chip chip-new">{t("brand_new_badge", lang)}</span>'
     return f'<span class="chip chip-ok">{t("models_count", lang, n=len(b["products"]))}</span>'
 
 
 def mega_menu(cur, lang):
     cols = ""
+    new_tag = f'<span class="mm-new">{t("new_short", lang)}</span>'
     for b in BRANDS:
         prods = {p["slug"]: p for p in b["products"]}
         tiles = "".join(
             f'<a class="mm-tile" href="{href(cur, product_path(lang, prods[s]))}">'
-            f'<span class="mm-img">{img(cur, prods[s]["image"], "", small=True)}</span>'
+            f'<span class="mm-img">{img(cur, prods[s]["image"], "", small=True)}'
+            f'{new_tag if prods[s].get("new") else ""}</span>'
             f'<b dir="ltr">{esc(label)}</b><small dir="ltr">{esc(key_stat(prods[s]))}</small></a>'
             for s, label in MEGA[b["slug"]]
         )
@@ -600,7 +602,33 @@ def build_home(lang):
         f'<li><b dir="ltr">{esc(v)}</b><span>{esc(k)}</span></li>'
         for v, k in [(f"{len(PRODUCTS)}+", t("hs_models", lang))] + T["hero_stats"][lang]
     )
-    chiller_page = href(cur, product_path(lang, chiller))
+    # hero slides: the two products launched at Canton Fair 2026, each lit on the night stage with its own cold-air loop.
+    # air: (gradient start x, paths) in the art's 0..100 box; led: (left, top, width, height) % of the art and a colour class
+    hero_slides, hero_dots = "", ""
+    for i, (p, brand, name, art, (w, h), viewer, alt_key, air, led) in enumerate((
+        (chiller, "Aolan", "Mini Chiller", "mini-chiller-lit", (2089, 1946), "3d/mini-chiller/index.html", "hero_img_alt",
+         (55, ["M55 20 C44 17, 36 24, 25 20 S8 14, -2 18", "M55 24.5 C43 23, 35 29, 23 25.5 S6 21, -4 25",
+               "M55 29 C44 29, 37 34, 25 31 S8 28, -2 32", "M55 33 C45 34, 38 38, 27 36 S11 34, 1 38"]),
+         ("62%", "53.7%", "1.1%", "16.8%", "")),
+        (newp, "PureBreeze", "BLDC Cube", "bldc-cube-lit", (1334, 1069), "3d/pb-98c/index.html", "hero_img_alt_cube",
+         (32, ["M32 38 C24 35, 17 41, 9 38 S-1 34, -8 37", "M31 46 C23 45, 16 50, 7 47 S-3 44, -10 47",
+               "M31 54 C23 55, 16 59, 7 57 S-3 54, -10 58", "M32 61 C24 63, 17 66, 9 65 S-1 63, -8 66"]),
+         ("53%", "41.3%", "1.6%", "21.9%", " hc-led-amber")),
+    )):
+        gid = f"hc-air-g{i}"
+        paths = "".join(f'<path pathLength="100" d="{d}"/>' for d in air[1])
+        on = " is-on" if i == 0 else ""
+        lazy = 'fetchpriority="high"' if i == 0 else 'loading="lazy" decoding="async"'
+        hero_slides += f"""        <figure class="hc-slide{on}" aria-roledescription="slide" aria-label="{brand} {name}"{'' if i == 0 else ' aria-hidden="true"'}>
+          <img class="hc-img" src="{href(cur, f'assets/img/hero/{art}.webp')}" srcset="{href(cur, f'assets/img/hero/{art}-sm.webp')} 900w, {href(cur, f'assets/img/hero/{art}.webp')} {w}w" sizes="(max-width: 820px) 100vw, 46vw" width="{w}" height="{h}" alt="{esc(t(alt_key, lang))}" {lazy}>
+          <svg class="hc-air" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><linearGradient id="{gid}" gradientUnits="userSpaceOnUse" x1="{air[0]}" y1="0" x2="{air[0] - 57}" y2="0"><stop offset="0" stop-color="#e8f0ff" stop-opacity=".9"/><stop offset=".55" stop-color="#93b4ff" stop-opacity=".45"/><stop offset="1" stop-color="#93b4ff" stop-opacity="0"/></linearGradient></defs><g stroke="url(#{gid})">{paths}</g></svg>
+          <span class="hc-led{led[4]}" style="left:{led[0]};top:{led[1]};width:{led[2]};height:{led[3]}" aria-hidden="true"></span>
+          <figcaption class="hc-tag"><span class="hc-new">{t('new_badge', lang)}</span>
+            <a href="{href(cur, product_path(lang, p))}"><small>{brand}</small> <b dir="ltr">{name}</b></a>
+            <a class="hc-3d" href="{href(cur, viewer)}">{t('hero_3d', lang)} {ICON['ne']}</a></figcaption>
+        </figure>
+"""
+        hero_dots += f'<button type="button" class="hc-dot" aria-label="{brand} {name}"{" aria-current=\"true\"" if i == 0 else ""}></button>'
     body = f"""
 <section class="hero hero-cine" aria-labelledby="hero-h">
   <div class="hc-frame">
@@ -612,21 +640,10 @@ def build_home(lang):
         <div class="hc-cta"><a class="btn btn-primary btn-lg" href="{contact}">{t('cta_quote', lang)} {ICON['arrow']}</a>
         <a class="hc-wa" href="{wa_link()}" rel="noopener">{ICON['wa']}<span>{t('hero_wa', lang)} <b dir="ltr">{esc(SITE['phone_display'])}</b></span></a></div>
       </div>
-      <figure class="hc-art">
-        <img class="hc-img" src="{href(cur, 'assets/img/hero/mini-chiller-lit.webp')}" srcset="{href(cur, 'assets/img/hero/mini-chiller-lit-sm.webp')} 900w, {href(cur, 'assets/img/hero/mini-chiller-lit.webp')} 2205w" sizes="(max-width: 820px) 100vw, 46vw" width="2205" height="2025" alt="{esc(t('hero_img_alt', lang))}" fetchpriority="high">
-        <svg class="hc-air" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-          <defs><linearGradient id="hc-air-g" gradientUnits="userSpaceOnUse" x1="57" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#e8f0ff" stop-opacity=".9"/><stop offset=".55" stop-color="#93b4ff" stop-opacity=".45"/><stop offset="1" stop-color="#93b4ff" stop-opacity="0"/></linearGradient></defs>
-          <path pathLength="100" d="M57 21 C46 18, 38 25, 27 21 S10 15, 0 19"/>
-          <path pathLength="100" d="M57 25.5 C45 24, 37 30, 25 26.5 S8 22, -2 26"/>
-          <path pathLength="100" d="M57 30 C46 30, 39 35, 27 32 S10 29, 0 33"/>
-          <path pathLength="100" d="M57 34 C47 35, 40 39, 29 37 S13 35, 3 39"/>
-        </svg>
-        <span class="hc-puffs" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="hc-led" aria-hidden="true"></span>
-        <figcaption class="hc-tag"><span class="hc-new">{t('new_badge', lang)}</span>
-          <a href="{chiller_page}"><small>Aolan</small> <b dir="ltr">Mini Chiller</b></a>
-          <a class="hc-3d" href="{href(cur, '3d/mini-chiller/index.html')}">{t('hero_3d', lang)} {ICON['ne']}</a></figcaption>
-      </figure>
+      <div class="hc-art" data-hc-slides aria-roledescription="carousel" aria-label="{esc(t('hero_slides_label', lang))}">
+{hero_slides}
+        <div class="hc-dots" role="group" aria-label="{esc(t('hero_slides_label', lang))}">{hero_dots}</div>
+      </div>
     </div>
     <ul class="hc-stats">{hero_stats}</ul>
   </div>

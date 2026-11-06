@@ -149,3 +149,28 @@
     dd.addEventListener('mouseleave', function () { t = setTimeout(function () { dd.open = false; }, 250); });
   }
 })();
+
+// Home hero: slide and fade between the Canton Fair 2026 launches. The current bar's fill animation is the timer, so
+// pausing it (hover, keyboard focus) pauses the slideshow; with reduced motion the bars do not animate and there is no autoplay.
+(function () {
+  var art = document.querySelector('[data-hc-slides]');
+  if (!art) return;
+  var slides = art.querySelectorAll('.hc-slide'), dots = art.querySelectorAll('.hc-dot'), cur = 0;
+  function show(n) {
+    if (n === cur) return;
+    slides[cur].classList.remove('is-on'); slides[cur].classList.add('is-out'); slides[cur].setAttribute('aria-hidden', 'true');
+    dots[cur].removeAttribute('aria-current');
+    var old = slides[cur];
+    setTimeout(function () { old.classList.remove('is-out'); }, 1300);
+    cur = n;
+    slides[cur].classList.remove('is-out'); slides[cur].classList.add('is-on'); slides[cur].removeAttribute('aria-hidden');
+    dots[cur].setAttribute('aria-current', 'true');
+  }
+  dots.forEach(function (d, i) { d.addEventListener('click', function () { show(i); }); });
+  art.addEventListener('animationend', function (e) { if (e.animationName === 'hc-prog') show((cur + 1) % slides.length); });
+  function pause(on) { art.classList.toggle('is-paused', on); }
+  art.addEventListener('mouseenter', function () { pause(true); });
+  art.addEventListener('mouseleave', function () { pause(false); });
+  art.addEventListener('focusin', function () { pause(true); });
+  art.addEventListener('focusout', function () { pause(false); });
+})();
