@@ -1088,7 +1088,7 @@ html[lang="ar"] .spec-x thead .mname { font-size: 1.05rem; }
 .hc-dot::after { background: #fff; transform: scaleX(0); transform-origin: left center; }
 [dir="rtl"] .hc-dot::after { transform-origin: right center; }
 .hc-dot:hover::before { background: rgba(238, 242, 248, .45); }
-.hc-dot[aria-current="true"]::after { animation: hc-prog 6.5s linear forwards; }
+.hc-dot[aria-current="true"]::after { animation: hc-prog 5s linear forwards; }
 .hc-art.is-paused .hc-dot::after { animation-play-state: paused; }
 @keyframes hc-prog { to { transform: scaleX(1); } }
 .hc-dot:focus-visible { outline: 2px solid var(--blue-hi); outline-offset: 0; }

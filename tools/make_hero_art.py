@@ -53,9 +53,11 @@ def scene(w, h, cx, cy):
     return Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8))
 
 
-def lit_product(name, mist_at, mist_reach=(-0.25, 0.05), pad=1.0):
+def lit_product(name, mist_at, mist_reach=(-0.25, 0.05), pad=1.0, flip=False):
     """`mist_at`: where the cold air leaves the unit, as fractions of the cutout; `mist_reach`: where the plume centres, relative to that."""
     src = Image.open(os.path.join(IMG, name + ".webp")).convert("RGBA")
+    if flip:  # mirror so the air outlet faces the headline (left of the hero)
+        src = src.transpose(Image.FLIP_LEFT_RIGHT)
     pw, ph = src.size
     W, H = int(pw * 1.7 * pad), int(ph * 1.75 * pad)
     ox, oy = (W - pw) // 2, int(H * 0.12 + ph * (pad - 1) * 0.6)
@@ -133,9 +135,11 @@ def main():
 
     # the indoor unit's grille (tall unit, right of the photo); the BLDC Cube's fan face (left of the photo)
     # pad: the Cube is one compact unit, so it gets more room around it to match the pair's size on screen
-    for out, name, mist_at, reach, pad in (("mini-chiller-lit", "aolan/mini-chiller", (0.71, 0.16), (-0.25, 0.05), 1.0),
-                                           ("bldc-cube-lit", "purebreeze/bldc-hero", (0.25, 0.42), (-0.35, -0.05), 1.3)):
-        lp = lit_product(name, mist_at, reach, pad)
+    # BLDC Cube: mirrored, so its blower outlet (the open square duct) faces left like the Mini Chiller's grille
+    for out, name, mist_at, reach, pad, flip in (
+            ("mini-chiller-lit", "aolan/mini-chiller", (0.71, 0.16), (-0.25, 0.05), 1.0, False),
+            ("bldc-cube-lit", "purebreeze/bldc-hero", (0.30, 0.48), (-0.3, -0.02), 1.3, True)):
+        lp = lit_product(name, mist_at, reach, pad, flip)
         lp.save(os.path.join(OUT, out + ".webp"), quality=86)
         sm = lp.resize((900, lp.height * 900 // lp.width), Image.LANCZOS)
         sm.save(os.path.join(OUT, out + "-sm.webp"), quality=84)
