@@ -366,6 +366,15 @@ footer { padding-top: 4px; }
 @media (max-width: 420px) {
   .powerrow .leds { display: none; }
 }
+/* --- readout note (2026-11-07): the readout values are approximate --- */
+.readout { grid-template-rows: auto auto; }
+.readout h2 { grid-row: 1; align-self: end; }
+.readout .ro-note { grid-column: 1; grid-row: 2; align-self: start; margin: 4px 0 0; padding: 0 4px 0 34px; max-width: 108px; font-size: .66rem; line-height: 1.3; color: var(--muted); }
+.readout .body { grid-column: 2; grid-row: 1 / span 2; }
+@media (max-width: 760px) {
+  .readout .ro-note { max-width: none; margin: 0; padding: 0 10px 7px; font-size: .64rem; text-align: center; }
+  .stage { height: clamp(300px, calc(100svh - 514px), 560px); }
+}
 </style>
 
 <div class="page">
@@ -425,6 +434,7 @@ footer { padding-top: 4px; }
           <div class="meter elec"><span>Power draw</span><div class="trk"><i id="m-watt"></i></div><span class="v" id="v-watt">0 W</span></div>
           <div class="meter elec"><span>Current</span><div class="trk"><i id="m-amp"></i></div><span class="v" id="v-amp">0.00 A</span></div>
         </div>
+          <p class="ro-note">Approximate values, for illustration only</p>
       </section>
     <section class="stage" id="stage" aria-label="3D model of the PureBreeze PB-98C BLDC cube air cooler">
       <div class="title">

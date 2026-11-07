@@ -187,9 +187,35 @@ def drop_snapshot_code(js, required=True):
     return js[:m.start()] + js[m.end():]
 
 
+NOTE_MARK = "/* --- readout note (2026-11-07)"
+NOTE_CSS = NOTE_MARK + """: the readout values are approximate --- */
+.readout { grid-template-rows: auto auto; }
+.readout h2 { grid-row: 1; align-self: end; }
+.readout .ro-note { grid-column: 1; grid-row: 2; align-self: start; margin: 4px 0 0; padding: 0 4px 0 34px; max-width: 108px; font-size: .66rem; line-height: 1.3; color: var(--muted); }
+.readout .body { grid-column: 2; grid-row: 1 / span 2; }
+@media (max-width: 760px) {
+  .readout .ro-note { max-width: none; margin: 0; padding: 0 10px 7px; font-size: .64rem; text-align: center; }
+  .stage { height: clamp(300px, calc(100svh - 514px), 560px); }
+}
+"""
+NOTE_HTML = '<p class="ro-note">Approximate values, for illustration only</p>'
+
+
+def add_readout_note(html):
+    """Small disclaimer under the Live readout title (desktop) or under the tiles (phones)."""
+    if NOTE_MARK in html:
+        return html, False
+    m = re.search(r'(<section class="card readout"[^>]*>.*?)(\n[ \t]*</section>)', html, re.S)
+    if not m:
+        raise SystemExit("readout section not found")
+    html = html[:m.end(1)] + "\n          " + NOTE_HTML + html[m.end(1):]
+    html = html.replace("</style>", NOTE_CSS + "</style>", 1)
+    return html, True
+
+
 def restyle(html):
     if MARK in html:
-        return html, False
+        return add_readout_note(html)
     html = html.replace(FONTS_OLD, FONTS_NEW)
 
     # 1. old phone/site block goes; the skin replaces it
@@ -225,6 +251,7 @@ def restyle(html):
         raise SystemExit("aside not found")
     inner = m.group(1)
     html = html[:m.start()] + "\n" + m.group(2) + "\n  <div class=\"info\">\n" + inner + "\n  </div>\n" + html[m.end():]
+    html, _ = add_readout_note(html)
     return html, True
 
 
