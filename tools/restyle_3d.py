@@ -297,9 +297,70 @@ def phone_stage(html):
     return html, True
 
 
+# --- phones, 2026-11-07 (c): Power and Speed -/+ copies in the bar under the 3D view, so they work without scrolling ---
+MINI_MARK = "/* --- phone mini controls (2026-11-07c)"
+MINI_CSS = MINI_MARK + """: power and speed in the bar under the 3D view --- */
+@media (max-width: 760px) {
+  .stage { height: clamp(280px, calc(100svh - 432px), 600px); }
+  .stagebar { grid-template-areas: "mini mini" "seg seg" "tb cut" "range range"; }
+  .minictl { grid-area: mini; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .minictl button { border: 0; cursor: pointer; font: inherit; display: grid; place-items: center; flex: none; }
+  .minictl .mpow { width: 44px; height: 44px; border-radius: 50%; color: #fff; background: radial-gradient(circle at 35% 30%, #3d5fc4, #14244f); box-shadow: inset 0 -3px 6px rgba(0,0,0,.4), 0 6px 14px -8px rgba(31, 68, 168, .8); }
+  .minictl .mpow[aria-pressed="true"] { box-shadow: inset 0 -3px 6px rgba(0,0,0,.4), 0 0 0 3px rgba(23, 163, 90, .45); }
+  .minictl .mpow svg { width: 20px; height: 20px; }
+  .minictl .mlcd { flex: 1; min-width: 0; height: 44px; display: flex; align-items: center; padding: 0 10px; border-radius: 12px; background: var(--lcd-bg); color: var(--lcd-fg); font: 600 .72rem var(--mono); letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: inset 0 2px 6px rgba(0,0,0,.6); }
+  .minictl .mlcd.off { opacity: .45; }
+  .minictl .mk { width: 50px; height: 44px; border-radius: 12px; border: 1px solid rgba(195, 204, 217, .7); background: var(--chip); color: var(--ink); font-size: 1.3rem; font-weight: 700; line-height: 1; }
+  .minictl .mk:disabled { opacity: .45; cursor: not-allowed; }
+}
+"""
+MINI_HTML = """<script>
+// Phones: Power and Speed -/+ copies at the top of the bar under the 3D view; they press the real buttons and mirror them.
+(function () {
+  var bar = document.getElementById('stagebar'), $ = function (id) { return document.getElementById(id); };
+  var mini = document.createElement('div'); mini.className = 'minictl';
+  mini.innerHTML = '<button class="mpow" aria-label="Power" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.3a8 8 0 1 0 11.4 0"/></svg></button>'
+    + '<span class="mlcd off" aria-hidden="true"></span>'
+    + '<button class="mk" aria-label="Speed down" disabled>&minus;</button><button class="mk" aria-label="Speed up" disabled>+</button>';
+  bar.prepend(mini);
+  var b = mini.querySelectorAll('button'), lcd = mini.querySelector('.mlcd');
+  b[0].onclick = function () { $('power').click(); };
+  b[1].onclick = function () { $('k-down').click(); };
+  b[2].onclick = function () { $('k-up').click(); };
+  function sync() {
+    var on = $('power').getAttribute('aria-pressed') === 'true';
+    b[0].setAttribute('aria-pressed', on);
+    b[1].disabled = $('k-down').disabled; b[2].disabled = $('k-up').disabled;
+    lcd.textContent = $('lcd-mode').textContent + ' \u00b7 ' + $('lcd-sub').textContent.split(' \\u00b7 ')[0];
+    lcd.classList.toggle('off', !on);
+  }
+  var mo = new MutationObserver(sync);
+  ['power', 'k-down', 'k-up'].forEach(function (id) { mo.observe($(id), { attributes: true }); });
+  mo.observe($('lcd'), { subtree: true, childList: true, characterData: true });
+  sync();
+})();
+</script>"""
+
+
+def phone_minictl(html):
+    if MINI_MARK in html:
+        return html, False
+    anchor = '<div class="card stagebar" id="stagebar" hidden></div>'
+    i = html.find(anchor)
+    j = html.find("</script>", i)
+    if i < 0 or j < 0:
+        raise SystemExit("stage bar not found")
+    j += len("</script>")
+    html = html[:j] + "\n    " + MINI_HTML.replace("\n", "\n    ") + html[j:]
+    html = html.replace("</style>", MINI_CSS + "</style>", 1)
+    return html, True
+
+
 def restyle(html):
     if MARK in html:
         html, c = phone_stage(html)
+        html, d = phone_minictl(html)
+        c = c or d
         html, a = add_readout_note(html)
         if "/*VIEWER_JS*/" in html:
             return html, a or c
@@ -344,6 +405,7 @@ def restyle(html):
     if "/*VIEWER_JS*/" not in html:
         html, _ = phone_labels_off(html)
     html, _ = phone_stage(html)
+    html, _ = phone_minictl(html)
     return html, True
 
 
