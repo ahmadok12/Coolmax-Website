@@ -655,7 +655,7 @@ const S = {
   power: false, speed: 6, cool: true, timer: 0, timerEnd: 0,
   omega: 0, pumpFlow: 0, fill: 0, wet: 0, tOut: 42, watts: 0,
   view: 'solid', explode: 0, explodeTarget: 0,
-  labels: true, allLabels: false, cut: false, selected: null,
+  labels: !matchMedia('(max-width: 760px)').matches, allLabels: false, cut: false, selected: null,
 };
 const SPEEDS = 12;
 // visual rad/s and real rpm per speed step (0 = off), evenly spaced from 400 to 1,100 rpm
@@ -1029,6 +1029,7 @@ function syncLabelButtons() {
   $('b-labels').setAttribute('aria-pressed', S.labels);
   $('b-all').setAttribute('aria-pressed', S.allLabels);
 }
+syncLabelButtons();
 $('t-labels').addEventListener('change', (e) => { S.labels = e.target.checked; syncLabelButtons(); });
 $('t-all').addEventListener('change', (e) => { S.allLabels = e.target.checked; if (S.allLabels) S.labels = true; syncLabelButtons(); });
 $('b-labels').addEventListener('click', () => { S.labels = !S.labels; syncLabelButtons(); });

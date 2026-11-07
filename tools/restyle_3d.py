@@ -213,9 +213,27 @@ def add_readout_note(html):
     return html, True
 
 
+PHONE_LABELS = "labels: !matchMedia('(max-width: 760px)').matches,"
+
+
+def phone_labels_off(js):
+    """Phones start with the part labels off (too busy on a small screen); the Labels switch still turns them on."""
+    if PHONE_LABELS in js:
+        return js, False
+    if js.count("labels: true,") != 1 or js.count("$('t-labels').addEventListener(") != 1:
+        raise SystemExit("label state not found")
+    js = js.replace("labels: true,", PHONE_LABELS, 1)
+    js = js.replace("$('t-labels').addEventListener(", "syncLabelButtons();\n$('t-labels').addEventListener(", 1)
+    return js, True
+
+
 def restyle(html):
     if MARK in html:
-        return add_readout_note(html)
+        html, a = add_readout_note(html)
+        if "/*VIEWER_JS*/" in html:
+            return html, a
+        html, b = phone_labels_off(html)
+        return html, a or b
     html = html.replace(FONTS_OLD, FONTS_NEW)
 
     # 1. old phone/site block goes; the skin replaces it
@@ -252,6 +270,8 @@ def restyle(html):
     inner = m.group(1)
     html = html[:m.start()] + "\n" + m.group(2) + "\n  <div class=\"info\">\n" + inner + "\n  </div>\n" + html[m.end():]
     html, _ = add_readout_note(html)
+    if "/*VIEWER_JS*/" not in html:
+        html, _ = phone_labels_off(html)
     return html, True
 
 
@@ -260,6 +280,7 @@ if __name__ == "__main__":
         src = open(path, encoding="utf-8").read()
         if path.endswith(".js"):  # Mini Chiller source keeps its script in viewer.js
             out = drop_snapshot_code(src, required=False)
+            out, _ = phone_labels_off(out)
             changed = out != src
         else:
             out, changed = restyle(src)
