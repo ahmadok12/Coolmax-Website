@@ -227,7 +227,7 @@ def phone_labels_off(js):
     return js, True
 
 
-# --- phones, 2026-11-07 (b): a much bigger 3D view ---
+# --- phones, 2026-11-07 (b) and (c): kept only so strip_old_phone() can take them out of pages that have them ---
 # The stage title is hidden, the view-mode panel and the toolbar move out of the stage into a bar under it,
 # the readout tiles get tighter, and the camera frames the cooler larger.
 PHONE_MARK = "/* --- phone stage (2026-11-07b)"
@@ -356,11 +356,137 @@ def phone_minictl(html):
     return html, True
 
 
+# --- phones, 2026-11-07 (d): one compact control row and one small view bar under the 3D view, extras in "..." menus ---
+# (replaces the earlier phone layouts b and c, which showed the controls twice)
+COMPACT_MARK = "/* --- phone compact controls (2026-11-07d)"
+COMPACT_CSS = COMPACT_MARK + """: big 3D view, one control row, one view bar, extras in menus --- */
+.stagebar[hidden], .fly[hidden] { display: none !important; }
+@media (max-width: 760px) {
+  .stage { height: clamp(260px, calc(100svh - 400px), 640px); }
+  .stage .title, .hint, .stage .viewmode, .stage .toolbar { display: none; }
+  .readout .body { gap: 5px; padding: 6px; }
+  .readout .meter { padding: 4px 7px 5px; gap: 0; }
+  .readout .meter > span:first-child { font-size: .6rem; }
+  .readout .meter .v { font-size: .8rem; line-height: 1.25; }
+  .readout .meter .trk { height: 3px; margin-top: 3px; }
+  .readout .ro-note { padding-bottom: 5px; font-size: .6rem; }
+
+  /* control panel: power, display, speed -/+ and a "..." menu for timer, cool, fan only, sound */
+  .ctrlbar { position: relative; }
+  .ctrlbar:has(.kfly:not([hidden])), .stagebar:has(.vfly:not([hidden])) { z-index: 30; }
+  .ctrlbar .unit { display: flex; align-items: center; gap: 6px; padding: 6px; }
+  .ctrlbar .powerrow { gap: 0; }
+  .ctrlbar .leds { display: none; }
+  .ctrlbar .power { width: 44px; height: 44px; }
+  .ctrlbar .power svg { width: 20px; height: 20px; }
+  .ctrlbar .lcd { flex: 1; min-width: 0; height: 44px; min-height: 0; padding: 4px 10px; grid-template-columns: minmax(0, 1fr) auto; align-content: center; gap: 0 6px; }
+  .ctrlbar .lcd > div:first-child { grid-column: 1; grid-row: 1; }
+  .ctrlbar .lcd .big { font-size: .92rem; line-height: 1.15; }
+  .ctrlbar .lcd .bars { display: none; }
+  .ctrlbar #lcd-sub { grid-column: 1 / -1; grid-row: 2; font-size: .6rem; overflow: hidden; text-overflow: ellipsis; }
+  .ctrlbar #lcd-timer { grid-column: 2; grid-row: 1; align-self: center; font-size: .56rem; white-space: nowrap; }
+  .ctrlbar .keys { display: flex; gap: 6px; flex: none; }
+  .ctrlbar .keys .key { width: 42px; height: 44px; min-height: 0; padding: 0; font-size: 0; gap: 0; place-items: center; }
+  .ctrlbar .keys .key svg { width: 18px; height: 18px; }
+  .ctrlbar .kfly .key { width: auto; height: auto; min-height: 58px; padding: 6px 4px; font-size: .72rem; gap: 3px; }
+
+  /* view bar: Solid / X-ray / Exploded, orbit, reset, and a "..." menu for focus, labels, show all, cross-section */
+  .stagebar { order: 1; position: relative; display: flex; align-items: center; gap: 6px; padding: 6px; }
+  .stagebar .seg { display: flex; gap: 4px; flex: none; }
+  .stagebar .seg button, .stagebar > button { width: 42px; height: 40px; min-height: 0; padding: 0; font-size: 0; gap: 0; display: grid; place-items: center; border-radius: 12px; border: 1px solid rgba(195, 204, 217, .7); background: var(--chip); color: var(--ink); cursor: pointer; }
+  .stagebar .seg button svg, .stagebar > button svg { width: 18px; height: 18px; }
+  .stagebar > button span { display: none; }
+  .stagebar > button[aria-pressed="true"], .stagebar .vmore[aria-expanded="true"], .ctrlbar .kmore[aria-expanded="true"] { background: rgba(47, 91, 211, .12); border-color: var(--navy); color: var(--navy); }
+  .stagebar .seg button[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .stagebar .vmore { margin-inline-start: auto; }
+
+  /* the two menus */
+  .fly { position: absolute; z-index: 30; right: 6px; padding: 8px; border-radius: 16px; background: rgba(255, 255, 255, .94); border: 1px solid var(--edge);
+    box-shadow: 0 18px 40px -14px rgba(15, 23, 38, .45); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
+  .kfly { bottom: calc(100% + 6px); display: grid; grid-template-columns: repeat(4, 66px); gap: 6px; }
+  .vfly { bottom: calc(100% + 6px); display: grid; gap: 2px; min-width: 220px; }
+  .vfly button { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: transparent; color: var(--ink); padding: 10px; border-radius: 10px; font: 600 .9rem var(--font); cursor: pointer; text-align: start; }
+  .vfly button svg { width: 18px; height: 18px; }
+  .vfly button span { display: inline; }
+  .vfly button[aria-pressed="true"] { background: rgba(47, 91, 211, .12); color: var(--navy); }
+  .vfly .tog { padding: 6px 10px; min-height: 42px; font-size: .9rem; font-weight: 600; }
+  .vfly input[type="range"] { margin: 2px 10px 6px; width: auto; }
+}
+"""
+COMPACT_HTML = """<div class="card stagebar" id="stagebar" hidden></div>
+<script>
+// Phones: one compact control row (power, display, speed -/+, "..." for the rest) and one small view bar
+// (Solid / X-ray / Exploded, orbit, reset, "..." for the rest) under the 3D view. The real buttons are moved,
+// not copied, and go back to their places on wider screens.
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var mq = matchMedia('(max-width: 760px)'), bar = $('stagebar'), ctrl = document.querySelector('.ctrlbar'), keys = ctrl.querySelector('.keys');
+  var DOTS = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
+  function el(tag, cls, html, label) { var e = document.createElement(tag); e.className = cls; if (html) e.innerHTML = html; if (label) { e.setAttribute('aria-label', label); e.setAttribute('aria-expanded', 'false'); } return e; }
+  var kMore = el('button', 'key kmore', DOTS + 'More', 'More controls'), kFly = el('div', 'fly kfly');
+  var vMore = el('button', 'vmore', DOTS, 'More view options'), vFly = el('div', 'fly vfly');
+  kFly.hidden = vFly.hidden = true;
+  var moves = [
+    [$('k-timer'), kFly], [$('k-cool'), kFly], [$('k-fan'), kFly], [$('k-sound'), kFly],
+    [document.querySelector('.viewmode .seg'), bar], [$('b-orbit'), bar], [$('b-reset'), bar],
+    [$('b-focus'), vFly], [$('b-labels'), vFly], [$('b-all'), vFly],
+    [document.querySelector('label[for="t-cut"]'), vFly], [$('cut'), vFly]
+  ];
+  var spots = moves.map(function (m) { var c = document.createComment(''); m[0].parentNode.insertBefore(c, m[0]); return c; });
+  function close() {
+    [[kMore, kFly], [vMore, vFly]].forEach(function (p) { p[1].hidden = true; p[0].setAttribute('aria-expanded', 'false'); });
+  }
+  function toggle(btn, fly) { var open = fly.hidden; close(); fly.hidden = !open; btn.setAttribute('aria-expanded', open); }
+  kMore.onclick = function (e) { e.stopPropagation(); toggle(kMore, kFly); };
+  vMore.onclick = function (e) { e.stopPropagation(); toggle(vMore, vFly); };
+  document.addEventListener('click', function (e) { if (!kFly.contains(e.target) && !vFly.contains(e.target)) close(); });
+  function place() {
+    if (mq.matches) {
+      moves.forEach(function (m) { m[1].appendChild(m[0]); });
+      keys.appendChild(kMore); ctrl.appendChild(kFly); bar.appendChild(vMore); bar.appendChild(vFly); bar.hidden = false;
+    } else {
+      moves.forEach(function (m, i) { spots[i].parentNode.insertBefore(m[0], spots[i]); });
+      [kMore, kFly, vMore, vFly].forEach(function (e) { e.remove(); }); bar.hidden = true;
+    }
+    close();
+  }
+  place();
+  if (mq.addEventListener) mq.addEventListener('change', place); else mq.addListener(place);
+})();
+</script>"""
+
+
+def strip_old_phone(html):
+    """Take out the earlier phone layouts (b: controls bar, c: mini power/speed copies)."""
+    for css in (PHONE_CSS, MINI_CSS):
+        html = html.replace(css, "")
+    for block in (MINI_HTML, STAGEBAR_HTML):
+        ind = block.replace("\n", "\n    ")
+        html = html.replace("\n    " + ind, "").replace("    " + ind + "\n", "")
+    return html
+
+
+def phone_compact(html):
+    if COMPACT_MARK in html:
+        return html, False
+    html = strip_old_phone(html)
+    if PHONE_MARK in html or MINI_MARK in html or 'id="stagebar"' in html:
+        raise SystemExit("old phone layout left behind")
+    i = html.find('<section class="stage"')
+    j = html.find("\n    </section>\n", i)
+    if i < 0 or j < 0:
+        raise SystemExit("stage section not found")
+    j += len("\n    </section>\n")
+    html = html[:j] + "    " + COMPACT_HTML.replace("\n", "\n    ") + "\n" + html[j:]
+    html = html.replace("</style>", COMPACT_CSS + "</style>", 1)
+    if "/*VIEWER_JS*/" not in html:
+        html, _ = phone_camera(html)
+    return html, True
+
+
 def restyle(html):
     if MARK in html:
-        html, c = phone_stage(html)
-        html, d = phone_minictl(html)
-        c = c or d
+        html, c = phone_compact(html)
         html, a = add_readout_note(html)
         if "/*VIEWER_JS*/" in html:
             return html, a or c
@@ -404,8 +530,7 @@ def restyle(html):
     html, _ = add_readout_note(html)
     if "/*VIEWER_JS*/" not in html:
         html, _ = phone_labels_off(html)
-    html, _ = phone_stage(html)
-    html, _ = phone_minictl(html)
+    html, _ = phone_compact(html)
     return html, True
 
 
