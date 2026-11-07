@@ -227,13 +227,84 @@ def phone_labels_off(js):
     return js, True
 
 
+# --- phones, 2026-11-07 (b): a much bigger 3D view ---
+# The stage title is hidden, the view-mode panel and the toolbar move out of the stage into a bar under it,
+# the readout tiles get tighter, and the camera frames the cooler larger.
+PHONE_MARK = "/* --- phone stage (2026-11-07b)"
+PHONE_CSS = PHONE_MARK + """: bigger 3D view, controls in a bar under it --- */
+.stagebar[hidden] { display: none !important; }
+@media (max-width: 760px) {
+  .stage { height: clamp(300px, calc(100svh - 380px), 640px); }
+  .stage .title, .hint { display: none; }
+  .readout .body { gap: 5px; padding: 6px; }
+  .readout .meter { padding: 4px 7px 5px; gap: 0; }
+  .readout .meter > span:first-child { font-size: .6rem; }
+  .readout .meter .v { font-size: .8rem; line-height: 1.25; }
+  .readout .meter .trk { height: 3px; margin-top: 3px; }
+  .readout .ro-note { padding-bottom: 5px; font-size: .6rem; }
+  .stagebar { order: -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "seg seg" "tb cut" "range range"; gap: 8px 8px; align-items: center; padding: 8px; }
+  .stagebar .viewmode { display: contents; }
+  .stagebar .viewmode .lab, .stagebar label[for="t-labels"], .stagebar label[for="t-all"] { display: none; }
+  .stagebar .seg { grid-area: seg; }
+  .stagebar .seg button { min-height: 38px; padding: 4px 0; grid-auto-flow: column; align-items: center; justify-content: center; gap: 6px; font-size: .78rem; }
+  .stagebar label[for="t-cut"] { grid-area: cut; min-height: 38px; font-size: .74rem; gap: 6px; }
+  .stagebar #cut { grid-area: range; }
+  .stagebar .toolbar { grid-area: tb; position: static; display: flex; pointer-events: auto; min-width: 0; }
+  .stagebar .tbgroup { flex: 1; box-shadow: none; flex-wrap: nowrap; }
+  .stagebar .tbgroup button { flex: 1 1 0; min-width: 32px; min-height: 38px; padding: 0; justify-content: center; }
+}
+"""
+STAGEBAR_HTML = """<div class="card stagebar" id="stagebar" hidden></div>
+<script>
+// Phones: the view-mode switches and the toolbar sit in a bar under the 3D view, so they don't cover the cooler.
+(function () {
+  var mq = matchMedia('(max-width: 760px)'), bar = document.getElementById('stagebar'), st = document.getElementById('stage');
+  var vm = st.querySelector('.viewmode'), tb = st.querySelector('.toolbar');
+  function place() {
+    if (mq.matches) { bar.append(vm, tb); bar.hidden = false; }
+    else { st.append(vm, tb); bar.hidden = true; }
+  }
+  place();
+  if (mq.addEventListener) mq.addEventListener('change', place); else mq.addListener(place);
+})();
+</script>"""
+CAM_MARK = "// phone framing 2026-11-07b"
+
+
+def phone_camera(js):
+    if CAM_MARK in js:
+        return js, False
+    js2 = re.sub(r"w < 600 \? h \* 0\.1[02] : 0", "w < 600 ? h * 0.02 : 0", js, count=1)
+    js2 = re.sub(r"camera\.fov = w < 600 \? (\d+) : 32;",
+                 lambda m: "camera.fov = w < 600 ? %d : 32; %s" % (round(int(m.group(1)) * 0.86), CAM_MARK), js2, count=1)
+    if CAM_MARK not in js2 or "h * 0.02" not in js2:
+        raise SystemExit("camera framing not found")
+    return js2, True
+
+
+def phone_stage(html):
+    if PHONE_MARK in html:
+        return html, False
+    i = html.find('<section class="stage"')
+    j = html.find("\n    </section>\n", i)
+    if i < 0 or j < 0:
+        raise SystemExit("stage section not found")
+    j += len("\n    </section>\n")
+    html = html[:j] + "    " + STAGEBAR_HTML.replace("\n", "\n    ") + "\n" + html[j:]
+    html = html.replace("</style>", PHONE_CSS + "</style>", 1)
+    if "/*VIEWER_JS*/" not in html:
+        html, _ = phone_camera(html)
+    return html, True
+
+
 def restyle(html):
     if MARK in html:
+        html, c = phone_stage(html)
         html, a = add_readout_note(html)
         if "/*VIEWER_JS*/" in html:
-            return html, a
+            return html, a or c
         html, b = phone_labels_off(html)
-        return html, a or b
+        return html, a or b or c
     html = html.replace(FONTS_OLD, FONTS_NEW)
 
     # 1. old phone/site block goes; the skin replaces it
@@ -272,6 +343,7 @@ def restyle(html):
     html, _ = add_readout_note(html)
     if "/*VIEWER_JS*/" not in html:
         html, _ = phone_labels_off(html)
+    html, _ = phone_stage(html)
     return html, True
 
 
@@ -281,6 +353,7 @@ if __name__ == "__main__":
         if path.endswith(".js"):  # Mini Chiller source keeps its script in viewer.js
             out = drop_snapshot_code(src, required=False)
             out, _ = phone_labels_off(out)
+            out, _ = phone_camera(out)
             changed = out != src
         else:
             out, changed = restyle(src)
