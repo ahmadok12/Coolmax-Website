@@ -375,6 +375,42 @@ footer { padding-top: 4px; }
   .readout .ro-note { max-width: none; margin: 0; padding: 0 10px 7px; font-size: .64rem; text-align: center; }
   .stage { height: clamp(300px, calc(100svh - 514px), 560px); }
 }
+/* --- phone stage (2026-11-07b): bigger 3D view, controls in a bar under it --- */
+.stagebar[hidden] { display: none !important; }
+@media (max-width: 760px) {
+  .stage { height: clamp(300px, calc(100svh - 380px), 640px); }
+  .stage .title, .hint { display: none; }
+  .readout .body { gap: 5px; padding: 6px; }
+  .readout .meter { padding: 4px 7px 5px; gap: 0; }
+  .readout .meter > span:first-child { font-size: .6rem; }
+  .readout .meter .v { font-size: .8rem; line-height: 1.25; }
+  .readout .meter .trk { height: 3px; margin-top: 3px; }
+  .readout .ro-note { padding-bottom: 5px; font-size: .6rem; }
+  .stagebar { order: -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "seg seg" "tb cut" "range range"; gap: 8px 8px; align-items: center; padding: 8px; }
+  .stagebar .viewmode { display: contents; }
+  .stagebar .viewmode .lab, .stagebar label[for="t-labels"], .stagebar label[for="t-all"] { display: none; }
+  .stagebar .seg { grid-area: seg; }
+  .stagebar .seg button { min-height: 38px; padding: 4px 0; grid-auto-flow: column; align-items: center; justify-content: center; gap: 6px; font-size: .78rem; }
+  .stagebar label[for="t-cut"] { grid-area: cut; min-height: 38px; font-size: .74rem; gap: 6px; }
+  .stagebar #cut { grid-area: range; }
+  .stagebar .toolbar { grid-area: tb; position: static; display: flex; pointer-events: auto; min-width: 0; }
+  .stagebar .tbgroup { flex: 1; box-shadow: none; flex-wrap: nowrap; }
+  .stagebar .tbgroup button { flex: 1 1 0; min-width: 32px; min-height: 38px; padding: 0; justify-content: center; }
+}
+/* --- phone mini controls (2026-11-07c): power and speed in the bar under the 3D view --- */
+@media (max-width: 760px) {
+  .stage { height: clamp(280px, calc(100svh - 432px), 600px); }
+  .stagebar { grid-template-areas: "mini mini" "seg seg" "tb cut" "range range"; }
+  .minictl { grid-area: mini; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .minictl button { border: 0; cursor: pointer; font: inherit; display: grid; place-items: center; flex: none; }
+  .minictl .mpow { width: 44px; height: 44px; border-radius: 50%; color: #fff; background: radial-gradient(circle at 35% 30%, #3d5fc4, #14244f); box-shadow: inset 0 -3px 6px rgba(0,0,0,.4), 0 6px 14px -8px rgba(31, 68, 168, .8); }
+  .minictl .mpow[aria-pressed="true"] { box-shadow: inset 0 -3px 6px rgba(0,0,0,.4), 0 0 0 3px rgba(23, 163, 90, .45); }
+  .minictl .mpow svg { width: 20px; height: 20px; }
+  .minictl .mlcd { flex: 1; min-width: 0; height: 44px; display: flex; align-items: center; padding: 0 10px; border-radius: 12px; background: var(--lcd-bg); color: var(--lcd-fg); font: 600 .72rem var(--mono); letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: inset 0 2px 6px rgba(0,0,0,.6); }
+  .minictl .mlcd.off { opacity: .45; }
+  .minictl .mk { width: 50px; height: 44px; border-radius: 12px; border: 1px solid rgba(195, 204, 217, .7); background: var(--chip); color: var(--ink); font-size: 1.3rem; font-weight: 700; line-height: 1; }
+  .minictl .mk:disabled { opacity: .45; cursor: not-allowed; }
+}
 </style>
 
 <div class="page">
@@ -469,6 +505,46 @@ footer { padding-top: 4px; }
         </div>
       </div>
     </section>
+    <div class="card stagebar" id="stagebar" hidden></div>
+    <script>
+    // Phones: the view-mode switches and the toolbar sit in a bar under the 3D view, so they don't cover the cooler.
+    (function () {
+      var mq = matchMedia('(max-width: 760px)'), bar = document.getElementById('stagebar'), st = document.getElementById('stage');
+      var vm = st.querySelector('.viewmode'), tb = st.querySelector('.toolbar');
+      function place() {
+        if (mq.matches) { bar.append(vm, tb); bar.hidden = false; }
+        else { st.append(vm, tb); bar.hidden = true; }
+      }
+      place();
+      if (mq.addEventListener) mq.addEventListener('change', place); else mq.addListener(place);
+    })();
+    </script>
+    <script>
+    // Phones: Power and Speed -/+ copies at the top of the bar under the 3D view; they press the real buttons and mirror them.
+    (function () {
+      var bar = document.getElementById('stagebar'), $ = function (id) { return document.getElementById(id); };
+      var mini = document.createElement('div'); mini.className = 'minictl';
+      mini.innerHTML = '<button class="mpow" aria-label="Power" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.3a8 8 0 1 0 11.4 0"/></svg></button>'
+        + '<span class="mlcd off" aria-hidden="true"></span>'
+        + '<button class="mk" aria-label="Speed down" disabled>&minus;</button><button class="mk" aria-label="Speed up" disabled>+</button>';
+      bar.prepend(mini);
+      var b = mini.querySelectorAll('button'), lcd = mini.querySelector('.mlcd');
+      b[0].onclick = function () { $('power').click(); };
+      b[1].onclick = function () { $('k-down').click(); };
+      b[2].onclick = function () { $('k-up').click(); };
+      function sync() {
+        var on = $('power').getAttribute('aria-pressed') === 'true';
+        b[0].setAttribute('aria-pressed', on);
+        b[1].disabled = $('k-down').disabled; b[2].disabled = $('k-up').disabled;
+        lcd.textContent = $('lcd-mode').textContent + ' · ' + $('lcd-sub').textContent.split(' \u00b7 ')[0];
+        lcd.classList.toggle('off', !on);
+      }
+      var mo = new MutationObserver(sync);
+      ['power', 'k-down', 'k-up'].forEach(function (id) { mo.observe($(id), { attributes: true }); });
+      mo.observe($('lcd'), { subtree: true, childList: true, characterData: true });
+      sync();
+    })();
+    </script>
     </div>
 
   </div>
@@ -1124,8 +1200,8 @@ $('b-orbit').addEventListener('click', () => { controls.autoRotate = !controls.a
 function resize() {
   const w = stage.clientWidth, h = stage.clientHeight;
   renderer.setSize(w, h, false); camera.aspect = w / h;
-  camera.setViewOffset(w, h, w < 700 ? 0 : -w * 0.04, w < 600 ? h * 0.12 : 0, w, h);
-  camera.fov = w < 600 ? 42 : 32;
+  camera.setViewOffset(w, h, w < 700 ? 0 : -w * 0.04, w < 600 ? h * 0.02 : 0, w, h);
+  camera.fov = w < 600 ? 36 : 32; // phone framing 2026-11-07b
   camera.updateProjectionMatrix();
   linesEl.setAttribute('viewBox', `0 0 ${w} ${h}`);
 }

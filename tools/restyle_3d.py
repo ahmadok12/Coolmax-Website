@@ -227,13 +227,145 @@ def phone_labels_off(js):
     return js, True
 
 
+# --- phones, 2026-11-07 (b): a much bigger 3D view ---
+# The stage title is hidden, the view-mode panel and the toolbar move out of the stage into a bar under it,
+# the readout tiles get tighter, and the camera frames the cooler larger.
+PHONE_MARK = "/* --- phone stage (2026-11-07b)"
+PHONE_CSS = PHONE_MARK + """: bigger 3D view, controls in a bar under it --- */
+.stagebar[hidden] { display: none !important; }
+@media (max-width: 760px) {
+  .stage { height: clamp(300px, calc(100svh - 380px), 640px); }
+  .stage .title, .hint { display: none; }
+  .readout .body { gap: 5px; padding: 6px; }
+  .readout .meter { padding: 4px 7px 5px; gap: 0; }
+  .readout .meter > span:first-child { font-size: .6rem; }
+  .readout .meter .v { font-size: .8rem; line-height: 1.25; }
+  .readout .meter .trk { height: 3px; margin-top: 3px; }
+  .readout .ro-note { padding-bottom: 5px; font-size: .6rem; }
+  .stagebar { order: -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "seg seg" "tb cut" "range range"; gap: 8px 8px; align-items: center; padding: 8px; }
+  .stagebar .viewmode { display: contents; }
+  .stagebar .viewmode .lab, .stagebar label[for="t-labels"], .stagebar label[for="t-all"] { display: none; }
+  .stagebar .seg { grid-area: seg; }
+  .stagebar .seg button { min-height: 38px; padding: 4px 0; grid-auto-flow: column; align-items: center; justify-content: center; gap: 6px; font-size: .78rem; }
+  .stagebar label[for="t-cut"] { grid-area: cut; min-height: 38px; font-size: .74rem; gap: 6px; }
+  .stagebar #cut { grid-area: range; }
+  .stagebar .toolbar { grid-area: tb; position: static; display: flex; pointer-events: auto; min-width: 0; }
+  .stagebar .tbgroup { flex: 1; box-shadow: none; flex-wrap: nowrap; }
+  .stagebar .tbgroup button { flex: 1 1 0; min-width: 32px; min-height: 38px; padding: 0; justify-content: center; }
+}
+"""
+STAGEBAR_HTML = """<div class="card stagebar" id="stagebar" hidden></div>
+<script>
+// Phones: the view-mode switches and the toolbar sit in a bar under the 3D view, so they don't cover the cooler.
+(function () {
+  var mq = matchMedia('(max-width: 760px)'), bar = document.getElementById('stagebar'), st = document.getElementById('stage');
+  var vm = st.querySelector('.viewmode'), tb = st.querySelector('.toolbar');
+  function place() {
+    if (mq.matches) { bar.append(vm, tb); bar.hidden = false; }
+    else { st.append(vm, tb); bar.hidden = true; }
+  }
+  place();
+  if (mq.addEventListener) mq.addEventListener('change', place); else mq.addListener(place);
+})();
+</script>"""
+CAM_MARK = "// phone framing 2026-11-07b"
+
+
+def phone_camera(js):
+    if CAM_MARK in js:
+        return js, False
+    js2 = re.sub(r"w < 600 \? h \* 0\.1[02] : 0", "w < 600 ? h * 0.02 : 0", js, count=1)
+    js2 = re.sub(r"camera\.fov = w < 600 \? (\d+) : 32;",
+                 lambda m: "camera.fov = w < 600 ? %d : 32; %s" % (round(int(m.group(1)) * 0.86), CAM_MARK), js2, count=1)
+    if CAM_MARK not in js2 or "h * 0.02" not in js2:
+        raise SystemExit("camera framing not found")
+    return js2, True
+
+
+def phone_stage(html):
+    if PHONE_MARK in html:
+        return html, False
+    i = html.find('<section class="stage"')
+    j = html.find("\n    </section>\n", i)
+    if i < 0 or j < 0:
+        raise SystemExit("stage section not found")
+    j += len("\n    </section>\n")
+    html = html[:j] + "    " + STAGEBAR_HTML.replace("\n", "\n    ") + "\n" + html[j:]
+    html = html.replace("</style>", PHONE_CSS + "</style>", 1)
+    if "/*VIEWER_JS*/" not in html:
+        html, _ = phone_camera(html)
+    return html, True
+
+
+# --- phones, 2026-11-07 (c): Power and Speed -/+ copies in the bar under the 3D view, so they work without scrolling ---
+MINI_MARK = "/* --- phone mini controls (2026-11-07c)"
+MINI_CSS = MINI_MARK + """: power and speed in the bar under the 3D view --- */
+@media (max-width: 760px) {
+  .stage { height: clamp(280px, calc(100svh - 432px), 600px); }
+  .stagebar { grid-template-areas: "mini mini" "seg seg" "tb cut" "range range"; }
+  .minictl { grid-area: mini; display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .minictl button { border: 0; cursor: pointer; font: inherit; display: grid; place-items: center; flex: none; }
+  .minictl .mpow { width: 44px; height: 44px; border-radius: 50%; color: #fff; background: radial-gradient(circle at 35% 30%, #3d5fc4, #14244f); box-shadow: inset 0 -3px 6px rgba(0,0,0,.4), 0 6px 14px -8px rgba(31, 68, 168, .8); }
+  .minictl .mpow[aria-pressed="true"] { box-shadow: inset 0 -3px 6px rgba(0,0,0,.4), 0 0 0 3px rgba(23, 163, 90, .45); }
+  .minictl .mpow svg { width: 20px; height: 20px; }
+  .minictl .mlcd { flex: 1; min-width: 0; height: 44px; display: flex; align-items: center; padding: 0 10px; border-radius: 12px; background: var(--lcd-bg); color: var(--lcd-fg); font: 600 .72rem var(--mono); letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: inset 0 2px 6px rgba(0,0,0,.6); }
+  .minictl .mlcd.off { opacity: .45; }
+  .minictl .mk { width: 50px; height: 44px; border-radius: 12px; border: 1px solid rgba(195, 204, 217, .7); background: var(--chip); color: var(--ink); font-size: 1.3rem; font-weight: 700; line-height: 1; }
+  .minictl .mk:disabled { opacity: .45; cursor: not-allowed; }
+}
+"""
+MINI_HTML = """<script>
+// Phones: Power and Speed -/+ copies at the top of the bar under the 3D view; they press the real buttons and mirror them.
+(function () {
+  var bar = document.getElementById('stagebar'), $ = function (id) { return document.getElementById(id); };
+  var mini = document.createElement('div'); mini.className = 'minictl';
+  mini.innerHTML = '<button class="mpow" aria-label="Power" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 7.3a8 8 0 1 0 11.4 0"/></svg></button>'
+    + '<span class="mlcd off" aria-hidden="true"></span>'
+    + '<button class="mk" aria-label="Speed down" disabled>&minus;</button><button class="mk" aria-label="Speed up" disabled>+</button>';
+  bar.prepend(mini);
+  var b = mini.querySelectorAll('button'), lcd = mini.querySelector('.mlcd');
+  b[0].onclick = function () { $('power').click(); };
+  b[1].onclick = function () { $('k-down').click(); };
+  b[2].onclick = function () { $('k-up').click(); };
+  function sync() {
+    var on = $('power').getAttribute('aria-pressed') === 'true';
+    b[0].setAttribute('aria-pressed', on);
+    b[1].disabled = $('k-down').disabled; b[2].disabled = $('k-up').disabled;
+    lcd.textContent = $('lcd-mode').textContent + ' \u00b7 ' + $('lcd-sub').textContent.split(' \\u00b7 ')[0];
+    lcd.classList.toggle('off', !on);
+  }
+  var mo = new MutationObserver(sync);
+  ['power', 'k-down', 'k-up'].forEach(function (id) { mo.observe($(id), { attributes: true }); });
+  mo.observe($('lcd'), { subtree: true, childList: true, characterData: true });
+  sync();
+})();
+</script>"""
+
+
+def phone_minictl(html):
+    if MINI_MARK in html:
+        return html, False
+    anchor = '<div class="card stagebar" id="stagebar" hidden></div>'
+    i = html.find(anchor)
+    j = html.find("</script>", i)
+    if i < 0 or j < 0:
+        raise SystemExit("stage bar not found")
+    j += len("</script>")
+    html = html[:j] + "\n    " + MINI_HTML.replace("\n", "\n    ") + html[j:]
+    html = html.replace("</style>", MINI_CSS + "</style>", 1)
+    return html, True
+
+
 def restyle(html):
     if MARK in html:
+        html, c = phone_stage(html)
+        html, d = phone_minictl(html)
+        c = c or d
         html, a = add_readout_note(html)
         if "/*VIEWER_JS*/" in html:
-            return html, a
+            return html, a or c
         html, b = phone_labels_off(html)
-        return html, a or b
+        return html, a or b or c
     html = html.replace(FONTS_OLD, FONTS_NEW)
 
     # 1. old phone/site block goes; the skin replaces it
@@ -272,6 +404,8 @@ def restyle(html):
     html, _ = add_readout_note(html)
     if "/*VIEWER_JS*/" not in html:
         html, _ = phone_labels_off(html)
+    html, _ = phone_stage(html)
+    html, _ = phone_minictl(html)
     return html, True
 
 
@@ -281,6 +415,7 @@ if __name__ == "__main__":
         if path.endswith(".js"):  # Mini Chiller source keeps its script in viewer.js
             out = drop_snapshot_code(src, required=False)
             out, _ = phone_labels_off(out)
+            out, _ = phone_camera(out)
             changed = out != src
         else:
             out, changed = restyle(src)
