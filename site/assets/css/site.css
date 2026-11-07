@@ -1105,3 +1105,14 @@ html[lang="ar"] .spec-x thead .mname { font-size: 1.05rem; }
   .hc-slide, .hc-slide.is-out, [dir="rtl"] .hc-slide, [dir="rtl"] .hc-slide.is-out { transform: none; }
   .hc-dot[aria-current="true"]::after { animation: none; transform: scaleX(1); }
 }
+
+/* ---------- Aolan logo (SVG, tools/make_aolan_logo.py) ---------- */
+.pd-logo { display: inline-block; margin-bottom: .7rem; line-height: 0; }
+.pd-logo img { display: block; width: auto; height: 30px; }
+.inline-logo { display: inline-block; width: auto; height: .82em; vertical-align: baseline; margin-inline-end: .35rem; }
+.hc-logo { display: inline-block; width: auto; height: 13px; vertical-align: -1px; margin-inline-end: 3px; }
+.mm-logo { display: block; width: auto; height: 26px; }
+@media (max-width: 600px) { .pd-logo img { height: 26px; } .hc-logo { height: 11px; } .mnav-panel .mm-logo { height: 22px; } }
+.brand-logo.brand-logo-solid { background: #fff; border: 0; box-shadow: 0 10px 30px -14px rgba(0, 0, 0, .55); padding: .6rem 1rem; }
+.bcard-img img.bcard-logo { height: 34px; padding: .45rem .7rem; background: #fff; border-radius: 999px; box-shadow: 0 6px 18px -10px rgba(10, 30, 80, .45); }
+@media (max-width: 600px) { .bcard-img img.bcard-logo { height: 30px; } }

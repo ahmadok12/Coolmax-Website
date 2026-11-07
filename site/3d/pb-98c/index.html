@@ -8,7 +8,7 @@
 <link rel="icon" href="../../assets/favicon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Urbanist:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 /* Layout: wide 3D stage on the left, a stack of operating cards on the right; one column on phones. */
 :root {
@@ -224,20 +224,156 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
   .key { min-height: 52px; font-size: .82rem; }
 }
 @media (prefers-reduced-motion: reduce) { .hint, .lcd, .meter .trk i { transition: none; } }
-/* --- site integration (2026-10-31): quote buttons, phone layout. kept in the viewer source --- */
-.buy { display: flex; gap: 8px; }
-.buy a { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 16px; border-radius: 999px; font-weight: 700; font-size: .88rem; text-decoration: none; white-space: nowrap; }
-.buy .q { background: #2f5bd3; color: #fff; }
-.buy .w { background: #1fa855; color: #fff; }
+/* --- site skin (2026-11-07): royal blue, glass cards, rounded corners; readout on top --- */
+:root, :root:not([data-theme="light"]), :root[data-theme="dark"] {
+  --navy: #2f5bd3; --navy-d: #1f44a8; --cyan: #4f7ef0; --gold: #e98a52;
+  --ink: #0f1726; --muted: #536075; --line: #dbe1ea; --bg: #f5f7fa;
+  --card: rgba(255, 255, 255, .62); --card-solid: #fbfcfe; --edge: rgba(255, 255, 255, .88);
+  --stage-top: #ffffff; --stage-bot: #dfe5ee; --chip: rgba(234, 239, 247, .8);
+  --on: #17a35a; --off: #d63a2f; --lcd-bg: #0b1730; --lcd-fg: #8fd1ff;
+  --shadow: 0 1px 0 rgba(255, 255, 255, .8) inset, 0 12px 32px -18px rgba(15, 23, 38, .22);
+  --font: "Urbanist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --display: "Gloock", Georgia, "Times New Roman", serif;
+  --radius: 18px; --blur: saturate(1.5) blur(16px);
+  color-scheme: light;
+}
+body { background: var(--bg); color: var(--ink); font-size: 15.5px; }
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(42rem 32rem at 8% 12%, rgba(47, 91, 211, .10), transparent 70%),
+    radial-gradient(38rem 30rem at 95% 45%, rgba(110, 160, 255, .16), transparent 70%),
+    radial-gradient(40rem 30rem at 30% 95%, rgba(47, 91, 211, .08), transparent 70%); }
+.page { gap: 14px; padding-top: 12px; }
+.card { background: var(--card); border: 1px solid var(--edge); box-shadow: var(--shadow); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
+.card h2 { font-size: .7rem; letter-spacing: .14em; color: var(--muted); padding: 12px 18px 9px; border-bottom: 1px solid rgba(195, 204, 217, .55); }
+
+/* floating glass header, like the site navbar */
+header.top { position: sticky; top: 10px; z-index: 40; background: rgba(255, 255, 255, .72); border: 1px solid var(--edge); border-radius: 999px;
+  box-shadow: var(--shadow); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); padding: 8px 10px 8px 10px; gap: 12px; flex-wrap: nowrap; }
+.mark { width: 42px; height: 42px; border-radius: 50%; background: var(--navy); box-shadow: 0 6px 16px -6px rgba(47, 91, 211, .6); }
+.mark svg { width: 24px; height: 24px; }
+.mark svg rect { stroke: #fff; } .mark svg circle { fill: #bcd0ff; } .mark svg path { stroke: #bcd0ff; }
+a.mark { width: auto; height: 42px; padding: 0 16px; border-radius: 999px; background: #fff; border: 1px solid var(--line); box-shadow: none; }
+a.mark img { display: block; width: auto; height: 19px; }
+.brand { flex: 1 1 auto; }
+.brand h1 { font-family: var(--display); font-weight: 400; font-size: 1.4rem; letter-spacing: 0; }
+.brand p { font-size: .84rem; }
+.back { color: var(--ink); font-weight: 600; padding: 9px 14px; border-radius: 999px; }
+.back:hover { background: var(--chip); text-decoration: none; }
+.buy { display: flex; gap: 8px; flex: none; }
+.buy a { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 18px; border-radius: 999px; font-weight: 700; font-size: .9rem; text-decoration: none; white-space: nowrap; transition: transform .15s, box-shadow .15s; }
+.buy .q { background: var(--navy); color: #fff; box-shadow: 0 8px 18px -10px rgba(47, 91, 211, .9); }
+.buy .q:hover { background: var(--navy-d); }
+.buy .w { background: #0f7d44; color: #fff; }
+.buy a:hover { transform: translateY(-1px); }
 .filechip { display: none; }
+
+/* main grid: parts list | control panel, live readout, 3D stage */
+.grid { grid-template-columns: 244px minmax(0, 1fr); gap: 14px; }
+.center { gap: 14px; }
+.plist { position: sticky; top: 84px; max-height: calc(100vh - 100px); overflow: auto; }
+.plist li button { border-radius: 12px; }
+.plist li button[aria-current="true"] { background: rgba(47, 91, 211, .1); border-color: rgba(47, 91, 211, .45); }
+.plist li button[aria-current="true"] .n { background: var(--navy); border-color: var(--navy); }
+.plist small.in { color: var(--navy); }
+
+.ctrlbar h2 { display: none; }
+.ctrlbar .body { padding: 12px 16px; }
+.power { background: radial-gradient(circle at 35% 30%, #3d5fc4, #14244f); box-shadow: inset 0 -3px 6px rgba(0,0,0,.4), 0 8px 18px -8px rgba(31, 68, 168, .8); }
+.lcd { border-radius: 12px; }
+.key, .seg button { border-radius: 12px; border-color: rgba(195, 204, 217, .7); background: var(--chip); }
+.key:not(:disabled):hover, .seg button:hover { border-color: var(--navy); }
+.key[aria-pressed="true"], .seg button[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); box-shadow: 0 6px 14px -8px rgba(47, 91, 211, .9); }
+
+/* live readout: one row of tiles right above the 3D stage, its title as a small label at the start */
+.readout { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; }
+.readout h2 { border: 0; padding: 0 4px 0 18px; display: flex; align-items: center; gap: 8px; writing-mode: horizontal-tb; max-width: 92px; line-height: 1.35; }
+.readout h2::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--on); box-shadow: 0 0 0 4px rgba(23, 163, 90, .16); }
+.readout .body { display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: 8px; padding: 10px; }
+.readout .meter { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "l" "v" "t"; gap: 3px; margin: 0; padding: 9px 11px 10px; border-radius: 12px; background: rgba(255, 255, 255, .7); border: 1px solid rgba(219, 225, 234, .9); }
+.readout .meter > span:first-child { grid-area: l; font-size: .74rem; color: var(--muted); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.readout .meter .v { grid-area: v; text-align: start; font-size: 1.02rem; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.readout .meter .trk { grid-area: t; height: 5px; border: 0; background: rgba(195, 204, 217, .45); margin-top: 2px; }
+.meter .trk i { background: linear-gradient(90deg, #5b8cff, var(--navy)); }
+.meter.warm .trk i { background: linear-gradient(90deg, #f4b183, var(--gold)); }
+.meter.elec .trk i { background: linear-gradient(90deg, #f08a7e, var(--off)); }
+
+/* 3D stage */
+.stage { height: clamp(420px, calc(100vh - 318px), 720px); min-height: 0; border: 1px solid var(--edge); box-shadow: var(--shadow);
+  background: radial-gradient(120% 95% at 50% 36%, #ffffff 0%, #f0f3f8 55%, #dfe5ee 100%); }
+.loading { background: radial-gradient(120% 95% at 50% 36%, #ffffff 0%, #f0f3f8 55%, #dfe5ee 100%); }
+.stage .title h2 { font-family: var(--display); font-weight: 400; font-size: 1.75rem; letter-spacing: 0; }
+.hint { background: rgba(255, 255, 255, .75); color: var(--ink); border: 1px solid var(--edge); border-radius: 12px; transform: none; -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); box-shadow: var(--shadow); }
+.viewmode { background: rgba(255, 255, 255, .66); border: 1px solid var(--edge); border-radius: 16px; box-shadow: var(--shadow); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
+.tbgroup { background: rgba(255, 255, 255, .7); border: 1px solid var(--edge); border-radius: 999px; box-shadow: var(--shadow); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
+.tbgroup button { border-right-color: rgba(195, 204, 217, .55); padding: 9px 14px; }
+.tbgroup button[aria-pressed="true"] { background: rgba(47, 91, 211, .12); color: var(--navy); }
+.lbl { background: var(--card-solid); }
+.lbl.sel { background: #e4ebfb; border-color: var(--navy); }
+.lbl.sel .n, .labels circle.sel { background: var(--navy); fill: var(--navy); }
+.badge-n { background: radial-gradient(circle at 35% 30%, #5b8cff, var(--navy-d)); }
+
+/* part details and how it works, below the stage */
+.info { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.pd-head h3 { font-family: var(--display); font-weight: 400; font-size: 1.3rem; }
+.notes .fun { border-top: 1px solid var(--line); }
+footer { padding-top: 4px; }
+
+@media (max-width: 1240px) {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  .plist { grid-column: auto; order: 3; position: static; max-height: none; }
+}
+@media (max-width: 980px) { .info { grid-template-columns: minmax(0, 1fr); } }
+
+/* phones: readout, 3D stage and control panel all fit in the first screen */
 @media (max-width: 760px) {
+  .page { padding-top: 8px; gap: 10px; padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
+  /* no backdrop-filter here: it would trap the fixed quote bar inside the header */
+  header.top { position: relative; top: 0; -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(255, 255, 255, .85); padding: 6px 8px; border-radius: 18px; gap: 10px; }
+  .mark { width: 36px; height: 36px; }
+  a.mark { width: auto; padding: 0 10px; } a.mark img { height: 15px; }
+  .brand h1 { font-size: 1.12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .brand p { display: none; }
-  .center { display: flex; flex-direction: column; }
-  .stage { order: -1; height: 62vh; min-height: 380px; }
+  .back { font-size: .8rem; padding: 8px 10px; }
+  .center { display: flex; flex-direction: column; gap: 10px; }
+  .readout { order: -2; }
+  .stage { order: -1; height: clamp(300px, calc(100svh - 500px), 560px); min-height: 0; max-height: none; }
+  .readout { display: block; }
+  .readout h2 { display: none; }
+  .readout .body { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 8px; }
+  .readout .meter { padding: 5px 8px 6px; gap: 1px; border-radius: 10px; }
+  .readout .meter > span:first-child { font-size: .64rem; line-height: 1.3; }
+  .readout .meter .trk { height: 4px; }
+  /* compact view-mode panel: modes on one row, two switches under it */
+  .viewmode { grid-template-columns: 1fr 1fr; padding: 6px; gap: 4px 10px; bottom: 60px; }
+  .viewmode .seg button { min-height: 38px; padding: 4px 0; grid-auto-flow: column; align-items: center; justify-content: center; gap: 6px; }
+  .viewmode .tog { min-height: 30px; }
+  .viewmode label[for="t-all"] { display: none; }
+  .readout .meter .v { font-family: var(--font); font-variant-numeric: tabular-nums; font-weight: 700; font-size: .84rem; letter-spacing: -.01em; }
+  .ctrlbar .body { padding: 10px; }
+  .ctrlbar .unit { grid-template-columns: auto minmax(0, 1fr); gap: 10px; }
+  .ctrlbar .keys { grid-column: 1 / -1; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+  .power { width: 54px; height: 54px; }
+  .powerrow { gap: 10px; }
+  .leds { font-size: .74rem; }
+  .ctrlbar .lcd { min-height: 54px; }
+  .key { min-height: 50px; padding: 6px 2px; font-size: .68rem; }
+  .key svg { width: 16px; height: 16px; }
   .snaps, footer { display: none; }
-  .page { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
-  .buy { position: fixed; z-index: 50; inset-inline: 0; bottom: 0; padding: 9px 12px calc(9px + env(safe-area-inset-bottom)); background: rgba(22, 22, 22, .96); }
+  .buy { position: fixed; z-index: 50; inset-inline: 10px; bottom: calc(8px + env(safe-area-inset-bottom)); padding: 7px; border-radius: 999px;
+    background: rgba(255, 255, 255, .78); border: 1px solid var(--edge); box-shadow: 0 14px 34px -14px rgba(15, 23, 38, .4); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
   .buy a { flex: 1; min-height: 46px; font-size: .95rem; }
+}
+@media (max-width: 420px) {
+  .powerrow .leds { display: none; }
+}
+/* --- readout note (2026-11-07): the readout values are approximate --- */
+.readout { grid-template-rows: auto auto; }
+.readout h2 { grid-row: 1; align-self: end; }
+.readout .ro-note { grid-column: 1; grid-row: 2; align-self: start; margin: 4px 0 0; padding: 0 4px 0 34px; max-width: 108px; font-size: .66rem; line-height: 1.3; color: var(--muted); }
+.readout .body { grid-column: 2; grid-row: 1 / span 2; }
+@media (max-width: 760px) {
+  .readout .ro-note { max-width: none; margin: 0; padding: 0 10px 7px; font-size: .64rem; text-align: center; }
+  .stage { height: clamp(300px, calc(100svh - 514px), 560px); }
 }
 </style>
 
@@ -287,6 +423,19 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
             </div>
           </div>
         </section>
+        <section class="card readout" aria-label="Live readout">
+        <h2>Live readout</h2>
+        <div class="body">
+          <div class="meter"><span>Fan speed</span><div class="trk"><i id="m-rpm"></i></div><span class="v" id="v-rpm">0 rpm</span></div>
+          <div class="meter"><span>Airflow</span><div class="trk"><i id="m-air"></i></div><span class="v" id="v-air">0 m³/h</span></div>
+          <div class="meter"><span>Pump flow</span><div class="trk"><i id="m-water"></i></div><span class="v" id="v-water">0 L/min</span></div>
+          <div class="meter"><span>Pad wetness</span><div class="trk"><i id="m-wet"></i></div><span class="v" id="v-wet">0%</span></div>
+          <div class="meter warm"><span>Air out</span><div class="trk"><i id="m-temp"></i></div><span class="v" id="v-temp">42.0 °C</span></div>
+          <div class="meter elec"><span>Power draw</span><div class="trk"><i id="m-watt"></i></div><span class="v" id="v-watt">0 W</span></div>
+          <div class="meter elec"><span>Current</span><div class="trk"><i id="m-amp"></i></div><span class="v" id="v-amp">0.00 A</span></div>
+        </div>
+          <p class="ro-note">Approximate values, for illustration only</p>
+      </section>
     <section class="stage" id="stage" aria-label="3D model of the PureBreeze PB-98C BLDC cube air cooler">
       <div class="title">
         <h2>PB-98C BLDC Cube</h2>
@@ -318,14 +467,13 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
           <button id="b-all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg><span>Show all</span></button>
           <button id="b-reset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 15v5h-5M4 4l6 6M20 20l-6-6"/></svg><span>Reset view</span></button>
         </div>
-        <div class="tbgroup">
-          <button id="b-snap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13.5" r="3.5"/><path d="M8 7l2-3h4l2 3"/></svg><span>Snapshot</span></button>
-        </div>
       </div>
     </section>
     </div>
 
-    <aside style="display:grid; gap:16px; min-width:0;">
+  </div>
+
+  <div class="info">
       <section class="card">
         <h2>Part details</h2>
         <div class="body">
@@ -345,41 +493,9 @@ footer { color: var(--muted); font-size: .8rem; text-align: center; }
         </div>
       </section>
 
-      <section class="card">
-        <h2>Live readout</h2>
-        <div class="body">
-          <div class="meter"><span>Fan speed</span><div class="trk"><i id="m-rpm"></i></div><span class="v" id="v-rpm">0 rpm</span></div>
-          <div class="meter"><span>Airflow</span><div class="trk"><i id="m-air"></i></div><span class="v" id="v-air">0 m³/h</span></div>
-          <div class="meter"><span>Pump flow</span><div class="trk"><i id="m-water"></i></div><span class="v" id="v-water">0 L/min</span></div>
-          <div class="meter"><span>Pad wetness</span><div class="trk"><i id="m-wet"></i></div><span class="v" id="v-wet">0%</span></div>
-          <div class="meter warm"><span>Air out</span><div class="trk"><i id="m-temp"></i></div><span class="v" id="v-temp">42.0 °C</span></div>
-          <div class="meter elec"><span>Power draw</span><div class="trk"><i id="m-watt"></i></div><span class="v" id="v-watt">0 W</span></div>
-          <div class="meter elec"><span>Current</span><div class="trk"><i id="m-amp"></i></div><span class="v" id="v-amp">0.00 A</span></div>
-        </div>
-      </section>
-    </aside>
   </div>
 
-  <section class="card cycles" aria-labelledby="cyc-h">
-    <h2 id="cyc-h">Rendered in Cycles</h2>
-    <div class="body">
-      <figure class="cyc-video">
-        <video id="cyc-video" src="cooler_cycles.mp4" poster="cycles_hero.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Cycles render of the PB-98C running: blower wheel spinning and water running down the wet pads"></video>
-        <figcaption>The PB-98C running, path-traced in Blender Cycles: real motion blur on the blower wheel, soft studio light and water trickling down the wet pads.</figcaption>
-      </figure>
-      <div class="cyc-stills">
-        <img src="cycles_hero.jpg" alt="Cycles studio render of the PureBreeze PB-98C, three-quarter view" loading="lazy" width="1920" height="1080">
-        <img src="cycles_top.jpg" alt="Cycles render of the PB-98C from the back, showing the swirl intake grilles" loading="lazy" width="1920" height="1080">
-      </div>
-    </div>
-  </section>
 
-  <section class="card snaps">
-    <h2>Snapshots <span id="snapcount">0 taken</span></h2>
-    <div class="body" id="snaps">
-      <div class="slot">Use Snapshot to save a view</div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
-    </div>
-  </section>
 
   <footer>Typical PB-98C figures at 42 °C and 25% humidity, BLDC motor 650 to 1,100 W on 230 V.</footer>
 <script>
@@ -539,7 +655,7 @@ const S = {
   power: false, speed: 6, cool: true, timer: 0, timerEnd: 0,
   omega: 0, pumpFlow: 0, fill: 0, wet: 0, tOut: 42, watts: 0,
   view: 'solid', explode: 0, explodeTarget: 0,
-  labels: true, allLabels: false, cut: false, selected: null,
+  labels: !matchMedia('(max-width: 760px)').matches, allLabels: false, cut: false, selected: null,
 };
 const SPEEDS = 12;
 // visual rad/s and real rpm per speed step (0 = off), evenly spaced from 400 to 1,100 rpm
@@ -913,6 +1029,7 @@ function syncLabelButtons() {
   $('b-labels').setAttribute('aria-pressed', S.labels);
   $('b-all').setAttribute('aria-pressed', S.allLabels);
 }
+syncLabelButtons();
 $('t-labels').addEventListener('change', (e) => { S.labels = e.target.checked; syncLabelButtons(); });
 $('t-all').addEventListener('change', (e) => { S.allLabels = e.target.checked; if (S.allLabels) S.labels = true; syncLabelButtons(); });
 $('b-labels').addEventListener('click', () => { S.labels = !S.labels; syncLabelButtons(); });
@@ -1002,22 +1119,6 @@ $('b-focus').addEventListener('click', () => {
   flyTo(tgt.clone().addScaledVector(dir, 1.5), tgt);
 });
 $('b-orbit').addEventListener('click', () => { controls.autoRotate = !controls.autoRotate; $('b-orbit').setAttribute('aria-pressed', controls.autoRotate); });
-
-// ---------- snapshots ----------
-let snapN = 0;
-$('b-snap').addEventListener('click', () => {
-  renderer.render(scene, camera);
-  const url = renderer.domElement.toDataURL('image/png');
-  const slots = $('snaps');
-  const slot = document.createElement('div'); slot.className = 'slot';
-  const img = new Image(); img.src = url; img.alt = `Snapshot ${snapN + 1} of the cooler`; slot.appendChild(img);
-  slots.prepend(slot);
-  const empty = [...slots.children].filter((c) => !c.querySelector('img'));
-  if (empty.length) empty[empty.length - 1].remove();
-  while (slots.children.length > 8) slots.lastElementChild.remove();
-  snapN++; $('snapcount').textContent = `${snapN} taken · right-click to save`;
-  beep(BEEP.key);
-});
 
 // ---------- resize ----------
 function resize() {
