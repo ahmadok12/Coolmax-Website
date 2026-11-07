@@ -818,9 +818,10 @@ input:user-invalid, select:user-invalid, textarea:user-invalid { border-color: v
   .page-hero h1 { font-size: 2.1rem; }
   .brand-hero .hero-media { display: none; }
   .brand-logo { height: 48px; margin-bottom: .8rem; }
-  .pills { flex-wrap: nowrap; overflow-x: auto; margin-inline: -16px; padding: 0 16px .25rem; scrollbar-width: none; }
-  .pills::-webkit-scrollbar { display: none; }
-  .pills a { white-space: nowrap; }
+  /* category chips: tidy two-column grid on phones, nothing cut off */
+  .pills { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-top: 1.25rem; }
+  .pills a { display: flex; align-items: center; min-height: 2.9rem; padding: .55rem .8rem; font-size: .85rem; line-height: 1.25; white-space: normal; overflow-wrap: anywhere; }
+  .pills a:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .stats-inline { margin-top: 1.5rem; }
   .stats-inline div { padding-top: 1rem; }
   .page-hero .stats b { font-size: 1.45rem; }
