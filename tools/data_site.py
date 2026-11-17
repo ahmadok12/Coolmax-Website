@@ -188,11 +188,11 @@ T = {
     "direct_lead": {"en": 'Order straight from the factory in China, made the way your market needs.', "ar": 'اطلب مباشرة من المصنع في الصين، وبالمواصفات التي يحتاجها سوقك.'},
     "direct_points": {
         "en": [
-            ("Buy direct from the factory", "Order straight from the factory in China at factory prices, with no middlemen."),
+            ("Buy direct from the factory", "Order straight from the factory in China at factory prices."),
             ("Customise the specs", "Tell us the voltage, airflow, size or colour you need and the factory builds to it."),
         ],
         "ar": [
-            ("اشترِ مباشرة من المصنع", "اطلب مباشرة من المصنع في الصين بسعر المصنع، وبدون وسطاء."),
+            ("اشترِ مباشرة من المصنع", "اطلب مباشرة من المصنع في الصين بسعر المصنع."),
             ("خصّص المواصفات", "حدد الجهد الكهربائي وقوة الهواء والحجم واللون، ويصنعه المصنع حسب طلبك."),
         ],
     },
